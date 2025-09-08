@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Contacto_Paciente } from "./contacto.entity";
+import { Telefono } from "./telefono.entity";
 
 @Entity()
 export class Paciente {
@@ -8,6 +9,9 @@ export class Paciente {
 
     @OneToMany(() => Contacto_Paciente, (contacto) => contacto.paciente)
     contactos: Contacto_Paciente[];
+
+    @OneToMany(() => Telefono, (telefono) => telefono.paciente)
+    telefono: Telefono[];
 
     @Column({ length: 100 })
     nombre: string;
@@ -19,7 +23,7 @@ export class Paciente {
     tipo_doc: number;
 
     @Column()
-    fecha_nacimiento: string;
+    fecha_nacimiento: Date;
 
     @Column()
     genero: number;

@@ -3,21 +3,31 @@ import { PacienteModule } from './modules/paciente/paciente.module';
 import { TratamientoModule } from './modules/tratamiento/tratamiento.module';
 import { MonitoreoModule } from './modules/monitoreo/monitore.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
-      username: process.env.DB_USERNAME || 'postgres',
-      password: process.env.DB_PASSWORD || 'hiachi20',
-      database: process.env.DB_DATABASE || 'seguimiento_db',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
-      logging: false,
-      migrations: [__dirname + '/database/migrations/*{.ts,.js}'],
-      migrationsRun: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get<string>('DB_HOST') || 'localhost',
+        port: configService.get<number>('DB_PORT') ? parseInt(configService.get('DB_PORT')) : 5432,
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_DATABASE'),
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        synchronize: true,
+        logging: false,
+        migrations: [__dirname + '/database/migrations/*{.ts,.js}'],
+        migrationsRun: true,
+        seeds: [__dirname + '/seeding/*.seeder{.ts,.js}'],
+        factories: [__dirname + '/seeding/*.factory{.ts,.js}'],
+      }),
     }),
     PacienteModule, 
     TratamientoModule, 

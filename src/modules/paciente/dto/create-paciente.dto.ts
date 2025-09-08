@@ -11,7 +11,7 @@ export class CreatePacienteDto {
     tipo_doc: number;
 
     @IsString()
-    fecha_nacimiento: string;
+    fecha_nacimiento: Date;
 
     @IsInt()
     genero: number;

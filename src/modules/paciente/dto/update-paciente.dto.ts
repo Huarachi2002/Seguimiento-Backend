@@ -16,7 +16,7 @@ export class UpdatePacienteDto {
 
     @IsOptional()
     @IsString()
-    fecha_nacimiento: string;
+    fecha_nacimiento: Date;
 
     @IsOptional()
     @IsInt()

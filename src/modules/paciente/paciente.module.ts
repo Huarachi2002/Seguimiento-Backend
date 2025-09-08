@@ -9,10 +9,11 @@ import { ContactoController } from "./controllers/contacto.controller";
 import { TipoParentescoController } from "./controllers/tipo_parentesco.controller";
 import { Contacto_Paciente } from "./entities/contacto.entity";
 import { Tipo_Parentesco } from "./entities/tipo_parentesco.entity";
+import { Telefono } from "./entities/telefono.entity";
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Paciente, Contacto_Paciente, Tipo_Parentesco]),
+        TypeOrmModule.forFeature([Paciente, Contacto_Paciente, Tipo_Parentesco, Telefono]),
     ],
     providers: [PacienteService, ContactoService, TipoParentescoService],
     controllers: [PacienteController, ContactoController, TipoParentescoController],
