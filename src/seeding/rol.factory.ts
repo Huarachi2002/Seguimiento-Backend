@@ -1,9 +1,9 @@
 
-import { Rol } from "src/modules/tratamiento/entities/rol.entity";
+import { Rol } from "../modules/tratamiento/entities/rol.entity";
 import { setSeederFactory } from "typeorm-extension";
 
 
-export const RolFactory = setSeederFactory(Rol, (faker) => {
+export default setSeederFactory(Rol, (faker) => {
     const rol = new Rol();
 
     rol.descripcion = faker.helpers.arrayElement([

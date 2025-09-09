@@ -24,9 +24,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         synchronize: true,
         logging: false,
         migrations: [__dirname + '/database/migrations/*{.ts,.js}'],
-        migrationsRun: true,
-        seeds: [__dirname + '/seeding/*.seeder{.ts,.js}'],
-        factories: [__dirname + '/seeding/*.factory{.ts,.js}'],
+        migrationsRun: true
       }),
     }),
     PacienteModule, 

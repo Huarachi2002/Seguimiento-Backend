@@ -1,8 +1,8 @@
-import { Estado_Cita } from "src/modules/tratamiento/entities/estado_cita.entity";
+import { Estado_Cita } from "../modules/tratamiento/entities/estado_cita.entity";
 import { setSeederFactory } from "typeorm-extension";
 
 
-export const EstadoCitaFactory = setSeederFactory(Estado_Cita, (faker) => {
+export default setSeederFactory(Estado_Cita, (faker) => {
     const estado_cita = new Estado_Cita();
 
     estado_cita.descripcion = faker.helpers.arrayElement([

@@ -1,8 +1,8 @@
-import { Tipo_Tratamiento } from "src/modules/tratamiento/entities/tipo_tratamiento.entity";
+import { Tipo_Tratamiento } from "../modules/tratamiento/entities/tipo_tratamiento.entity";
 import { setSeederFactory } from "typeorm-extension";
 
 
-export const TipoTratamientoFactory = setSeederFactory(Tipo_Tratamiento, (faker) => {
+export default setSeederFactory(Tipo_Tratamiento, (faker) => {
     const tipo_tratamiento = new Tipo_Tratamiento();
 
     tipo_tratamiento.descripcion = faker.helpers.arrayElement([

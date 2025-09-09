@@ -1,18 +1,19 @@
-import { Zona_Mza } from "src/modules/monitoreo/entities/zona_mza.entity";
-import { Zona_Uv } from "src/modules/monitoreo/entities/zona_uv.entity";
-import { Tipo_Parentesco } from "src/modules/paciente/entities/tipo_parentesco.entity";
-import { Estado_Cita } from "src/modules/tratamiento/entities/estado_cita.entity";
-import { Estado_Tratamiento } from "src/modules/tratamiento/entities/estado_tratamiento.entity";
-import { Rol } from "src/modules/tratamiento/entities/rol.entity";
-import { Tipo_Cita } from "src/modules/tratamiento/entities/tipo_cita.entity";
-import { Tipo_Tratamiento } from "src/modules/tratamiento/entities/tipo_tratamiento.entity";
+import { Zona_Mza } from "../modules/monitoreo/entities/zona_mza.entity";
+import { Zona_Uv } from "../modules/monitoreo/entities/zona_uv.entity";
+import { Tipo_Parentesco } from "../modules/paciente/entities/tipo_parentesco.entity";
+import { Estado_Cita } from "../modules/tratamiento/entities/estado_cita.entity";
+import { Estado_Tratamiento } from "../modules/tratamiento/entities/estado_tratamiento.entity";
+import { Rol } from "../modules/tratamiento/entities/rol.entity";
+import { Tipo_Cita } from "../modules/tratamiento/entities/tipo_cita.entity";
+import { Tipo_Tratamiento } from "../modules/tratamiento/entities/tipo_tratamiento.entity";
 import { DataSource } from "typeorm";
 import { Seeder, SeederFactoryManager } from "typeorm-extension";
 
 
-export class MainSeeder implements Seeder {
+export default class MainSeeder implements Seeder {
     public async run(dataSource: DataSource, factoryManager: SeederFactoryManager): Promise<any> {
         
+        console.log("Iniciando el proceso de seeding...");
         // 1. Seeder para Tipo_Parentesco (datos fijos)
         await this.seedTipoParentesco(dataSource);
 
@@ -36,6 +37,8 @@ export class MainSeeder implements Seeder {
 
         // 8. Seeder para Rol (datos fijos)
         await this.seedRol(dataSource);
+
+        console.log("Proceso de seeding completado.");
     }
 
     private async seedRol(dataSource: DataSource): Promise<void> {

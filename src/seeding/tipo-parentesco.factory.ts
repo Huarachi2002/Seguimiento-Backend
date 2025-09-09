@@ -1,8 +1,8 @@
-import { Tipo_Parentesco } from "src/modules/paciente/entities/tipo_parentesco.entity";
+import { Tipo_Parentesco } from "../modules/paciente/entities/tipo_parentesco.entity";
 import { setSeederFactory } from "typeorm-extension";
 
 
-export const TipoParentescoFactory = setSeederFactory(Tipo_Parentesco, (faker) => {
+export default setSeederFactory(Tipo_Parentesco, (faker) => {
     const tipo_parentesco = new Tipo_Parentesco();
     
     tipo_parentesco.descripcion = faker.helpers.arrayElement([

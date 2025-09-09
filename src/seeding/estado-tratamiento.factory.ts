@@ -1,8 +1,8 @@
-import { Estado_Tratamiento } from "src/modules/tratamiento/entities/estado_tratamiento.entity";
+import { Estado_Tratamiento } from "../modules/tratamiento/entities/estado_tratamiento.entity";
 import { setSeederFactory } from "typeorm-extension";
 
 
-export const EstadoTratamientoFactory = setSeederFactory(Estado_Tratamiento, (faker) => {
+export default setSeederFactory(Estado_Tratamiento, (faker) => {
     const estado_tratamiento = new Estado_Tratamiento();
     
     estado_tratamiento.descripcion = faker.helpers.arrayElement([
