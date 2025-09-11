@@ -1,5 +1,8 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Tipo_Tratamiento } from "./tipo_tratamiento.entity";
+import { Estado_Tratamiento } from "./estado_tratamiento.entity";
+import { Paciente } from "src/modules/paciente/entities/paciente.entity";
+import { Fase_Tratamiento } from "./fase_tratamiento.entity";
 
 
 @Entity()
@@ -7,8 +10,17 @@ export class TratamientoTB {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @OneToMany(() => Tipo_Tratamiento, (tipo_tratamiento) => tipo_tratamiento.id)
-    tipo_tratamientos: Tipo_Tratamiento[];
+    @ManyToOne(() => Paciente, (paciente) => paciente.tratamientos)
+    paciente: Paciente;
+
+    @ManyToOne(() => Tipo_Tratamiento, (tipo_tratamiento) => tipo_tratamiento.id)
+    tipo_tratamiento: Tipo_Tratamiento;
+
+    @ManyToOne(() => Estado_Tratamiento, (estado) => estado.id)
+    estado: Estado_Tratamiento;
+
+    @ManyToOne(() => Fase_Tratamiento, (fase) => fase.id)
+    fase: Fase_Tratamiento;
 
     @Column({ length: 100 })
     codigo_tratamiento: string;
@@ -27,9 +39,6 @@ export class TratamientoTB {
 
     @Column()
     dosis_completa: number;
-
-    @Column()
-    estado: number;
 
     @Column()
     observaciones: string;

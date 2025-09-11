@@ -4,6 +4,8 @@ import { IApiResponse } from "src/common/interface/api-response.interface";
 import { DireccionService } from "../services/direccion.service";
 import { CreateDireccionDto } from "../dto/create-direccion.dto";
 import { UpdateDireccionDto } from "../dto/update-direccion.dto";
+import { CreateZonaMzaDto } from "../dto/create-zona-mza.dto";
+import { CreateZonaUvDto } from "../dto/create-zona-uv.dto";
 
 
 @Controller('direccion')
@@ -14,7 +16,7 @@ export class DireccionController {
         private direccionService: DireccionService
     ){}
 
-    @Get(':idPaciente')
+    @Get('paciente/:idPaciente')
     getDirrecionByPaciente(@Param('idPaciente') id: string) {
         const paciente = this.pacienteService.findOne(id)
         if (!paciente) {
@@ -30,6 +32,65 @@ export class DireccionController {
             message: 'Detalles de la direccion',
             data
         }));
+    }
+
+    @Get(':id')
+    async getDireccionById(@Param('id') id: string): Promise<IApiResponse> {
+        const data = await this.direccionService.findOne(id);
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Detalles de la direccion',
+            data
+        };
+    }
+
+    @Get('zona-mza')
+    async getAllZonaMzas(): Promise<IApiResponse> {
+        const data = await this.direccionService.findAllMzas();
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Lista de zonas Mza',
+            data
+        };
+    }
+
+    @Get('zona-uv')
+    async getAllZonaUvs(): Promise<IApiResponse> {
+        const data = await this.direccionService.findAllUvs();
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Lista de zonas UV',
+            data
+        };
+    }
+
+    @Post('zona-mza')
+    async createZonaMza(@Body() createZonaMzaDto: CreateZonaMzaDto): Promise<IApiResponse> {
+        const zona_uv = await this.direccionService.findUvById(createZonaMzaDto.idZonaUv);
+        if (!zona_uv) {
+            return {
+                statusCode: HttpStatus.NOT_FOUND,
+                message: 'Zona UV no encontrada',
+                data: null
+            };
+        }
+        
+        const data = await this.direccionService.createMza(createZonaMzaDto, zona_uv);
+        return {
+            statusCode: HttpStatus.CREATED,
+            message: 'Zona Mza creada',
+            data
+        };
+    }
+
+    @Post('zona-uv')
+    async createZonaUv(@Body() createZonaUvDto: CreateZonaUvDto): Promise<IApiResponse> {
+        const data = await this.direccionService.createUv(createZonaUvDto);
+        return {
+            statusCode: HttpStatus.CREATED,
+            message: 'Zona UV creada',
+            data
+        };
     }
 
     @Post()
@@ -50,13 +111,41 @@ export class DireccionController {
         }));
     }
 
+    @Put('zona-mza/:id')
+    async updateZonaMza(@Param('id') id: string, @Body() updateZonaMzaDto: CreateZonaMzaDto): Promise<IApiResponse> {
+        const zonaUv = await this.direccionService.findUvById(updateZonaMzaDto.idZonaUv);
+        if (!zonaUv) {
+            return {
+                statusCode: HttpStatus.NOT_FOUND,
+                message: 'Zona UV no encontrada',
+                data: null
+            };
+        }
+        const data = await this.direccionService.updateMza(id, updateZonaMzaDto, zonaUv);
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Zona Mza actualizada',
+            data
+        };
+    }
+
+    @Put('zona-uv/:id')
+    async updateZonaUv(@Param('id') id: string, @Body() updateZonaUvDto: CreateZonaUvDto): Promise<IApiResponse> {
+        const data = await this.direccionService.updateUv(id, updateZonaUvDto);
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Zona UV actualizada',
+            data
+        };
+    }
+
     @Put(':id')
     async updateDireccion(@Param('id') id: string, @Body() updateDireccionDto: UpdateDireccionDto): Promise<IApiResponse> {
-        await this.direccionService.update(id, updateDireccionDto);
+        const data = await this.direccionService.update(id, updateDireccionDto);
         return Promise.resolve( {
             statusCode: HttpStatus.OK,
             message: 'Direccion actualizada',
-            data: null
+            data
         });
     }
 

@@ -9,7 +9,7 @@ export class Tipo_Parentesco {
     @OneToMany(() => Contacto_Paciente, (contacto) => contacto.tipo_parentesco)
     contactos: Contacto_Paciente[];
 
-    @Column({ length: 100 })
+    @Column({ length: 100, unique: true })
     descripcion: string;
 
     @Column({ default: true })

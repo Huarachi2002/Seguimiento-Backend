@@ -6,7 +6,7 @@ export class Tipo_Cita {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
+    @Column({ unique: true, length: 100 })
     descripcion: string;
 
     @Column({ default: true })

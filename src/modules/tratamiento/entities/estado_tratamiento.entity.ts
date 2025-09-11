@@ -10,7 +10,7 @@ export class Estado_Tratamiento {
     @OneToMany(() => TratamientoTB, (tratamiento) => tratamiento.estado)
     tratamientos: TratamientoTB[];
 
-    @Column({ length: 100 })
+    @Column({ unique: true, length: 100 })
     descripcion: string;
 
     @Column({ default: true })

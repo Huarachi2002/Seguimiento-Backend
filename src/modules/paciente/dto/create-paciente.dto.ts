@@ -1,4 +1,4 @@
-import { IsBoolean, IsEmail, IsInt, IsString } from "class-validator";
+import { IsBoolean, IsDate, IsEmail, IsInt, IsString } from "class-validator";
 
 export class CreatePacienteDto {
     @IsString()
@@ -10,7 +10,7 @@ export class CreatePacienteDto {
     @IsInt()
     tipo_doc: number;
 
-    @IsString()
+    @IsDate()
     fecha_nacimiento: Date;
 
     @IsInt()

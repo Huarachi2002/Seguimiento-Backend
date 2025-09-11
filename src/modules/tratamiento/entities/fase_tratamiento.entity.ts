@@ -3,11 +3,11 @@ import { TratamientoTB } from "./tratamientoTB.entity";
 
 
 @Entity()
-export class Tipo_Tratamiento {
+export class Fase_Tratamiento {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @OneToMany(() => TratamientoTB, (tratamiento) => tratamiento.tipo_tratamiento)
+    @OneToMany(() => TratamientoTB, (tratamiento) => tratamiento.fase)
     tratamientos: TratamientoTB[];
 
     @Column({ unique: true, length: 100 })

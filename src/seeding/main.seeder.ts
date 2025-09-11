@@ -1,3 +1,4 @@
+import { Fase_Tratamiento } from "src/modules/tratamiento/entities/fase_tratamiento.entity";
 import { Zona_Mza } from "../modules/monitoreo/entities/zona_mza.entity";
 import { Zona_Uv } from "../modules/monitoreo/entities/zona_uv.entity";
 import { Tipo_Parentesco } from "../modules/paciente/entities/tipo_parentesco.entity";
@@ -38,7 +39,33 @@ export default class MainSeeder implements Seeder {
         // 8. Seeder para Rol (datos fijos)
         await this.seedRol(dataSource);
 
+        // 9. Seeder para Fase_Tratamiento (datos fijos)
+        await this.seedFaseTratamiento(dataSource);
+
         console.log("Proceso de seeding completado.");
+    }
+
+    private async seedFaseTratamiento(dataSource: DataSource): Promise<void> {
+        const repository = dataSource.getRepository(Fase_Tratamiento);
+
+        const count = await repository.count();
+        if (count > 0) {
+            console.log("Fase_Tratamiento ya tiene datos, se omite el seeding.");
+            return;
+        }
+        const fasesTratamiento = [
+            'Intensivo',
+            'Continuación',
+            'Completado'
+        ];
+        for (const descripcion of fasesTratamiento) {
+            const faseTratamiento = repository.create({
+                descripcion,
+                estado: true
+            });
+            await repository.save(faseTratamiento);
+        }
+        console.log("Seeding de Fase_Tratamiento completado.");
     }
 
     private async seedRol(dataSource: DataSource): Promise<void> {
@@ -72,10 +99,11 @@ export default class MainSeeder implements Seeder {
         }
 
         const estadosTratamiento = [
-            'Pendiente',
-            'En Proceso',
-            'Completado',
-            'Cancelado'
+            'Activa',
+            'Completada',
+            'Abandonada',
+            'Fallida',
+            'Transferida'
         ];
         for (const descripcion of estadosTratamiento) {
             const estadoTratamiento = repository.create({
@@ -98,11 +126,12 @@ export default class MainSeeder implements Seeder {
         }
 
         const estadosCita = [
-            'Programada',
-            'Completada',
-            'Cancelada',
-            'Reprogramada',
-            'No Asistida'
+            'Programado',
+            'Confirmado',
+            'Asistido',
+            'Perdido',
+            'Reprogramado',
+            'Cancelado'
         ];
 
         for (const descripcion of estadosCita) {
@@ -126,10 +155,10 @@ export default class MainSeeder implements Seeder {
         }
 
         const tiposCita = [
-            'Consulta Inicial',
-            'Seguimiento',
-            'Control de Medicación',
-            'Consulta de Resultados'
+            'Toma de medicamentos',
+            'Revisión médica',
+            'Análisis de laboratorio',
+            'Visita de seguimiento'
         ];
 
         for (const descripcion of tiposCita) {
@@ -153,12 +182,10 @@ export default class MainSeeder implements Seeder {
         }
 
         const tiposTratamiento = [
-            'Consulta',
-            'Control',
-            'Urgencia',
-            'Emergencia',
-            'Hospitalización',
-            'Rehabilitación'
+            'Nuevo caso',
+            'Recaída',
+            'Retratamiento',
+            'TB multirresistente'
         ];
 
         for (const descripcion of tiposTratamiento) {

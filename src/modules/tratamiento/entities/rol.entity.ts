@@ -9,7 +9,7 @@ export class Rol {
     @OneToMany(() => User, (user) => user.rol)
     users: User[];
 
-    @Column()
+    @Column({ unique: true, length: 100 })
     descripcion: string;
 
     @CreateDateColumn()

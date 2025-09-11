@@ -16,7 +16,7 @@ export class Contacto_Paciente {
     @Column({ length: 100 })
     nombre_contacto: string;
 
-    @Column({ length: 20 })
+    @Column({ length: 20, unique: true })
     numero_telefono_contacto: string;
 
     @Column()
