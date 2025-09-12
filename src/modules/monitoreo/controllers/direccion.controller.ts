@@ -16,6 +16,60 @@ export class DireccionController {
         private direccionService: DireccionService
     ){}
 
+    @Get('zona-mza')
+    async getAllZonaMzas(): Promise<IApiResponse> {
+        const data = await this.direccionService.findAllMzas();
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Lista de zonas Mza',
+            data
+        };
+    }
+
+    @Get('zona-uv')
+    async getAllZonaUvs(): Promise<IApiResponse> {
+        const data = await this.direccionService.findAllUvs();
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Lista de zonas UV',
+            data
+        };
+    }
+
+    @Get('zona-mza/:id')
+    async getZonaMzaById(@Param('id') id: string): Promise<IApiResponse> {
+        const data = await this.direccionService.findMzaById(id);
+        if (!data) {
+            return {
+                statusCode: HttpStatus.NOT_FOUND,
+                message: 'Zona Mza no encontrada',
+                data: null
+            };
+        }
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Detalles de la zona Mza',
+            data
+        };
+    }
+
+    @Get('zona-uv/:id')
+    async getZonaUvById(@Param('id') id: string): Promise<IApiResponse> {
+        const data = await this.direccionService.findUvById(id);
+        if (!data) {
+            return {
+                statusCode: HttpStatus.NOT_FOUND,
+                message: 'Zona UV no encontrada',
+                data: null
+            };
+        }
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Detalles de la zona UV',
+            data
+        };
+    }
+
     @Get('paciente/:idPaciente')
     getDirrecionByPaciente(@Param('idPaciente') id: string) {
         const paciente = this.pacienteService.findOne(id)
@@ -37,6 +91,13 @@ export class DireccionController {
     @Get(':id')
     async getDireccionById(@Param('id') id: string): Promise<IApiResponse> {
         const data = await this.direccionService.findOne(id);
+        if(!data){
+            return {
+                statusCode: 404,
+                message: "Direccion no encontrada",
+                data: null
+            };
+        }
         return {
             statusCode: HttpStatus.OK,
             message: 'Detalles de la direccion',
@@ -44,25 +105,7 @@ export class DireccionController {
         };
     }
 
-    @Get('zona-mza')
-    async getAllZonaMzas(): Promise<IApiResponse> {
-        const data = await this.direccionService.findAllMzas();
-        return {
-            statusCode: HttpStatus.OK,
-            message: 'Lista de zonas Mza',
-            data
-        };
-    }
-
-    @Get('zona-uv')
-    async getAllZonaUvs(): Promise<IApiResponse> {
-        const data = await this.direccionService.findAllUvs();
-        return {
-            statusCode: HttpStatus.OK,
-            message: 'Lista de zonas UV',
-            data
-        };
-    }
+    
 
     @Post('zona-mza')
     async createZonaMza(@Body() createZonaMzaDto: CreateZonaMzaDto): Promise<IApiResponse> {
@@ -142,11 +185,18 @@ export class DireccionController {
     @Put(':id')
     async updateDireccion(@Param('id') id: string, @Body() updateDireccionDto: UpdateDireccionDto): Promise<IApiResponse> {
         const data = await this.direccionService.update(id, updateDireccionDto);
-        return Promise.resolve( {
+        if(!data){
+            return {
+                statusCode: 404,
+                message: "Direccion no encontrada",
+                data: null
+            };
+        }
+        return {
             statusCode: HttpStatus.OK,
             message: 'Direccion actualizada',
             data
-        });
+        };
     }
 
 }

@@ -21,6 +21,10 @@ export class CitaService {
         @InjectRepository(Tipo_Cita) private tipoCitaRepository: Repository<Tipo_Cita>,
     ) {}
 
+    async findOne(id: string): Promise<Cita> {
+        return this.citaRepository.findOneBy({ id });
+    }
+
     async findByPaciente(pacienteId: string): Promise<Cita[]> {
         return this.citaRepository.find({
             where: { tratamiento: { paciente: { id: pacienteId } } },

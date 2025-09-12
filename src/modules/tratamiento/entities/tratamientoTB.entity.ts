@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Tipo_Tratamiento } from "./tipo_tratamiento.entity";
 import { Estado_Tratamiento } from "./estado_tratamiento.entity";
-import { Paciente } from "src/modules/paciente/entities/paciente.entity";
+import { Paciente } from "../../paciente/entities/paciente.entity";
 import { Fase_Tratamiento } from "./fase_tratamiento.entity";
 
 

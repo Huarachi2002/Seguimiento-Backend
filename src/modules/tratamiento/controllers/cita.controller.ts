@@ -20,6 +20,26 @@ export class CitaController {
         private usuarioService: UserService,
     ){}
 
+    @Get('estado-cita')
+    async getEstadosCita():Promise<IApiResponse>{
+        const data = await this.citaService.getEstadosCita();
+        return {
+            statusCode: 200,
+            message: 'Lista de estados de cita',
+            data
+        };
+    }
+
+    @Get('tipo-cita')
+    async getTiposCita():Promise<IApiResponse>{
+        const data = await this.citaService.getTiposCita();
+        return {
+            statusCode: 200,
+            message: 'Lista de tipos de cita',
+            data
+        };
+    }
+
     @Get('paciente/:idPaciente')
     async getCitasByPaciente(@Param('idPaciente') idPaciente: string):Promise<IApiResponse>{
         const data = await this.citaService.findByPaciente(idPaciente);
@@ -40,19 +60,16 @@ export class CitaController {
         };
     }
 
-    @Get('estado-cita')
-    async getEstadosCita():Promise<IApiResponse>{
-        const data = await this.citaService.getEstadosCita();
-        return {
-            statusCode: 200,
-            message: 'Lista de estados de cita',
-            data
-        };
-    }
-
     @Get('estado-cita/:id')
     async getEstadoCitaById(@Param('id') id: string):Promise<IApiResponse>{
         const data = await this.citaService.getEstadoCitaById(id);
+        if(!data) {
+            return {
+                statusCode: 404,
+                message: 'Estado de cita no encontrado',
+                data: null
+            };
+        }
         return {
             statusCode: 200,
             message: 'Estado de cita encontrado',
@@ -60,22 +77,36 @@ export class CitaController {
         };
     }
 
-    @Get('tipo-cita')
-    async getTiposCita():Promise<IApiResponse>{
-        const data = await this.citaService.getTiposCita();
+    @Get('tipo-cita/:id')
+    async getTipoCitaById(@Param('id') id: string):Promise<IApiResponse>{
+        const data = await this.citaService.getTipoCitaById(id);
+        if(!data){
+            return {
+                statusCode: 404,
+                message: 'Tipo de cita no encontrado',
+                data: null
+            };
+        }
         return {
             statusCode: 200,
-            message: 'Lista de tipos de cita',
+            message: 'Tipo de cita encontrado',
             data
         };
     }
 
-    @Get('tipo-cita/:id')
-    async getTipoCitaById(@Param('id') id: string):Promise<IApiResponse>{
-        const data = await this.citaService.getTipoCitaById(id);
+    @Get(':id')
+    async getCitaById(@Param('id') id: string):Promise<IApiResponse>{
+        const data = await this.citaService.findOne(id);
+        if(!data){
+            return {
+                statusCode: 404,
+                message: 'Cita no encontrada',
+                data: null
+            };
+        }
         return {
             statusCode: 200,
-            message: 'Tipo de cita encontrado',
+            message: 'Cita encontrada',
             data
         };
     }

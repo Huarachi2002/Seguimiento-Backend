@@ -11,6 +11,7 @@ import { Tipo_Parentesco } from "./entities/tipo_parentesco.entity";
         TypeOrmModule.forFeature([Paciente, Contacto_Paciente, Tipo_Parentesco]),
     ],
     providers: [PacienteService],
-    controllers: [PacienteController  ],
+    controllers: [PacienteController],
+    exports:[PacienteService, TypeOrmModule]
 })
 export class PacienteModule {}

@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Contacto_Paciente } from "./contacto.entity";
-import { TratamientoTB } from "src/modules/tratamiento/entities/tratamientoTB.entity";
+import { TratamientoTB } from "../../tratamiento/entities/tratamientoTB.entity";
 
 @Entity()
 export class Paciente {

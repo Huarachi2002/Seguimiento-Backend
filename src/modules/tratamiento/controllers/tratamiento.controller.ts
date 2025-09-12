@@ -18,6 +18,26 @@ export class TratamientoController {
         private pacienteService: PacienteService,
     ){}
 
+    @Get('tipo-tratamiento')
+    async getTiposTratamiento():Promise<IApiResponse>{
+        const data = await this.tratamientoService.getTiposTratamiento();
+        return {
+            statusCode: 200,
+            message: 'Lista de tipos de tratamiento',
+            data
+        };
+    }
+
+    @Get('estado-tratamiento')
+    async getEstadosTratamiento():Promise<IApiResponse>{
+        const data = await this.tratamientoService.getEstadosTratamiento();
+        return {
+            statusCode: 200,
+            message: 'Lista de estados de tratamiento',
+            data
+        };
+    }
+
     @Get('paciente/:idPaciente')
     async getTratamientosByPaciente(@Param('idPaciente') idPaciente: string):Promise<IApiResponse>{
         const paciente = await this.pacienteService.findOne(idPaciente);
@@ -39,6 +59,13 @@ export class TratamientoController {
     @Get(':id')
     async getTratamientoById(@Param('id') id: string):Promise<IApiResponse>{
         const data = await this.tratamientoService.findOne(id);
+        if(!data){
+            return {
+                statusCode: 404,
+                message: 'Tratamiento no encontrado',
+                data: null
+            }
+        }
         return {
             statusCode: 200,
             message: 'Tratamiento encontrado',
@@ -46,20 +73,16 @@ export class TratamientoController {
         };
     }
 
-
-    @Get('tipo-tratamiento')
-    async getTiposTratamiento():Promise<IApiResponse>{
-        const data = await this.tratamientoService.getTiposTratamiento();
-        return {
-            statusCode: 200,
-            message: 'Lista de tipos de tratamiento',
-            data
-        };
-    }
-
     @Get('tipo-tratamiento/:id')
     async getTipoTratamientoById(@Param('id') id: string):Promise<IApiResponse>{
         const data = await this.tratamientoService.getTipoTratamientoById(id);
+        if(!data){
+            return {
+                statusCode: 404,
+                message: 'Tipo de tratamiento no encontrado',
+                data: null
+            };
+        }
         return {
             statusCode: 200,
             message: 'Tipo de tratamiento encontrado',
@@ -67,19 +90,16 @@ export class TratamientoController {
         };
     }
 
-    @Get('estado-tratamiento')
-    async getEstadosTratamiento():Promise<IApiResponse>{
-        const data = await this.tratamientoService.getEstadosTratamiento();
-        return {
-            statusCode: 200,
-            message: 'Lista de estados de tratamiento',
-            data
-        };
-    }
-
     @Get('estado-tratamiento/:id')
     async getEstadoTratamientoById(@Param('id') id: string):Promise<IApiResponse>{
         const data = await this.tratamientoService.getEstadoTratamientoById(id);
+        if(!data){
+            return {
+                statusCode: 404,
+                message: 'Estado de tratamiento no encontrado',
+                data: null
+            };
+        }
         return {
             statusCode: 200,
             message: 'Estado de tratamiento encontrado',

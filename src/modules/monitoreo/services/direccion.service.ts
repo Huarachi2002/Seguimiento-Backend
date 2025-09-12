@@ -19,7 +19,7 @@ export class DireccionService {
     constructor(
         @InjectRepository(Direccion) private direccionRepository: Repository<Direccion>,
         @InjectRepository(Zona_Mza) private zonaMzaRepository: Repository<Zona_Mza>,
-                @InjectRepository(Zona_Uv) private zonaUvRepository: Repository<Zona_Uv>
+        @InjectRepository(Zona_Uv) private zonaUvRepository: Repository<Zona_Uv>
     ) { }
 
     async findOne(id: string): Promise<Direccion> {

@@ -21,10 +21,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true,
-        logging: false,
+        synchronize: false,
+        logging: true,
         migrations: [__dirname + '/database/migrations/*{.ts,.js}'],
-        migrationsRun: true
+        migrationsRun: false
       }),
     }),
     PacienteModule, 

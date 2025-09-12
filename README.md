@@ -71,3 +71,22 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+## Pasos para iniciar el proyecto
+
+npm install
+
+// Crear la base de datos con el nombre de seguimiento_db en Postgres
+//! En caso de cambiar el nombre de la bd tendra que tambien cambiar en el archivo .env
+
+// En caso de no tener ninguna migracion en dicha carpeta
+npm run migration:generate -- src/database/migration 
+
+// Si ya tiene migraciones o termino de crear
+npm run migration:run
+
+// Luego de tener las tablas listas en la bd
+npm run seed:run
+
+// Y por ultimo levantar proyecto
+npm run start:dev

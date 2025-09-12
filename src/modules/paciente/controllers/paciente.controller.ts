@@ -24,10 +24,27 @@ export class PacienteController {
             data
         };
     }
+    
+    @Get('tipo-parentesco')
+    async getTipoParentescos(): Promise<IApiResponse> {
+        const data = await this.pacienteService.getTipoParentescos();
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Lista de tipos de parentesco',
+            data
+        };
+    }
 
     @Get(':id')
     async getPacienteById(@Param('id') id: string) {
         const data = await this.pacienteService.findOne(id);
+        if(!data){
+            return {
+                statusCode: HttpStatus.NOT_FOUND,
+                message: 'Paciente no encontrado',
+                data: null
+            };
+        }
         return {
             statusCode: HttpStatus.OK,
             message: 'Detalles del paciente',
@@ -45,22 +62,41 @@ export class PacienteController {
         };
     }
 
-    @Get('tipo-parentesco')
-    async getTipoParentescos(): Promise<IApiResponse> {
-        const data = await this.pacienteService.getTipoParentescos();
-        return {
-            statusCode: HttpStatus.OK,
-            message: 'Lista de tipos de parentesco',
-            data
-        };
-    }
+
 
     @Get('tipo-parentesco/:id')
     async getTipoParentescoById(@Param('id') id: string): Promise<IApiResponse> {
         const data = await this.pacienteService.findTipoParentescoById(id);
+        if(!data){
+            return {
+                statusCode: HttpStatus.NOT_FOUND,
+                message: 'Tipo de parentesco no encontrado',
+                data: null
+            };
+        }
         return {
             statusCode: HttpStatus.OK,
             message: 'Detalles del tipo de parentesco',
+            data
+        };
+    }
+
+    @Post()
+    async createPaciente(@Body() createPacienteDto: CreatePacienteDto) {
+        const data = await this.pacienteService.create(createPacienteDto);
+        return {
+            statusCode: HttpStatus.CREATED,
+            message: 'Paciente creado',
+            data
+        };
+    }
+
+    @Post('tipo-parentesco')
+    async createTipoParentesco(@Body() createTipoParentescoDto: CreateTipoParentescoDto): Promise<IApiResponse> {
+        const data = await this.pacienteService.createTipoParentesco(createTipoParentescoDto);
+        return {
+            statusCode: HttpStatus.CREATED,
+            message: 'Tipo de parentesco creado',
             data
         };
     }
@@ -90,26 +126,6 @@ export class PacienteController {
             data: contacto
         };
     }    
-
-    @Post()
-    async createPaciente(@Body() createPacienteDto: CreatePacienteDto) {
-        const data = await this.pacienteService.create(createPacienteDto);
-        return {
-            statusCode: HttpStatus.CREATED,
-            message: 'Paciente creado',
-            data
-        };
-    }
-
-    @Post('tipo-parentesco')
-    async createTipoParentesco(@Body() createTipoParentescoDto: CreateTipoParentescoDto): Promise<IApiResponse> {
-        const data = await this.pacienteService.createTipoParentesco(createTipoParentescoDto);
-        return {
-            statusCode: HttpStatus.CREATED,
-            message: 'Tipo de parentesco creado',
-            data
-        };
-    }
 
     @Put(':id')
     async updatePaciente(@Param('id') id: string, @Body() updatePacienteDto: UpdatePacienteDto) {

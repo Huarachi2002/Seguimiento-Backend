@@ -24,16 +24,6 @@ export class UserController {
         }
     }
 
-    @Get(':id')
-    async findOne(@Param('id') id: string): Promise<IApiResponse>{
-        const user = await this.userService.findOne(id);
-        return {
-            statusCode: 200,
-            message: 'Usuario encontrado',
-            data: user
-        }
-    }
-
     @Get('rol')
     async getRols(): Promise<IApiResponse>{
         const rols = await this.userService.getRols();
@@ -44,9 +34,33 @@ export class UserController {
         }
     }
 
+    @Get(':id')
+    async findOne(@Param('id') id: string): Promise<IApiResponse>{
+        const user = await this.userService.findOne(id);
+        if(!user){
+            return {
+                statusCode: 404,
+                message: 'Usuario no encontrado',
+                data: null
+            }
+        }
+        return {
+            statusCode: 200,
+            message: 'Usuario encontrado',
+            data: user
+        }
+    }
+
     @Get('rol/:id')
     async getRolById(@Param('id') id: string): Promise<IApiResponse>{
         const rol = await this.userService.getRolById(id);
+        if(!rol){
+            return {
+                statusCode: 404,
+                message: 'Rol no encontrado',
+                data: null
+            }
+        }
         return {
             statusCode: 200,
             message: 'Rol encontrado',

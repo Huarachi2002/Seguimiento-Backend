@@ -1,4 +1,4 @@
-import { Fase_Tratamiento } from "src/modules/tratamiento/entities/fase_tratamiento.entity";
+import { Fase_Tratamiento } from "../modules/tratamiento/entities/fase_tratamiento.entity";
 import { Zona_Mza } from "../modules/monitoreo/entities/zona_mza.entity";
 import { Zona_Uv } from "../modules/monitoreo/entities/zona_uv.entity";
 import { Tipo_Parentesco } from "../modules/paciente/entities/tipo_parentesco.entity";

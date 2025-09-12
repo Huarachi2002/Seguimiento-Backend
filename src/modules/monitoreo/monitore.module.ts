@@ -7,16 +7,28 @@ import { Zona_Mza } from "./entities/zona_mza.entity";
 import { Zona_Uv } from "./entities/zona_uv.entity";
 import { DireccionService } from "./services/direccion.service";
 import { DireccionController } from "./controllers/direccion.controller";
-import { PacienteService } from "../paciente/services/paciente.service";
+import { PacienteModule } from "../paciente/paciente.module";
+import { TratamientoModule } from "../tratamiento/tratamiento.module";
+import { Cita } from "../tratamiento/entities/cita.entity";
 import { Paciente } from "../paciente/entities/paciente.entity";
-
+import { TratamientoTB } from "../tratamiento/entities/tratamientoTB.entity";
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Direccion, Zona_Mza, Zona_Uv, Paciente]),
+        TypeOrmModule.forFeature([
+            Direccion, 
+            Zona_Mza, 
+            Zona_Uv,
+            Paciente,
+            Cita,
+            TratamientoTB
+        ]),
+        PacienteModule,
+        TratamientoModule
     ],
-    providers: [MonitoreoService, DireccionService, PacienteService],
+    providers: [MonitoreoService, DireccionService],
     controllers: [MonitoreoController, DireccionController],
+    exports: [MonitoreoService, DireccionService]
 })
 
 export class MonitoreoModule {}
