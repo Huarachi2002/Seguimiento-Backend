@@ -1,3 +1,4 @@
+import { Type } from "class-transformer"
 import { IsDate, IsOptional, IsString } from "class-validator"
 
 
@@ -21,5 +22,6 @@ export class UpdateUserDto {
 
     @IsOptional()
     @IsDate()
+    @Type(() => Date)
     fecha_login: Date
 }

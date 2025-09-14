@@ -6,6 +6,5 @@ export const pgConfig: PostgresConnectionOptions = {
     type: 'postgres',
     host: process.env.DB_HOST || 'localhost',
     port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
-    entities: [ 'src/**/*.entity{.ts,.js}'],
-    synchronize: true
+    entities: [ 'src/**/*.entity{.ts,.js}']
 }

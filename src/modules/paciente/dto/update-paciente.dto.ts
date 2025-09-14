@@ -1,3 +1,4 @@
+import { Type } from "class-transformer";
 import { IsBoolean, IsDate, IsEmail, IsInt, IsOptional, IsString } from "class-validator";
 
 export class UpdatePacienteDto {
@@ -16,6 +17,7 @@ export class UpdatePacienteDto {
 
     @IsOptional()
     @IsDate()
+    @Type(() => Date)
     fecha_nacimiento: Date;
 
     @IsOptional()
