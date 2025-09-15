@@ -70,6 +70,15 @@ export class DireccionController {
         };
     }
 
+    @Get('zona-mza/uv/:idZonaUv')
+    getZonasMzaByZonaUv(@Param('idZonaUv') idZonaUv: string) {
+        return this.direccionService.findMzasByZonaUv(idZonaUv).then(data => ({
+            statusCode: HttpStatus.OK,
+            message: 'Lista de zonas Mza por Zona UV',
+            data
+        }));
+    }
+
     @Get('paciente/:idPaciente')
     getDirrecionByPaciente(@Param('idPaciente') id: string) {
         const paciente = this.pacienteService.findOne(id)

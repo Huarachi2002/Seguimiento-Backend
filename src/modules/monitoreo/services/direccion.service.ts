@@ -55,6 +55,14 @@ export class DireccionService {
         return this.zonaUvRepository.find();
     }
 
+    async findMzasByZonaUv(idZonaUv: string): Promise<Zona_Mza[]> {
+        return this.zonaMzaRepository.find({
+            where: {
+                zona_uv: { id: idZonaUv }
+            }
+        });
+    }
+
     async findMzaById(id: string): Promise<Zona_Mza> {
         return this.zonaMzaRepository.findOneBy({ id });
     }
