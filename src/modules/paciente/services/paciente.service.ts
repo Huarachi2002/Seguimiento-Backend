@@ -1,7 +1,7 @@
-import { Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Paciente } from "../entities/paciente.entity";
-import { In, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { CreatePacienteDto } from "../dto/create-paciente.dto";
 import { UpdatePacienteDto } from "../dto/update-paciente.dto";
 import { Contacto_Paciente } from "../entities/contacto.entity";
@@ -9,6 +9,8 @@ import { CreateContactoDto } from "../dto/create-contacto.dto";
 import { Tipo_Parentesco } from "../entities/tipo_parentesco.entity";
 import { CreateTipoParentescoDto } from "../dto/create-tipo-parentesco.dto";
 import { UpdateTipoParentescoDto } from "../dto/update-tipo-parentesco.dto";
+import { DireccionService } from "@/modules/monitoreo/services/direccion.service";
+import { Direccion } from "@/modules/monitoreo/entities/direccion.entity";
 
 
 @Injectable()
@@ -18,6 +20,9 @@ export class PacienteService {
         @InjectRepository(Paciente) private pacienteRepository: Repository<Paciente>,
         @InjectRepository(Contacto_Paciente) private contactoRepository: Repository<Contacto_Paciente>,
         @InjectRepository(Tipo_Parentesco) private tipoParentescoRepository: Repository<Tipo_Parentesco>,
+        
+        @Inject(forwardRef(() => DireccionService))
+        private direccionService: DireccionService,
     ) { }
 
     async findAll(): Promise<Paciente[]> {
@@ -28,10 +33,13 @@ export class PacienteService {
         return this.pacienteRepository.findOneBy({ id });
     }
 
+    async findDireccionByPaciente(idPaciente: string): Promise<Direccion> {
+        return this.direccionService.findOneByPaciente(idPaciente);
+    }
+
     async findContactoById(id: string): Promise<Contacto_Paciente> {
         return this.contactoRepository.findOneBy({ id });
     }
-
 
     async findContactosByPaciente(id: string): Promise<Contacto_Paciente[]> {
         return this.contactoRepository.find({

@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Module, forwardRef } from "@nestjs/common";
 import { TratamientoService } from "./services/tratamiento.service";
 import { TratamientoController } from "./controllers/tratamiento.controller";
 import { UserService } from "./services/user.service";
@@ -31,7 +31,7 @@ import { PacienteModule } from "../paciente/paciente.module";
             User,
             Rol
         ]),
-        PacienteModule
+        forwardRef(() => PacienteModule)
     ],
     providers: [TratamientoService, CitaService, UserService],
     controllers: [TratamientoController, CitaController, UserController],

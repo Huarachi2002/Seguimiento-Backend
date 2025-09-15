@@ -1,16 +1,17 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Inject, forwardRef } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Direccion } from "../entities/direccion.entity";
 import { CreateDireccionDto } from "../dto/create-direccion.dto";
 import { UpdateDireccionDto } from "../dto/update-direccion.dto";
-import { Paciente } from "src/modules/paciente/entities/paciente.entity";
+import { Paciente } from "@/modules/paciente/entities/paciente.entity";
 import { Zona_Mza } from "../entities/zona_mza.entity";
 import { Zona_Uv } from "../entities/zona_uv.entity";
 import { UpdateZonaUvDto } from "../dto/update-zona-uv.dto";
 import { UpdateZonaMzaDto } from "../dto/update-zona-mza.dto";
 import { CreateZonaUvDto } from "../dto/create-zona-uv.dto";
 import { CreateZonaMzaDto } from "../dto/create-zona-mza.dto";
+import { PacienteService } from "@/modules/paciente/services/paciente.service";
 
 
 @Injectable()
@@ -19,11 +20,18 @@ export class DireccionService {
     constructor(
         @InjectRepository(Direccion) private direccionRepository: Repository<Direccion>,
         @InjectRepository(Zona_Mza) private zonaMzaRepository: Repository<Zona_Mza>,
-        @InjectRepository(Zona_Uv) private zonaUvRepository: Repository<Zona_Uv>
+        @InjectRepository(Zona_Uv) private zonaUvRepository: Repository<Zona_Uv>,
+
+        @Inject(forwardRef(() => PacienteService))
+        private pacienteService: PacienteService,
     ) { }
 
     async findOne(id: string): Promise<Direccion> {
         return this.direccionRepository.findOneBy({ id });
+    }
+
+    async findPacienteById(idPaciente: string): Promise<Paciente> {
+        return this.pacienteService.findOne(idPaciente);
     }
 
     async findOneByPaciente(idPaciente: string): Promise<Direccion> {

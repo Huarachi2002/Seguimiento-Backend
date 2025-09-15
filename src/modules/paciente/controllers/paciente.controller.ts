@@ -6,6 +6,7 @@ import { IApiResponse } from "src/common/interface/api-response.interface";
 import { CreateContactoDto } from "../dto/create-contacto.dto";
 import { CreateTipoParentescoDto } from "../dto/create-tipo-parentesco.dto";
 import { UpdateTipoParentescoDto } from "../dto/update-tipo-parentesco.dto";
+import { DireccionService } from "@/modules/monitoreo/services/direccion.service";
 
 
 @Controller('paciente')
@@ -37,13 +38,21 @@ export class PacienteController {
 
     @Get(':id')
     async getPacienteById(@Param('id') id: string) {
-        const data = await this.pacienteService.findOne(id);
-        if(!data){
+        const paciente = await this.pacienteService.findOne(id);
+        if(!paciente){
             return {
                 statusCode: HttpStatus.NOT_FOUND,
                 message: 'Paciente no encontrado',
                 data: null
             };
+        }
+        const direccion = await this.pacienteService.findDireccionByPaciente(id);
+
+        const contactos = await this.pacienteService.findContactosByPaciente(id);
+        const data = {
+            paciente,
+            direccion,
+            contactos 
         }
         return {
             statusCode: HttpStatus.OK,

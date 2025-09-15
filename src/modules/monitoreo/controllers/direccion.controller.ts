@@ -1,5 +1,4 @@
 import { Body, Controller, Get, HttpStatus, Param, Post, Put } from "@nestjs/common";
-import { PacienteService } from "../../paciente/services/paciente.service";
 import { IApiResponse } from "src/common/interface/api-response.interface";
 import { DireccionService } from "../services/direccion.service";
 import { CreateDireccionDto } from "../dto/create-direccion.dto";
@@ -12,7 +11,6 @@ import { CreateZonaUvDto } from "../dto/create-zona-uv.dto";
 export class DireccionController {
 
     constructor(
-        private pacienteService: PacienteService,
         private direccionService: DireccionService
     ){}
 
@@ -81,7 +79,7 @@ export class DireccionController {
 
     @Get('paciente/:idPaciente')
     getDirrecionByPaciente(@Param('idPaciente') id: string) {
-        const paciente = this.pacienteService.findOne(id)
+        const paciente = this.direccionService.findPacienteById(id)
         if (!paciente) {
             return {
                 statusCode: HttpStatus.NOT_FOUND,
@@ -147,7 +145,7 @@ export class DireccionController {
 
     @Post()
     async createDireccion(@Body() createDireccionDto: CreateDireccionDto): Promise<IApiResponse> {
-        const paciente = await this.pacienteService.findOne(createDireccionDto.idPaciente);
+        const paciente = await this.direccionService.findPacienteById(createDireccionDto.idPaciente);
         if (!paciente) {
             return Promise.resolve({
                 statusCode: HttpStatus.NOT_FOUND,

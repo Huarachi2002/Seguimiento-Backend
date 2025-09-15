@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Module, forwardRef} from "@nestjs/common";
 import { MonitoreoService } from "./services/monitoreo.service";
 import { MonitoreoController } from "./controllers/monitoreo.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -23,12 +23,12 @@ import { TratamientoTB } from "../tratamiento/entities/tratamientoTB.entity";
             Cita,
             TratamientoTB
         ]),
-        PacienteModule,
-        TratamientoModule
+        forwardRef(() => PacienteModule),
+        forwardRef(() => TratamientoModule)
     ],
     providers: [MonitoreoService, DireccionService],
     controllers: [MonitoreoController, DireccionController],
-    exports: [MonitoreoService, DireccionService]
+    exports: [MonitoreoService, DireccionService, TypeOrmModule]
 })
 
 export class MonitoreoModule {}
