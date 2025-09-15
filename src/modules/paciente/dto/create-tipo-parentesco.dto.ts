@@ -1,6 +1,7 @@
-import { IsBoolean, IsEmail, IsInt, IsString } from "class-validator";
+import { IsNotEmpty, IsString } from "class-validator";
 
 export class CreateTipoParentescoDto {
     @IsString()
+    @IsNotEmpty()
     descripcion: string;
 }
