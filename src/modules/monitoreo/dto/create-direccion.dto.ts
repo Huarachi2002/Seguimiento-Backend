@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsString } from "class-validator";
+import { IsInt, IsNotEmpty, IsString, IsDecimal,  } from "class-validator";
 
 export class CreateDireccionDto {
     @IsString()
@@ -17,11 +17,9 @@ export class CreateDireccionDto {
     @IsNotEmpty()
     nro_casa: number;
 
-    @IsInt()
     @IsNotEmpty()
     latitud: number;
 
-    @IsInt()
     @IsNotEmpty()
     longitud: number;
 
