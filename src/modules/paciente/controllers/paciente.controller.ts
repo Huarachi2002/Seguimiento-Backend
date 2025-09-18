@@ -47,7 +47,6 @@ export class PacienteController {
             };
         }
         const direccion = await this.pacienteService.findDireccionByPaciente(id);
-
         const contactos = await this.pacienteService.findContactosByPaciente(id);
         const data = {
             paciente,
@@ -70,8 +69,6 @@ export class PacienteController {
             data
         };
     }
-
-
 
     @Get('tipo-parentesco/:id')
     async getTipoParentescoById(@Param('id') id: string): Promise<IApiResponse> {

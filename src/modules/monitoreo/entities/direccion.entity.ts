@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Double, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Paciente } from "../../paciente/entities/paciente.entity";
 import { Zona_Mza } from "./zona_mza.entity";
 
@@ -20,11 +20,11 @@ export class Direccion {
     @Column()
     nro_casa: number;
 
-    @Column()
-    latitud: number;
+    @Column({ type: 'double precision'})
+    latitud: Double;
 
-    @Column()
-    longitud: number;
+    @Column({ type: 'double precision'})
+    longitud: Double;
 
     @CreateDateColumn()
     readonly created_at: Date;
