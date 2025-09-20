@@ -72,11 +72,17 @@ export class DireccionService {
     }
 
     async findMzaById(id: string): Promise<Zona_Mza> {
-        return this.zonaMzaRepository.findOneBy({ id });
+        return this.zonaMzaRepository.findOne({
+            where: { id },
+            relations: ['zona_uv']
+        });
     }
 
     async findUvById(id: string): Promise<Zona_Uv> {
-        return this.zonaUvRepository.findOneBy({ id });
+        return this.zonaUvRepository.findOne({
+            where: { id },
+            relations: ['zona_mza']
+        });
     }
 
     async createMza(zonaMza: CreateZonaMzaDto, zonaUv: Zona_Uv): Promise<Zona_Mza> {
