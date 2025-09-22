@@ -47,7 +47,7 @@ export class DireccionController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Detalles de la zona Mza',
-            data
+            data: {...data, idZonaUv: data.zona_uv.id}
         };
     }
 

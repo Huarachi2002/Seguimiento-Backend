@@ -1,29 +1,26 @@
-import { IsInt, IsOptional, IsString } from "class-validator";
+import { IsInt, IsNotEmpty, IsString, IsDecimal,  } from "class-validator";
 
 export class UpdateDireccionDto {
-
-    @IsOptional()
     @IsString()
+    @IsNotEmpty()
     descripcion: string;
 
-    @IsOptional()
     @IsString()
+    @IsNotEmpty()
     idPaciente: string;
 
-    @IsOptional()
     @IsString()
+    @IsNotEmpty()
     idMza: string;
 
-    @IsOptional()
     @IsInt()
+    @IsNotEmpty()
     nro_casa: number;
 
-    @IsOptional()
-    @IsInt()
+    @IsNotEmpty()
     latitud: number;
 
-    @IsOptional()
-    @IsInt()
+    @IsNotEmpty()
     longitud: number;
 
 }
