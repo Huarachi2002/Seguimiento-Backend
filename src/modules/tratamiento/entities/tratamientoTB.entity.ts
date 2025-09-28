@@ -11,34 +11,34 @@ export class TratamientoTB {
     id: string;
 
     @ManyToOne(() => Paciente, (paciente) => paciente.tratamientos)
-    paciente: Paciente;
+    paciente: Paciente; // Input Frontend
 
     @ManyToOne(() => Tipo_Tratamiento, (tipo_tratamiento) => tipo_tratamiento.id)
-    tipo_tratamiento: Tipo_Tratamiento;
+    tipo_tratamiento: Tipo_Tratamiento;  // Input Frontend
 
     @ManyToOne(() => Estado_Tratamiento, (estado) => estado.id)
-    estado: Estado_Tratamiento;
+    estado: Estado_Tratamiento; // Input Frontend
 
     @ManyToOne(() => Fase_Tratamiento, (fase) => fase.id)
-    fase: Fase_Tratamiento;
+    fase: Fase_Tratamiento; // Input Frontend
 
     @Column({ length: 100 })
-    codigo_tratamiento: string;
+    codigo_tratamiento: string; // Columna al pedo
 
     @Column()
-    fecha_inicio: Date;
+    fecha_inicio: Date; // Input Frontend
 
-    @Column()
+    @Column({ nullable: true })
     fecha_fin: Date;
 
     @Column({ length: 100 })
-    regimen_medicacion: string;
+    regimen_medicacion: string; // Columna al pedo
 
     @Column()
-    dosis_total: number;
+    dosis_total: number;  // Columna al pedo
 
     @Column()
-    dosis_completa: number;
+    dosis_completa: number; // Columna al pedo
 
     @Column()
     observaciones: string;

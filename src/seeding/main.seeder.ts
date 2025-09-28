@@ -56,7 +56,8 @@ export default class MainSeeder implements Seeder {
         const fasesTratamiento = [
             'Intensivo',
             'Continuación',
-            'Completado'
+            'Completado',
+            'Comenzado'
         ];
         for (const descripcion of fasesTratamiento) {
             const faseTratamiento = repository.create({

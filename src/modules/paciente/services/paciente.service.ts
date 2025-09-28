@@ -22,7 +22,7 @@ export class PacienteService {
         @InjectRepository(Tipo_Parentesco) private tipoParentescoRepository: Repository<Tipo_Parentesco>,
         
         @Inject(forwardRef(() => DireccionService))
-        private direccionService: DireccionService,
+        private direccionService: DireccionService
     ) { }
 
     async findAll(): Promise<Paciente[]> {
