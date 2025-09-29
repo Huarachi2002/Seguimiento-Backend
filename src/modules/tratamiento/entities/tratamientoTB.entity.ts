@@ -3,6 +3,7 @@ import { Tipo_Tratamiento } from "./tipo_tratamiento.entity";
 import { Estado_Tratamiento } from "./estado_tratamiento.entity";
 import { Paciente } from "../../paciente/entities/paciente.entity";
 import { Fase_Tratamiento } from "./fase_tratamiento.entity";
+import { Cita } from "./cita.entity";
 
 
 @Entity()
@@ -10,19 +11,22 @@ export class TratamientoTB {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
+    @OneToMany(() => Cita, (cita) => cita.tratamiento, { nullable: true })
+    citas: Cita[];
+
     @ManyToOne(() => Paciente, (paciente) => paciente.tratamientos)
     paciente: Paciente; // Input Frontend
 
-    @ManyToOne(() => Tipo_Tratamiento, (tipo_tratamiento) => tipo_tratamiento.id)
+    @ManyToOne(() => Tipo_Tratamiento, (tipo_tratamiento) => tipo_tratamiento.tratamientos)
     tipo_tratamiento: Tipo_Tratamiento;  // Input Frontend
 
-    @ManyToOne(() => Estado_Tratamiento, (estado) => estado.id)
+    @ManyToOne(() => Estado_Tratamiento, (estado) => estado.tratamientos)
     estado: Estado_Tratamiento; // Input Frontend
 
-    @ManyToOne(() => Fase_Tratamiento, (fase) => fase.id)
+    @ManyToOne(() => Fase_Tratamiento, (fase) => fase.tratamientos)
     fase: Fase_Tratamiento; // Input Frontend
 
-    @Column({ length: 100 })
+    @Column({ length: 100 , nullable: true })
     codigo_tratamiento: string; // Columna al pedo
 
     @Column()
@@ -31,13 +35,13 @@ export class TratamientoTB {
     @Column({ nullable: true })
     fecha_fin: Date;
 
-    @Column({ length: 100 })
+    @Column({ length: 100 , nullable: true })
     regimen_medicacion: string; // Columna al pedo
 
-    @Column()
+    @Column({ nullable: true })
     dosis_total: number;  // Columna al pedo
 
-    @Column()
+    @Column({ nullable: true })
     dosis_completa: number; // Columna al pedo
 
     @Column()

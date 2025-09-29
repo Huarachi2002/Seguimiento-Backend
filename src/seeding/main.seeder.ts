@@ -42,7 +42,35 @@ export default class MainSeeder implements Seeder {
         // 9. Seeder para Fase_Tratamiento (datos fijos)
         await this.seedFaseTratamiento(dataSource);
 
+        // 10. Seeder para User (datos fijos)
+        await this.seedUser(dataSource);
+
         console.log("Proceso de seeding completado.");
+    }
+
+    private async seedUser(dataSource: DataSource): Promise<void> {
+        const repository = dataSource.getRepository('User');
+
+        const count = await repository.count();
+        if (count > 0) {
+            console.log("User ya tiene datos, se omite el seeding.");
+            return;
+        }
+
+        const users = [
+            { username: 'admin', password: '123', rol: 'Admin' },
+        ];
+
+        for (const userData of users) {
+            const user = repository.create({
+                username: userData.username,
+                password: userData.password,
+                rol: { descripcion: userData.rol }
+            });
+            await repository.save(user);
+        }
+
+        console.log("Seeding de User completado.");
     }
 
     private async seedFaseTratamiento(dataSource: DataSource): Promise<void> {

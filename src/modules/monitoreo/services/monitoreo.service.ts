@@ -59,9 +59,27 @@ export class MonitoreoService {
 
     async getPacientesConCitasPendientes(){
         return await this.citaRepository.createQueryBuilder('cita')
-            .leftJoinAndSelect('cita.paciente', 'paciente')
-            .where('cita.fecha_programada = NOW() AND cita.estado = :estado', { estado: 'Programado' })
+            .leftJoinAndSelect('cita.tratamiento', 'tratamiento')
+            .leftJoinAndSelect('tratamiento.paciente', 'paciente')
+            .leftJoin('cita.estado', 'estado_cita')
+            .where('cita.fecha_programada::date = NOW()::date')
+            .andWhere('estado_cita.descripcion = :estado', { estado: 'Programado' })
             .getMany();
+    }
+
+
+    async getPacientesNuevos(fechaInicio: Date, fechaFin: Date) {
+        return await this.pacienteRepository.createQueryBuilder('paciente')
+            .where('paciente.created_at BETWEEN :fechaInicio AND :fechaFin', { fechaInicio, fechaFin })
+            .getMany();
+    }
+
+    async getMapaCalorPacientes(){
+        return await this.pacienteRepository.createQueryBuilder('paciente')
+        .leftJoinAndSelect('paciente.direccion', 'direccion')
+        .leftJoinAndSelect('direccion.zona', 'zona')
+        .leftJoinAndSelect('zona.zona_uv', 'zona_uv')
+        .getMany();
     }
     
 }

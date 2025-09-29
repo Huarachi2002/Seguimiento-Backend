@@ -18,7 +18,7 @@ export class User {
     username: string;
 
     @Column()
-    constrasena: string;
+    contrasena: string;
 
     @Column()
     nombre: string;
