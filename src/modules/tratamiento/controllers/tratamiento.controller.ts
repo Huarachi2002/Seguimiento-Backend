@@ -107,6 +107,16 @@ export class TratamientoController {
         };
     }
 
+    @Get()
+    async getAllTratamientos():Promise<IApiResponse>{
+        const data = await this.tratamientoService.findAll();
+        return {
+            statusCode: 200,
+            message: 'Lista de tratamientos',
+            data
+        };
+    }
+
     @Post('tipo-tratamiento')
     async createTipoTratamiento(@Body() createTipoTratamientoDto: CreateTipoTratamientoDto):Promise<IApiResponse>{
         

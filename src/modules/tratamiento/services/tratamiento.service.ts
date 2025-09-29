@@ -19,6 +19,16 @@ export class TratamientoService {
         @InjectRepository(Estado_Tratamiento) private estadoTratamientoRepository: Repository<Estado_Tratamiento>,
     ) {}
 
+    async findAll(): Promise<TratamientoTB[]> {
+        return this.tratamientoRepository.find({
+            relations: {
+                paciente: true,
+                tipo_tratamiento: true,
+                estado: true,
+            },
+        });
+    }
+
     async findOne(id: string): Promise<TratamientoTB> {
         return this.tratamientoRepository.findOne({ where: { id } });
     }
