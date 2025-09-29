@@ -57,5 +57,11 @@ export class MonitoreoService {
             .getMany();
     }
 
+    async getPacientesConCitasPendientes(){
+        return await this.citaRepository.createQueryBuilder('cita')
+            .leftJoinAndSelect('cita.paciente', 'paciente')
+            .where('cita.fecha_programada = NOW() AND cita.estado = :estado', { estado: 'Programado' })
+            .getMany();
+    }
     
 }

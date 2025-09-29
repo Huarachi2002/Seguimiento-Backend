@@ -1,6 +1,7 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Contacto_Paciente } from "./contacto.entity";
 import { TratamientoTB } from "../../tratamiento/entities/tratamientoTB.entity";
+import { Direccion } from '../../monitoreo/entities/direccion.entity';
 
 @Entity()
 export class Paciente {
@@ -9,6 +10,10 @@ export class Paciente {
 
     @OneToMany(() => Contacto_Paciente, (contacto) => contacto.paciente)
     contactos: Contacto_Paciente[];
+
+    @OneToOne(() => Direccion, (direccion) => direccion.paciente)
+    @JoinColumn()
+    direccion: Direccion;
 
     @Column({  unique: true })
     telefono: number;

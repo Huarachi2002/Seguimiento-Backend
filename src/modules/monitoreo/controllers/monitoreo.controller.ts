@@ -34,6 +34,9 @@ export class MonitoreoController {
         //return await this.monitoreoService.getEstadisticasAdherencia(idPaciente);
     }
 
-
+    @Get('pacientes-citas')
+    async getPacientesConCitasPendientes() {
+        return await this.monitoreoService.getPacientesConCitasPendientes();
+    }
 
 }

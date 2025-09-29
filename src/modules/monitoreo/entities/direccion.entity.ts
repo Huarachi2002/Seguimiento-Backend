@@ -10,8 +10,7 @@ export class Direccion {
     @ManyToOne(() => Zona_Mza, (zona) => zona.direcciones)
     zona: Zona_Mza;
 
-    @OneToOne(() => Paciente)
-    @JoinColumn()
+    @OneToOne(() => Paciente, (paciente)=> paciente.direccion)
     paciente: Paciente;
 
     @Column({ length: 100 })
