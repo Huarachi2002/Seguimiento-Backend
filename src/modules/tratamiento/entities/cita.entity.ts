@@ -13,13 +13,13 @@ export class Cita {
     @ManyToOne(() => User, (user) => user.citas)
     user: User;
 
-    @ManyToOne(() => TratamientoTB, (tratamiento) => tratamiento.id)
+    @ManyToOne(() => TratamientoTB, (tratamiento) => tratamiento.citas)
     tratamiento: TratamientoTB;
 
-    @ManyToOne(() => Estado_Cita, (estado) => estado.id)
+    @ManyToOne(() => Estado_Cita, (estado) => estado.citas)
     estado: Estado_Cita;
 
-    @ManyToOne(() => Tipo_Cita, (tipo) => tipo.id)
+    @ManyToOne(() => Tipo_Cita, (tipo) => tipo.citas)
     tipo: Tipo_Cita;
 
     @Column()

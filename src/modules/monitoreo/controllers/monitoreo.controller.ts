@@ -1,5 +1,6 @@
-import { Controller, Get, Query } from "@nestjs/common";
+import { Body, Controller, Get, Query } from "@nestjs/common";
 import { MonitoreoService } from "../services/monitoreo.service";
+import { IApiResponse } from "@/common/interface/api-response.interface";
 
 
 @Controller('monitoreo')
@@ -34,6 +35,36 @@ export class MonitoreoController {
         //return await this.monitoreoService.getEstadisticasAdherencia(idPaciente);
     }
 
+    @Get('pacientes-citas')
+    async getPacientesConCitasPendientes():Promise<IApiResponse> {
+        const data = await this.monitoreoService.getPacientesConCitasPendientes();
+        return {
+            statusCode: 200,
+            message: 'Lista de pacientes con citas pendientes',
+            data
+        };
+    }
 
+    @Get('pacientes-nuevos')
+    async getPacientesNuevos(
+        @Body() fechas: { fechaInicio: Date; fechaFin: Date }
+    ):Promise<IApiResponse> {
+        const data = await this.monitoreoService.getPacientesNuevos(fechas.fechaInicio, fechas.fechaFin);
+        return {
+            statusCode: 200,
+            message: 'Lista de pacientes nuevos',
+            data
+        };
+    }
+
+    @Get('mapa-calor')
+    async getMapaCalorPacientes():Promise<IApiResponse> {
+        const data = await this.monitoreoService.getMapaCalorPacientes();
+        return {
+            statusCode: 200,
+            message: 'Mapa de calor de pacientes',
+            data
+        };
+    }
 
 }

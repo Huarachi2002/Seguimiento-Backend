@@ -50,7 +50,7 @@ export class PacienteController {
         const contactos = await this.pacienteService.findContactosByPaciente(id);
         const data = {
             paciente,
-            direccion,
+            direccion:{...direccion, idMza: direccion?.zona.id},
             contactos 
         }
         return {

@@ -1,10 +1,14 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Cita } from "./cita.entity";
 
 
 @Entity()
 export class Estado_Cita {
     @PrimaryGeneratedColumn('uuid')
     id: string;
+
+    @OneToMany(() => Cita, (cita) => cita.estado)
+    citas: Cita[];
 
     @Column({unique: true, length: 100 })
     descripcion: string;

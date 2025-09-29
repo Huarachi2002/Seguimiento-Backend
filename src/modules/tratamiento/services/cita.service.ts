@@ -2,8 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { TratamientoTB } from "../entities/tratamientoTB.entity";
 import { In, Repository } from "typeorm";
-import { CreateTratamientoDto } from "../dto/create-tratamiento.dto";
-import { UpdateTratamientoDto } from "../dto/update-tratamiento.dto";
 import { Cita } from "../entities/cita.entity";
 import { Tipo_Cita } from "../entities/tipo_cita.entity";
 import { Estado_Tratamiento } from "../entities/estado_tratamiento.entity";
@@ -21,6 +19,17 @@ export class CitaService {
         @InjectRepository(Tipo_Cita) private tipoCitaRepository: Repository<Tipo_Cita>,
     ) {}
 
+    async findAll(): Promise<Cita[]> {
+        return this.citaRepository.find({
+            relations: {
+                tratamiento: { paciente: true },
+                estado: true,
+                tipo: true,
+                user: true
+            },
+        });
+    }
+
     async findOne(id: string): Promise<Cita> {
         return this.citaRepository.findOneBy({ id });
     }
@@ -28,7 +37,12 @@ export class CitaService {
     async findByPaciente(pacienteId: string): Promise<Cita[]> {
         return this.citaRepository.find({
             where: { tratamiento: { paciente: { id: pacienteId } } },
-            relations: ['tratamiento', 'tratamiento.paciente', 'estado', 'tipo', 'user'],
+            relations: {
+                tratamiento: { paciente: true },
+                estado: true,
+                tipo: true,
+                user: true
+            },
         });
     }
 
@@ -55,7 +69,7 @@ export class CitaService {
         return this.tipoCitaRepository.findOne({ where: { id } });
     }
 
-    async create(cita: CreateCitaDto, tratamiento: TratamientoTB, tipoCita: Tipo_Cita, estadoCita: Estado_Tratamiento, user: User): Promise<Cita> {
+    async create(cita: CreateCitaDto, tratamiento: TratamientoTB, tipoCita: Tipo_Cita, estadoCita: Estado_Cita, user: User): Promise<Cita> {
         const newCita = this.citaRepository.create(cita);
         newCita.estado = estadoCita;
         newCita.tipo = tipoCita;
@@ -72,7 +86,7 @@ export class CitaService {
         return this.estadoCitaRepository.save(estadoCita);
     }
 
-    async update(id: string, cita: UpdateCitaDto, tratamiento: TratamientoTB, tipoCita: Tipo_Cita, estadoCita: Estado_Tratamiento, user: User): Promise<Cita> {
+    async update(id: string, cita: UpdateCitaDto, tratamiento: TratamientoTB, tipoCita: Tipo_Cita, estadoCita: Estado_Cita, user: User): Promise<Cita> {
         const existingCita = await this.citaRepository.preload({
             id,
             ...cita,

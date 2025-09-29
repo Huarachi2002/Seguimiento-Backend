@@ -14,16 +14,6 @@ export class UserController {
         private userService: UserService,
     ){}
 
-    @Get()
-    async findAll(): Promise<IApiResponse>{
-        const users = await this.userService.findAll();
-        return {
-            statusCode: 200,
-            message: 'Usuarios encontrados',
-            data: users
-        }
-    }
-
     @Get('rol')
     async getRols(): Promise<IApiResponse>{
         const rols = await this.userService.getRols();
@@ -34,6 +24,16 @@ export class UserController {
         }
     }
 
+    @Get()
+    async findAll(): Promise<IApiResponse>{
+        const users = await this.userService.findAll();
+        return {
+            statusCode: 200,
+            message: 'Usuarios encontrados',
+            data: users
+        }
+    }
+    
     @Get(':id')
     async findOne(@Param('id') id: string): Promise<IApiResponse>{
         const user = await this.userService.findOne(id);
@@ -68,6 +68,16 @@ export class UserController {
         }
     }
 
+    @Post('rol')
+    async createRol(@Body() rol: CreateRolDto): Promise<IApiResponse>{
+        const newRol = await this.userService.createRol(rol);
+        return {
+            statusCode: 201,
+            message: 'Rol creado',
+            data: newRol
+        }
+    }
+
     @Post()
     async create(@Body() user: CreateUserDto): Promise<IApiResponse>{
         const rol = await this.userService.getRolById(user.idRol);
@@ -76,16 +86,6 @@ export class UserController {
             statusCode: 201,
             message: 'Usuario creado',
             data: newUser
-        }
-    }
-
-    @Post('rol')
-    async createRol(@Body() rol: CreateRolDto): Promise<IApiResponse>{
-        const newRol = await this.userService.createRol(rol);
-        return {
-            statusCode: 201,
-            message: 'Rol creado',
-            data: newRol
         }
     }
 

@@ -1,13 +1,14 @@
 import { Type } from "class-transformer";
-import { IsBoolean, IsDate, IsEmail, IsInt, IsNotEmpty, IsString } from "class-validator";
+import { IsBoolean, IsDate, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateTratamientoDto {
     @IsString()
     @IsNotEmpty()
-    idPaciente: string;
+    idPaciente: string; // Input Frontend
 
     @IsString()
     @IsNotEmpty()
+    @IsOptional()
     codigo_diagnostico: string;
 
     @IsString()
@@ -21,19 +22,23 @@ export class CreateTratamientoDto {
 
     @IsDate()
     @IsNotEmpty()
+    @IsOptional()
     @Type(() => Date)
     fecha_fin: Date;
 
     @IsString()
     @IsNotEmpty()
+    @IsOptional()
     regimen_medicacion: string;
 
     @IsInt()
     @IsNotEmpty()
+    @IsOptional()
     dosis_total: number;
 
     @IsInt()
     @IsNotEmpty()
+    @IsOptional()
     dosis_completa: number;
 
     @IsString()

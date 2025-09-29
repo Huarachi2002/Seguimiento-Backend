@@ -118,11 +118,11 @@ export class CitaController {
         if(!tratamiento){
             throw new Error('Tratamiento no encontrado');
         }
-        const estado = await this.tratamientoService.getEstadoTratamientoById(idEstado);
+        const estado = await this.citaService.getEstadoCitaById(idEstado);
         if(!estado){
             throw new Error('Estado no encontrado');
         }
-        const tipo = await this.tratamientoService.getTipoTratamientoById(idTipo);
+        const tipo = await this.citaService.getTipoCitaById(idTipo);
         if(!tipo){
             throw new Error('Tipo de cita no encontrado');
         }
@@ -185,11 +185,11 @@ export class CitaController {
         if(!tratamiento){
             throw new Error('Tratamiento no encontrado');
         }
-        const estado = await this.tratamientoService.getEstadoTratamientoById(idEstado);
+        const estado = await this.citaService.getEstadoCitaById(idEstado);
         if(!estado){
             throw new Error('Estado no encontrado');
         }
-        const tipo = await this.tratamientoService.getTipoTratamientoById(idTipo);
+        const tipo = await this.citaService.getTipoCitaById(idTipo);
         if(!tipo){
             throw new Error('Tipo de cita no encontrado');
         }

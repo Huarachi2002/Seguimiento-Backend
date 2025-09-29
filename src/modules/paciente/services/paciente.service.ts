@@ -22,11 +22,15 @@ export class PacienteService {
         @InjectRepository(Tipo_Parentesco) private tipoParentescoRepository: Repository<Tipo_Parentesco>,
         
         @Inject(forwardRef(() => DireccionService))
-        private direccionService: DireccionService,
+        private direccionService: DireccionService
     ) { }
 
     async findAll(): Promise<Paciente[]> {
-        return this.pacienteRepository.find();
+        return this.pacienteRepository.find({
+            relations: {
+                direccion: true
+            }
+        });
     }
 
     async findOne(id: string): Promise<Paciente> {

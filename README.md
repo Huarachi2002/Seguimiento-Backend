@@ -80,7 +80,7 @@ npm install
 //! En caso de cambiar el nombre de la bd tendra que tambien cambiar en el archivo .env
 
 // En caso de no tener ninguna migracion en dicha carpeta
-npm run migration:generate -- src/database/migrations 
+npm run migration:generate -- src/database/migrations/${NombreMigration}
 
 // Si ya tiene migraciones o termino de crear
 npm run migration:run

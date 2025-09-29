@@ -6,22 +6,22 @@ export class CreateUserDto {
 
     @IsString()
     @IsNotEmpty()
-    username: string
+    username: string;
 
     @IsString()
     @IsNotEmpty()
-    nombre: string
+    nombre: string;
 
     @IsString()
     @IsNotEmpty()
-    constrasena: string
+    contrasena: string;
 
     @IsString()
     @IsNotEmpty()
-    idRol: string
+    idRol: string;
 
     @IsDate()
     @IsNotEmpty()
     @Type(() => Date)
-    fecha_login: Date
+    fecha_login: Date;
 }

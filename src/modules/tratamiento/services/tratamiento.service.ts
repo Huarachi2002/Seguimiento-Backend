@@ -9,6 +9,7 @@ import { UpdateTratamientoDto } from "../dto/update-tratamiento.dto";
 import { CreateTipoTratamientoDto } from "../dto/create-tipo-tratamiento.dto";
 import { CreateEstadoTratamientoDto } from "../dto/create-estado-tratamiento.dto";
 import { UpdateTipoTratamientoDto } from "../dto/update-tipo-tratamiento.dto";
+import { Fase_Tratamiento } from "../entities/fase_tratamiento.entity";
 
 
 @Injectable()
@@ -52,6 +53,10 @@ export class TratamientoService {
         return this.estadoTratamientoRepository.find();
     }
 
+    async getFasesTratamiento(): Promise<Fase_Tratamiento[]> {
+        return this.tratamientoRepository.manager.find(Fase_Tratamiento);
+    }
+    
     async getEstadoTratamientoById(id: string): Promise<Estado_Tratamiento> {
         return this.estadoTratamientoRepository.findOne({ where: { id } });
     }

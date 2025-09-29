@@ -35,20 +35,38 @@ export class DireccionService {
     }
 
     async findOneByPaciente(idPaciente: string): Promise<Direccion> {
-        return this.direccionRepository.findOneBy({ paciente: { id: idPaciente } });
+        //NOTE: devolver objetos relacionados
+        return this.direccionRepository.findOne({ 
+            where:{ paciente: { id: idPaciente } },
+            relations: {zona:true}
+        });
     }
 
     async create(direccion: CreateDireccionDto, paciente: Paciente): Promise<Direccion> {
-        const newDireccion = this.direccionRepository.create(direccion);
-        newDireccion.paciente = paciente;
+        const newDireccion = this.direccionRepository.create({
+            descripcion: direccion.descripcion,
+            nro_casa: direccion.nro_casa,
+            latitud: direccion.latitud,
+            longitud: direccion.longitud,
+            zona: { id: direccion.idMza },
+            paciente,
+        });
+        
         return this.direccionRepository.save(newDireccion);
     }
 
     async update(id: string, direccion: UpdateDireccionDto): Promise<Direccion> {
-        const existingDireccion = await this.direccionRepository.preload({
+        //NOTE: no se actualizaban las relaciones
+        const preloadData = {
             id,
-            ...direccion
-        })
+            descripcion: direccion.descripcion,
+            nro_casa: direccion.nro_casa,
+            latitud: direccion.latitud,
+            longitud: direccion.longitud,
+            paciente: { id: direccion.idPaciente }, 
+            zona: { id: direccion.idMza }           
+        };
+        const existingDireccion = await this.direccionRepository.preload(preloadData)
         if(!existingDireccion){
             throw new Error('Dirección no encontrada');
         }

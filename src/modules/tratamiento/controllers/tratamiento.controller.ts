@@ -38,6 +38,16 @@ export class TratamientoController {
         };
     }
 
+    @Get('fase-tratamiento')
+    async getFasesTratamiento():Promise<IApiResponse>{
+        const data = await this.tratamientoService.getFasesTratamiento();
+        return {
+            statusCode: 200,
+            message: 'Lista de fases de tratamiento',
+            data
+        };
+    }
+
     @Get('paciente/:idPaciente')
     async getTratamientosByPaciente(@Param('idPaciente') idPaciente: string):Promise<IApiResponse>{
         const paciente = await this.pacienteService.findOne(idPaciente);
