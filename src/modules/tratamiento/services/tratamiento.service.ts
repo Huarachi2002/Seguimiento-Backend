@@ -10,6 +10,7 @@ import { CreateTipoTratamientoDto } from "../dto/create-tipo-tratamiento.dto";
 import { CreateEstadoTratamientoDto } from "../dto/create-estado-tratamiento.dto";
 import { UpdateTipoTratamientoDto } from "../dto/update-tipo-tratamiento.dto";
 import { Fase_Tratamiento } from "../entities/fase_tratamiento.entity";
+import { Paciente } from "@/modules/paciente/entities/paciente.entity";
 
 
 @Injectable()
@@ -31,7 +32,13 @@ export class TratamientoService {
     }
 
     async findOne(id: string): Promise<TratamientoTB> {
-        return this.tratamientoRepository.findOne({ where: { id } });
+        return this.tratamientoRepository.findOne({ where: { id },
+            relations: {
+                tipo_tratamiento: true,
+                estado: true,
+                paciente: true,
+            }
+        });
     }
     
     async findByPaciente(pacienteId: string): Promise<TratamientoTB[]> {
@@ -61,10 +68,11 @@ export class TratamientoService {
         return this.estadoTratamientoRepository.findOne({ where: { id } });
     }
 
-    async create(tratamiento: CreateTratamientoDto, tipoTratamiento: Tipo_Tratamiento, estadoTratamiento: Estado_Tratamiento): Promise<TratamientoTB> {
+    async create(tratamiento: CreateTratamientoDto, tipoTratamiento: Tipo_Tratamiento, estadoTratamiento: Estado_Tratamiento, paciente: Paciente): Promise<TratamientoTB> {
         const newTratamiento = this.tratamientoRepository.create(tratamiento);
         newTratamiento.tipo_tratamiento = tipoTratamiento;
         newTratamiento.estado = estadoTratamiento;
+        newTratamiento.paciente = paciente;
         return this.tratamientoRepository.save(newTratamiento);
     }
 

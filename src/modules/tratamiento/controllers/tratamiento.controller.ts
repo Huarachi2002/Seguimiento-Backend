@@ -179,7 +179,7 @@ export class TratamientoController {
             };
         }
 
-        const tratamiento = await this.tratamientoService.create(createTratamientoDto, tipoTratamiento, estadoTratamiento);
+        const tratamiento = await this.tratamientoService.create(createTratamientoDto, tipoTratamiento, estadoTratamiento, paciente);
         return {
             statusCode: 201,
             message: 'Tratamiento creado exitosamente',

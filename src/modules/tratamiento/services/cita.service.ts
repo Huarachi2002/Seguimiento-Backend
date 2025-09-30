@@ -49,7 +49,11 @@ export class CitaService {
     async findByTratamiento(tratamientoId: string): Promise<Cita[]> {
         return this.citaRepository.find({
             where: { tratamiento: { id: tratamientoId } },
-            relations: ['tratamiento'],
+            relations: {
+                tratamiento: true,
+                tipo: true,
+                estado: true,
+            },
         });
     }
 
@@ -74,7 +78,7 @@ export class CitaService {
         newCita.estado = estadoCita;
         newCita.tipo = tipoCita;
         newCita.tratamiento = tratamiento;
-        newCita.user = user;
+        // newCita.user = user;
         return this.citaRepository.save(newCita);
     }
 

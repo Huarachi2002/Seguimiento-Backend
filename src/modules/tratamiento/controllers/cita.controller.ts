@@ -126,11 +126,12 @@ export class CitaController {
         if(!tipo){
             throw new Error('Tipo de cita no encontrado');
         }
-        const usuario = await this.usuarioService.findOne(idUser);
-        if(!usuario){
-            throw new Error('Usuario no encontrado');
-        }
-        const data = await this.citaService.create(citaDto, tratamiento, tipo, estado, usuario);
+        // const usuario = await this.usuarioService.findOne(idUser);
+        // if(!usuario){
+        //     throw new Error('Usuario no encontrado');
+        // }
+        // const data = await this.citaService.create(citaDto, tratamiento, tipo, estado, usuario);
+        const data = await this.citaService.create(citaDto, tratamiento, tipo, estado, null);
         return {
             statusCode: 201,
             message: 'Cita creada exitosamente',
