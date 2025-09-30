@@ -23,7 +23,15 @@
     "migration:run": "npm run build && npm run typeorm migration:run -- -d data-source.ts",
     "migration:revert": "npm run build && npm run typeorm migration:revert -- -d data-source.ts",
     "migration:drop": "npm run build && npm run typeorm schema:drop -- -d data-source.ts",
-    "seed:run": "ts-node src/seeding/seed.ts"
+    "seed:run": "ts-node src/seeding/seed.ts",
+    "docker:build": "docker build -t seguimiento-backend .",
+    "docker:run": "docker run -p 3001:3001 --env-file .env.production seguimiento-backend",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up --build",
+    "docker:prod": "docker-compose up --build",
+    "docker:stop": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:clean": "docker system prune -a",
+    "docker:db": "docker-compose up db -d"
   },
   "dependencies": {
     "@faker-js/faker": "^10.0.0",

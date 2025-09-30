@@ -58,13 +58,15 @@ export default class MainSeeder implements Seeder {
         }
 
         const users = [
-            { username: 'admin', password: '123', rol: 'Admin' },
+            { username: 'admin', nombre: 'Admin',  contrasena: '123', rol: 'Admin' },
         ];
 
         for (const userData of users) {
             const user = repository.create({
                 username: userData.username,
-                password: userData.password,
+                contrasena: userData.contrasena,
+                nombre: userData.nombre,
+                fecha_login: new Date(),
                 rol: { descripcion: userData.rol }
             });
             await repository.save(user);

@@ -1,0 +1,51 @@
+# Stage 1: Base
+FROM node:20-slim AS base
+
+WORKDIR /app
+
+# Instalar dependencias del sistema
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar archivos de dependencias
+COPY package*.json ./
+
+# Instalar todas las dependencias (incluyendo devDependencies)
+RUN npm ci
+
+# Copiar código fuente
+COPY . .
+
+# Compilar la aplicación
+RUN npm run build
+
+# Stage 2: Development
+FROM base AS development
+
+WORKDIR /app
+
+# Instalar las dependencias necesarias para ejecutar bcrypt
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar archivos de la etapa anterior
+COPY --from=base /app/dist ./dist
+COPY --from=base /app/package*.json ./
+
+# Crear directorios necesarios
+RUN mkdir -p ./uploads ./temp
+RUN chmod -R 755 ./uploads ./temp
+
+# Exponer puertos
+EXPOSE 3001 
+
+# Comando para desarrollo
+CMD ["npm", "run", "start:debug"]

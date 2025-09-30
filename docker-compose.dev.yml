@@ -1,8 +1,8 @@
 services:
-  # Base de datos PostgreSQL
+  # Base de datos PostgreSQL para desarrollo
   db:
     image: postgres:13
-    container_name: seguimiento-db
+    container_name: seguimiento-db-dev
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
@@ -11,26 +11,26 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_dev:/var/lib/postgresql/data
     networks:
-      - seguimiento-network
+      - seguimiento-network-dev
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Aplicación NestJS
+  # Aplicación NestJS en modo desarrollo
   app:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: seguimiento-backend
+      dockerfile: Dockerfile.dev
+    container_name: seguimiento-backend-dev
     restart: always
     ports:
       - "3001:3001"
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
       PORT: 3001
       DB_URL: postgres://postgres:123@db:5432/seguimiento_db
       DB_HOST: db
@@ -41,21 +41,18 @@ services:
     volumes:
       - ./uploads:/app/uploads
       - ./temp:/app/temp
+      # - .:/app
+      # - /app/node_modules
+      # - /app/dist
     depends_on:
       db:
         condition: service_healthy
     networks:
-      - seguimiento-network
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3001 || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      - seguimiento-network-dev
 
 networks:
-  seguimiento-network:
+  seguimiento-network-dev:
     driver: bridge
 
 volumes:
-  postgres_data:
+  postgres_data_dev:
