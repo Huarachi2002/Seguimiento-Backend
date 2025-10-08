@@ -9,6 +9,7 @@ import { Tipo_Cita } from "../modules/tratamiento/entities/tipo_cita.entity";
 import { Tipo_Tratamiento } from "../modules/tratamiento/entities/tipo_tratamiento.entity";
 import { DataSource } from "typeorm";
 import { Seeder, SeederFactoryManager } from "typeorm-extension";
+import { Motivo } from "../modules/tratamiento/entities/motivo.entity";
 
 
 export default class MainSeeder implements Seeder {
@@ -45,7 +46,37 @@ export default class MainSeeder implements Seeder {
         // 10. Seeder para User (datos fijos)
         await this.seedUser(dataSource);
 
+        // 11. Seeder para Motivos (datos fijos)
+        await this.seedMotivo(dataSource);
+
         console.log("Proceso de seeding completado.");
+    }
+
+    private async seedMotivo(dataSource: DataSource): Promise<void> {
+        const repository = dataSource.getRepository(Motivo);
+
+        const count = await repository.count();
+        if (count > 0) {
+            console.log("Motivo ya tiene datos, se omite el seeding.");
+            return;
+        }
+
+        const motivos = [
+            'No tiene tiempo',
+            'No le dieron tiempo en el trabajo',
+            'Estaba fuera de la ciudad',
+            'Otro'
+        ];
+
+        for (const descripcion of motivos) {
+            const motivo = repository.create({
+                descripcion,
+                estado: true
+            });
+            await repository.save(motivo);
+        }
+
+        console.log("Seeding de Motivo completado.");
     }
 
     private async seedUser(dataSource: DataSource): Promise<void> {

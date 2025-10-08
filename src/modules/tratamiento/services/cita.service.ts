@@ -9,6 +9,7 @@ import { User } from "../entities/user.entity";
 import { CreateCitaDto } from "../dto/create-cita.dto";
 import { UpdateCitaDto } from "../dto/update-cita.dto";
 import { Estado_Cita } from "../entities/estado_cita.entity";
+import { Motivo } from "../entities/motivo.entity";
 
 
 @Injectable()
@@ -17,6 +18,7 @@ export class CitaService {
         @InjectRepository(Cita) private citaRepository: Repository<Cita>,
         @InjectRepository(Estado_Cita) private estadoCitaRepository: Repository<Estado_Cita>,
         @InjectRepository(Tipo_Cita) private tipoCitaRepository: Repository<Tipo_Cita>,
+        @InjectRepository(Motivo) private motivoRepository: Repository<Motivo>,
     ) {}
 
     async findAll(): Promise<Cita[]> {
@@ -67,6 +69,10 @@ export class CitaService {
 
     async getTiposCita(): Promise<Tipo_Cita[]> {
         return this.tipoCitaRepository.find();
+    }
+
+    async getMotivos(): Promise<Motivo[]> {
+        return this.motivoRepository.find();
     }
 
     async getTipoCitaById(id: string): Promise<Tipo_Cita> {

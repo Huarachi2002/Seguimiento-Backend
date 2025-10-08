@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Query } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query } from "@nestjs/common";
 import { MonitoreoService } from "../services/monitoreo.service";
 import { IApiResponse } from "@/common/interface/api-response.interface";
 
@@ -45,7 +45,7 @@ export class MonitoreoController {
         };
     }
 
-    @Get('pacientes-nuevos')
+    @Post('pacientes-nuevos')
     async getPacientesNuevos(
         @Body() fechas: { fechaInicio: Date; fechaFin: Date }
     ):Promise<IApiResponse> {

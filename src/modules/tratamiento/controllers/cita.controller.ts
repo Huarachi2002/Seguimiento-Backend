@@ -40,6 +40,16 @@ export class CitaController {
         };
     }
 
+    @Get('motivo')
+    async getMotivos():Promise<IApiResponse>{
+        const data = await this.citaService.getMotivos();
+        return {
+            statusCode: 200,
+            message: 'Lista de motivos de no asistencia',
+            data
+        };
+    }
+
     @Get('paciente/:idPaciente')
     async getCitasByPaciente(@Param('idPaciente') idPaciente: string):Promise<IApiResponse>{
         const data = await this.citaService.findByPaciente(idPaciente);

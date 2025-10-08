@@ -1,8 +1,9 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { TratamientoTB } from "./tratamientoTB.entity";
 import { Tipo_Cita } from "./tipo_cita.entity";
 import { Estado_Cita } from "./estado_cita.entity";
 import { User } from "./user.entity";
+import { Motivo } from "./motivo.entity";
 
 
 @Entity()
@@ -21,6 +22,10 @@ export class Cita {
 
     @ManyToOne(() => Tipo_Cita, (tipo) => tipo.citas)
     tipo: Tipo_Cita;
+
+    @ManyToOne(() => Motivo, (motivo) => motivo.citas)
+    @JoinColumn({name: 'id_motivo'})
+    motivo: Motivo;
 
     @Column()
     fecha_programada: Date;

@@ -16,6 +16,7 @@ import { Estado_Cita } from "./entities/estado_cita.entity";
 import { User } from "./entities/user.entity";
 import { Rol } from "./entities/rol.entity";
 import { PacienteModule } from "../paciente/paciente.module";
+import { Motivo } from "./entities/motivo.entity";
 
 
 @Module({
@@ -26,6 +27,7 @@ import { PacienteModule } from "../paciente/paciente.module";
             Estado_Tratamiento,
             Fase_Tratamiento,
             Cita,
+            Motivo,
             Tipo_Cita,
             Estado_Cita,
             User,
