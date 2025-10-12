@@ -123,7 +123,7 @@ export class CitaController {
 
     @Post()
     async createCita(@Body() citaDto: CreateCitaDto):Promise<IApiResponse>{
-        const { idEstado, idTipo, idTratamiento, idUser } = citaDto;
+        const { idEstado, idTipo, idTratamiento, idMotivo, idUser } = citaDto;
         const tratamiento = await this.tratamientoService.findOne(idTratamiento);
         if(!tratamiento){
             throw new Error('Tratamiento no encontrado');
@@ -141,7 +141,10 @@ export class CitaController {
         //     throw new Error('Usuario no encontrado');
         // }
         // const data = await this.citaService.create(citaDto, tratamiento, tipo, estado, usuario);
-        const data = await this.citaService.create(citaDto, tratamiento, tipo, estado, null);
+
+        const motivo = await this.citaService.getMotivoById(idMotivo);
+
+        const data = await this.citaService.create(citaDto, tratamiento, tipo, estado, motivo, null);
         return {
             statusCode: 201,
             message: 'Cita creada exitosamente',

@@ -7,6 +7,9 @@ export class CreateCitaDto {
     @IsNotEmpty()
     idTratamiento: string;
 
+    @IsString()
+    idMotivo: string;
+
     @IsDate()
     @IsNotEmpty()
     @Type(() => Date)

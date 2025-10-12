@@ -67,6 +67,10 @@ export class CitaService {
         return this.estadoCitaRepository.findOne({ where: { id } });
     }
 
+    async getMotivoById(id: string): Promise<Motivo> {
+        return this.motivoRepository.findOne({ where: { id } });
+    }
+
     async getTiposCita(): Promise<Tipo_Cita[]> {
         return this.tipoCitaRepository.find();
     }
@@ -79,11 +83,19 @@ export class CitaService {
         return this.tipoCitaRepository.findOne({ where: { id } });
     }
 
-    async create(cita: CreateCitaDto, tratamiento: TratamientoTB, tipoCita: Tipo_Cita, estadoCita: Estado_Cita, user: User): Promise<Cita> {
+    async create(
+        cita: CreateCitaDto, 
+        tratamiento: TratamientoTB, 
+        tipoCita: Tipo_Cita, 
+        estadoCita: Estado_Cita, 
+        motivo: Motivo, 
+        user: User): Promise<Cita> {
+
         const newCita = this.citaRepository.create(cita);
         newCita.estado = estadoCita;
         newCita.tipo = tipoCita;
         newCita.tratamiento = tratamiento;
+        if(motivo) newCita.motivo = motivo;
         // newCita.user = user;
         return this.citaRepository.save(newCita);
     }
