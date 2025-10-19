@@ -10,6 +10,9 @@ import { Tipo_Tratamiento } from "../modules/tratamiento/entities/tipo_tratamien
 import { DataSource } from "typeorm";
 import { Seeder, SeederFactoryManager } from "typeorm-extension";
 import { Motivo } from "../modules/tratamiento/entities/motivo.entity";
+import { Tipo_Laboratorio } from "../modules/laboratorio/entities/tipo_laboratorio.entity";
+import { Tipo_Control } from "../modules/laboratorio/entities/tipo_control.entity";
+import { Tipo_Resultado } from "../modules/laboratorio/entities/tipo_resultado.entity";
 
 
 export default class MainSeeder implements Seeder {
@@ -49,7 +52,111 @@ export default class MainSeeder implements Seeder {
         // 11. Seeder para Motivos (datos fijos)
         await this.seedMotivo(dataSource);
 
+        // 12. Seeder para Tipo Laboratorio (datos fijos)
+        await this.seedTipoLaboratorio(dataSource);
+
+        // 13. Seeder para Tipo Control (datos fijos)
+        await this.seedTipoControl(dataSource);
+
+        // 13. Seeder para Tipo Control (datos fijos)
+        await this.seedTipoResultado(dataSource);
+
         console.log("Proceso de seeding completado.");
+    }
+
+    private async seedTipoLaboratorio(dataSource: DataSource): Promise<void> {
+        const repository = dataSource.getRepository(Tipo_Laboratorio);
+
+        const count = await repository.count();
+        if (count > 0) {
+            console.log("Tipo Laboratorio ya tiene datos, se omite el seeding.");
+            return;
+        }
+
+        const tiposLaboratorios = [
+            'Basiloscopia',
+            'Cultivo',
+        ];
+
+        for (const descripcion of tiposLaboratorios) {
+            const motivo = repository.create({
+                descripcion,
+            });
+            await repository.save(motivo);
+        }
+
+        console.log("Seeding de Motivo completado.");
+    }
+
+    private async seedTipoResultado(dataSource: DataSource): Promise<void> {
+        const tipoResultadoRepository = dataSource.getRepository(Tipo_Resultado);
+        const tipoLaboratorioRepository = dataSource.getRepository(Tipo_Laboratorio);
+
+        const count = await tipoResultadoRepository.count();
+        if (count > 0) {
+            console.log("Tipo_Resultado ya tiene datos, se omite el seeding.");
+            return;
+        }
+        const tiposLaboratorio = await tipoLaboratorioRepository.find();
+
+        const resultadosPorLaboratorio: Record<string, string[]> = {
+            'Basiloscopia': [
+                'Negativo',
+                'Positivo 1 - 9 BAAR en 100 campos',
+                '(+) 10 - 99 BAAR en 100 campos',
+                '(++) 1 - 10 BAAR en 50 campos',
+                '(+++) > 10 BAAR en 20 campos',
+            ],
+            'Cultivo': [
+                'Negativo',
+                'Contaminado',
+                'Positivo 1 - 19 colonias',
+                '(+) 20 - 100 colonias', 
+                '(++) > 100 colonias separadas', 
+                '(+++) incontable confluente', 
+            ]
+        };
+
+        for (const tipoLab of tiposLaboratorio) {
+            const resultados = resultadosPorLaboratorio[tipoLab.descripcion] || ['No definido'];
+            for (const descripcion of resultados) {
+                const tipoResultado = tipoResultadoRepository.create({
+                    descripcion,
+                    tipo_laboratorio: tipoLab
+                });
+                await tipoResultadoRepository.save(tipoResultado);
+            }
+        }
+
+        console.log("Seeding de Tipo_Resultado completado.");
+    }
+
+
+
+    private async seedTipoControl(dataSource: DataSource): Promise<void> {
+        const repository = dataSource.getRepository(Tipo_Control);
+
+        const count = await repository.count();
+        if (count > 0) {
+            console.log("Tipo Control ya tiene datos, se omite el seeding.");
+            return;
+        }
+
+        const tiposControl = [
+            'Test diagnóstico',
+            'Control de seguimiento',
+            'Término de Tratamiento',
+            'Control post-tratamiento'
+        ];
+
+        for (const descripcion of tiposControl) {
+            const motivo = repository.create({
+                descripcion,
+            });
+            await repository.save(motivo);
+        }
+
+        console.log("Seeding de Motivo completado.");
     }
 
     private async seedMotivo(dataSource: DataSource): Promise<void> {

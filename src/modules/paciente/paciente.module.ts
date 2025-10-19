@@ -7,6 +7,7 @@ import { Contacto_Paciente } from "./entities/contacto.entity";
 import { Tipo_Parentesco } from "./entities/tipo_parentesco.entity";
 import { Direccion } from "../monitoreo/entities/direccion.entity";
 import { MonitoreoModule } from "../monitoreo/monitore.module";
+import { Laboratorio } from "../laboratorio/entities/laboratorio.entity";
 
 @Module({
     imports: [
@@ -14,7 +15,8 @@ import { MonitoreoModule } from "../monitoreo/monitore.module";
             Paciente, 
             Contacto_Paciente, 
             Tipo_Parentesco,
-            Direccion
+            Direccion,
+            Laboratorio
         ]),
         forwardRef(()=> MonitoreoModule)
     ],
