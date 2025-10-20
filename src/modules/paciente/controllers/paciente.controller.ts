@@ -6,7 +6,6 @@ import { IApiResponse } from "src/common/interface/api-response.interface";
 import { CreateContactoDto } from "../dto/create-contacto.dto";
 import { CreateTipoParentescoDto } from "../dto/create-tipo-parentesco.dto";
 import { UpdateTipoParentescoDto } from "../dto/update-tipo-parentesco.dto";
-import { DireccionService } from "@/modules/monitoreo/services/direccion.service";
 
 
 @Controller('paciente')
@@ -84,6 +83,85 @@ export class PacienteController {
             statusCode: HttpStatus.OK,
             message: 'Detalles del tipo de parentesco',
             data
+        };
+    }
+
+    @Get('telefono/:telefono')
+    async getPacienteByTelefono(@Param('telefono') telefono: number): Promise<IApiResponse> {
+        const paciente = await this.pacienteService.findByTelefono(telefono);
+        if(!paciente){
+            return {
+                statusCode: HttpStatus.NOT_FOUND,
+                message: 'Paciente no encontrado',
+                data: null
+            };
+        }
+
+        const citas = await this.pacienteService.findCitasByPaciente(paciente.id);
+        const proxima_cita = citas.length > 0
+            ? citas.reduce((prev, curr) => {
+                return (new Date(prev.fecha_programada) > new Date(curr.fecha_programada)) ? curr : prev;
+            }, citas[0])
+            : null;
+
+        const ultima_cita = citas.length > 0
+            ? citas.reduce((prev, curr) => {
+                return (new Date(prev.fecha_programada) < new Date(curr.fecha_programada) && curr.estado.descripcion === "Asistido") ? curr : prev;
+            }, citas[0])
+            : null;
+
+        const responseData = {
+            ...paciente,
+            Nombre: paciente.nombre,
+            Citas: citas,
+            proxima_cita,
+            ultima_cita
+        }
+
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Paciente encontrado por telefono',
+            data: responseData
+        };
+    }
+
+    @Get('carnet/:carnet')
+    async getPacienteByCarnet(@Param('carnet') carnet: string): Promise<IApiResponse> {
+        const paciente = await this.pacienteService.findByCarnet(carnet);
+        if(!paciente){
+            return {
+                statusCode: HttpStatus.NOT_FOUND,
+                message: 'Paciente no encontrado',
+                data: null
+            };
+        }
+        const citas = await this.pacienteService.findCitasByPaciente(paciente.id);
+        const proxima_cita = citas.length > 0
+            ? citas.reduce((prev, curr) => {
+                return (new Date(prev.fecha_programada) > new Date(curr.fecha_programada)) ? curr : prev;
+            }, citas[0])
+            : null;
+
+        // Buscar la utlima cita en estado "Asistido"
+        const ultima_cita = citas.length > 0
+            ? citas.reduce((prev, curr) => {
+                return (new Date(prev.fecha_programada) < new Date(curr.fecha_programada) && curr.estado.descripcion === "Asistido") ? curr : prev;
+            }, citas[0])
+            : null;
+
+
+        const responseData = {
+            ...paciente,
+            Nombre: paciente.nombre,
+            Citas: citas,
+            proxima_cita,
+            ultima_cita
+        }
+
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Paciente encontrado por carnet',
+            data: responseData
         };
     }
 

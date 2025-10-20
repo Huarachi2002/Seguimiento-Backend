@@ -188,6 +188,7 @@ export default class MainSeeder implements Seeder {
         }
 
         const estadosCita = [
+            'Pendiente',
             'Programado',
             'Confirmado',
             'Asistido',

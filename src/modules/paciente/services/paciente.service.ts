@@ -11,6 +11,7 @@ import { CreateTipoParentescoDto } from "../dto/create-tipo-parentesco.dto";
 import { UpdateTipoParentescoDto } from "../dto/update-tipo-parentesco.dto";
 import { DireccionService } from "@/modules/monitoreo/services/direccion.service";
 import { Direccion } from "@/modules/monitoreo/entities/direccion.entity";
+import { Cita } from "@/modules/tratamiento/entities/cita.entity";
 
 
 @Injectable()
@@ -20,6 +21,7 @@ export class PacienteService {
         @InjectRepository(Paciente) private pacienteRepository: Repository<Paciente>,
         @InjectRepository(Contacto_Paciente) private contactoRepository: Repository<Contacto_Paciente>,
         @InjectRepository(Tipo_Parentesco) private tipoParentescoRepository: Repository<Tipo_Parentesco>,
+        @InjectRepository(Cita) private citaRepository: Repository<Cita>,
         
         @Inject(forwardRef(() => DireccionService))
         private direccionService: DireccionService
@@ -54,6 +56,29 @@ export class PacienteService {
 
     async getTipoParentescos(): Promise<Tipo_Parentesco[]> {
         return this.tipoParentescoRepository.find();
+    }
+
+    async findByTelefono(telefono: number): Promise<Paciente> {
+        return this.pacienteRepository.findOne({
+            where: { telefono }
+        });
+    }
+
+    async findCitasByPaciente(idPaciente: string): Promise<Cita[]> {
+        const data = await this.citaRepository.find({
+            where: { tratamiento: { paciente: { id: idPaciente } } },
+            relations: {
+                estado: true,
+                tipo: true
+            }
+        });
+        return data;
+    }
+
+    async findByCarnet(carnet: string): Promise<Paciente> {
+        return this.pacienteRepository.findOne({
+            where: { numero_doc: carnet  }
+        });
     }
 
     async findTipoParentescoById(id: string): Promise<Tipo_Parentesco> {

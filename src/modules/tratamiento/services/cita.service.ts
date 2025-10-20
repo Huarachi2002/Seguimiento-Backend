@@ -33,7 +33,13 @@ export class CitaService {
     }
 
     async findOne(id: string): Promise<Cita> {
-        return this.citaRepository.findOneBy({ id });
+        return this.citaRepository.findOne({ 
+            where: { id },
+            relations: {
+                estado: true,
+                tipo: true,
+            },
+        });
     }
 
     async findByPaciente(pacienteId: string): Promise<Cita[]> {

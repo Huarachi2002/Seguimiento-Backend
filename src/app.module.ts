@@ -4,6 +4,7 @@ import { TratamientoModule } from './modules/tratamiento/tratamiento.module';
 import { MonitoreoModule } from './modules/monitoreo/monitore.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     TratamientoModule, 
     MonitoreoModule
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}

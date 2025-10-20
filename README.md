@@ -90,3 +90,5 @@ npm run seed:run
 
 // Y por ultimo levantar proyecto
 npm run start:dev
+
+## Pasos para iniciar el proyecto en Docker
