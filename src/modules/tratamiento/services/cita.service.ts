@@ -69,6 +69,10 @@ export class CitaService {
         return this.estadoCitaRepository.find();
     }
 
+    async getEstadoCitaByDescription(description: string): Promise<Estado_Cita> {
+        return this.estadoCitaRepository.findOne({ where: { descripcion: description } });
+    }
+
     async getEstadoCitaById(id: string): Promise<Estado_Cita> {
         return this.estadoCitaRepository.findOne({ where: { id } });
     }
@@ -116,6 +120,22 @@ export class CitaService {
         }
         return this.citaRepository.save(existingCita);
     }
+
+    async updateCitaAssistant(idCita: string, fechaProgramada: Date, observacion: string, user: User, estadoCita: Estado_Cita): Promise<Cita> {
+        const existingCita = await this.citaRepository.preload({
+            id: idCita,
+            fecha_programada: fechaProgramada,
+            observaciones: observacion,
+            estado: estadoCita,
+            user: user,
+        })
+        if(!existingCita){
+            throw new Error('Cita no encontrada');
+        }
+        return this.citaRepository.save(existingCita);
+    }
+        
+    
 
     async updateEstadoCita(id: string, estadoCita: any): Promise<Estado_Cita> {
         const existingEstado = await this.estadoCitaRepository.preload({

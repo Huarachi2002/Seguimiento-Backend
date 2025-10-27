@@ -30,6 +30,12 @@ export class UserService {
         return this.userRepository.findOne({ where: { id } });
     }
 
+    async getUserAdmin(): Promise<User> {
+        return this.userRepository.findOne({
+            where: { rol: { descripcion: 'admin' } }
+        });
+    }
+
     async getRols(): Promise<Rol[]> {
         return this.rolRepository.find();
     }
