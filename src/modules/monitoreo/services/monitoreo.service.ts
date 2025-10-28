@@ -57,14 +57,19 @@ export class MonitoreoService {
             .getMany();
     }
 
-    async getPacientesConCitasPendientes(){
-        return await this.citaRepository.createQueryBuilder('cita')
-            .leftJoinAndSelect('cita.tratamiento', 'tratamiento')
-            .leftJoinAndSelect('tratamiento.paciente', 'paciente')
-            .leftJoin('cita.estado', 'estado_cita')
-            .where('cita.fecha_programada::date = NOW()::date')
-            .andWhere('estado_cita.descripcion = :estado', { estado: 'Programado' })
-            .getMany();
+    async getPacientesConCitasPendientes() {
+        const tratamientos = await this.tratamientoRepository.createQueryBuilder('t')
+            .innerJoinAndSelect('t.paciente', 'p')
+            .where('NOW() BETWEEN t.fecha_inicio AND t.fecha_fin')
+            .andWhere(qb => {
+                const subQuery = qb.subQuery()
+                    .select('DISTINCT c.tratamientoId')
+                    .from('cita', 'c')
+                    .where('c.fecha_programada::date = NOW()::date')
+                    .getQuery();
+                return `t.id NOT IN ${subQuery}`;
+            }).getMany();
+        return tratamientos;
     }
 
 

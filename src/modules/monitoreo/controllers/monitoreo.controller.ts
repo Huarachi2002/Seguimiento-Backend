@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post, Query } from "@nestjs/common";
 import { MonitoreoService } from "../services/monitoreo.service";
 import { IApiResponse } from "@/common/interface/api-response.interface";
+import { TratamientoTB } from "@/modules/tratamiento/entities/tratamientoTB.entity";
 
 
 @Controller('monitoreo')
@@ -37,7 +38,14 @@ export class MonitoreoController {
 
     @Get('pacientes-citas')
     async getPacientesConCitasPendientes():Promise<IApiResponse> {
-        const data = await this.monitoreoService.getPacientesConCitasPendientes();
+        const tratamientos: TratamientoTB[] = await this.monitoreoService.getPacientesConCitasPendientes();
+        const data = tratamientos.map(tratamiento => ({
+            idTratamiento: tratamiento.id,
+            fecha_programada: new Date(),
+            fecha_acumulada: new Date(),
+            tratamiento: tratamiento
+        }));
+
         return {
             statusCode: 200,
             message: 'Lista de pacientes con citas pendientes',
