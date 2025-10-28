@@ -13,6 +13,8 @@ import { Motivo } from "../modules/tratamiento/entities/motivo.entity";
 import { Tipo_Laboratorio } from "../modules/laboratorio/entities/tipo_laboratorio.entity";
 import { Tipo_Control } from "../modules/laboratorio/entities/tipo_control.entity";
 import { Tipo_Resultado } from "../modules/laboratorio/entities/tipo_resultado.entity";
+import { Enfermedad } from "../modules/paciente/entities/enfermedad.entity";
+import { Sintoma } from "../modules/paciente/entities/sintoma.entity";
 
 
 export default class MainSeeder implements Seeder {
@@ -51,6 +53,12 @@ export default class MainSeeder implements Seeder {
 
         // 11. Seeder para Motivos (datos fijos)
         await this.seedMotivo(dataSource);
+
+    // 12. Seeder para Enfermedades (catalogo)
+    await this.seedEnfermedad(dataSource);
+
+    // 13. Seeder para Sintomas (catalogo)
+    await this.seedSintoma(dataSource);
 
         // 12. Seeder para Tipo Laboratorio (datos fijos)
         await this.seedTipoLaboratorio(dataSource);
@@ -157,6 +165,64 @@ export default class MainSeeder implements Seeder {
         }
 
         console.log("Seeding de Motivo completado.");
+    }
+
+    private async seedEnfermedad(dataSource: DataSource): Promise<void> {
+        const repository = dataSource.getRepository(Enfermedad);
+        const count = await repository.count();
+        if (count > 0) {
+            console.log("Enfermedad ya tiene datos, se omite el seeding.");
+            return;
+        }
+
+        const enfermedades = [
+            'Diabetes',
+            'Hipertensión arterial',
+            'Asma',
+            'EPOC',
+            'Enfermedad renal crónica',
+            'VIH',
+            'Tuberculosis previa',
+            'Cardiopatía',
+            'Hepatitis',
+            'Otra'
+        ];
+
+        for (const descripcion of enfermedades) {
+            const entity = repository.create({ descripcion, estado: true });
+            await repository.save(entity);
+        }
+
+        console.log("Seeding de Enfermedad completado.");
+    }
+
+    private async seedSintoma(dataSource: DataSource): Promise<void> {
+        const repository = dataSource.getRepository(Sintoma);
+        const count = await repository.count();
+        if (count > 0) {
+            console.log("Sintoma ya tiene datos, se omite el seeding.");
+            return;
+        }
+
+        const sintomas = [
+            'Fiebre',
+            'Tos',
+            'Pérdida de peso',
+            'Sudoración nocturna',
+            'Fatiga',
+            'Dolor torácico',
+            'Dificultad respiratoria',
+            'Náuseas',
+            'Vómitos',
+            'Diarrea'
+        ];
+
+        for (const descripcion of sintomas) {
+            const entity = repository.create({ descripcion, estado: true });
+            await repository.save(entity);
+        }
+
+        console.log("Seeding de Sintoma completado.");
     }
 
     private async seedMotivo(dataSource: DataSource): Promise<void> {

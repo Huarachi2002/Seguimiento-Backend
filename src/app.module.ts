@@ -5,6 +5,7 @@ import { MonitoreoModule } from './modules/monitoreo/monitore.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LaboratorioModule } from './modules/laboratorio/laboratorio.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { LaboratorioModule } from './modules/laboratorio/laboratorio.module';
     TratamientoModule, 
     MonitoreoModule,
     LaboratorioModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

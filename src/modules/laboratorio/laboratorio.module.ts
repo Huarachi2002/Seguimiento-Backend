@@ -8,6 +8,8 @@ import { Laboratorio } from "./entities/laboratorio.entity";
 import { Tipo_Control } from "./entities/tipo_control.entity";
 import { Tipo_Laboratorio } from "./entities/tipo_laboratorio.entity";
 import { Tipo_Resultado } from "./entities/tipo_resultado.entity";
+import { JwtStrategy } from "../auth/strategy/jwt.strategy";
+import { AuthModule } from "../auth/auth.module";
 
 @Module({
     imports: [
@@ -18,6 +20,7 @@ import { Tipo_Resultado } from "./entities/tipo_resultado.entity";
             Tipo_Resultado
         ]),
         forwardRef(() => PacienteModule),
+        AuthModule
     ],
     providers: [LaboratorioService],
     controllers: [LaboratorioController],

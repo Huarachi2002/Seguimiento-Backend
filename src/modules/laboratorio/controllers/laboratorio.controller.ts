@@ -1,9 +1,10 @@
-import { Body, Controller, Get, HttpStatus, NotFoundException, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Get, HttpStatus, NotFoundException, Param, Post, Put, UseGuards } from "@nestjs/common";
 import { IApiResponse } from "src/common/interface/api-response.interface";
 import { LaboratorioService } from "../services/laboratorio.service";
 
 import { CreateLaboratorioDto } from "../dto/create-laboratorio.dto";
 import { PacienteService } from "@/modules/paciente/services/paciente.service";
+import { AuthGuard } from "@nestjs/passport";
 
 
 @Controller('laboratorio')
@@ -38,6 +39,8 @@ export class LaboratorioController {
             data
         };
     }
+
+    @UseGuards(AuthGuard('jwt'))
     @Get()
     async getLaboratorios(): Promise<IApiResponse> {
         let data = await this.laboratorioService.getLaboratorios();
