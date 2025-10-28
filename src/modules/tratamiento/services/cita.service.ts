@@ -35,7 +35,13 @@ export class CitaService {
     }
 
     async findOne(id: string): Promise<Cita> {
-        return this.citaRepository.findOneBy({ id });
+        return this.citaRepository.findOne({ 
+            where: { id },
+            relations: {
+                estado: true,
+                tipo: true,
+            },
+        });
     }
 
     async findByPaciente(pacienteId: string): Promise<Cita[]> {
@@ -63,6 +69,10 @@ export class CitaService {
 
     async getEstadosCita(): Promise<Estado_Cita[]> {
         return this.estadoCitaRepository.find();
+    }
+
+    async getEstadoCitaByDescription(description: string): Promise<Estado_Cita> {
+        return this.estadoCitaRepository.findOne({ where: { descripcion: description } });
     }
 
     async getEstadoCitaById(id: string): Promise<Estado_Cita> {
@@ -139,6 +149,22 @@ export class CitaService {
         }
         return this.citaRepository.save(existingCita);
     }
+
+    async updateCitaAssistant(idCita: string, fechaProgramada: Date, observacion: string, user: User, estadoCita: Estado_Cita): Promise<Cita> {
+        const existingCita = await this.citaRepository.preload({
+            id: idCita,
+            fecha_programada: fechaProgramada,
+            observaciones: observacion,
+            estado: estadoCita,
+            user: user,
+        })
+        if(!existingCita){
+            throw new Error('Cita no encontrada');
+        }
+        return this.citaRepository.save(existingCita);
+    }
+        
+    
 
     async updateEstadoCita(id: string, estadoCita: any): Promise<Estado_Cita> {
         const existingEstado = await this.estadoCitaRepository.preload({

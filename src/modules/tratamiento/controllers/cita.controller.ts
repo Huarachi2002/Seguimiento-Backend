@@ -11,6 +11,7 @@ import { CreateMotivoDto } from "../dto/create-motivo.dto";
 import { UpdateMotivoDto } from "../dto/update-motivo.dto";
 import { UpdateTipoCitaDto } from "../dto/update-tipo-cita.dto";
 import { UpdateEstadoCitaDto } from "../dto/update-estado-cita.dto";
+import { UpdateAssistantDto } from "../dto/update-cita-assistant.dto";
 
 
 @Controller('cita')
@@ -191,6 +192,41 @@ export class CitaController {
             statusCode: 201,
             message: 'Estado de cita creado exitosamente',
             data: estadoCita
+        };
+    }
+
+    @Put('update-assistant')
+    async updateCitaAssistant(@Body() updateAssistantDto: UpdateAssistantDto):Promise<IApiResponse>{
+        const citas = await this.citaService.findByPaciente(updateAssistantDto.id_paciente);
+        if(citas.length === 0){
+            throw new Error('No se encontraron citas para el paciente');
+        }
+
+        const userAdmin = await this.usuarioService.getUserAdmin()
+
+        const estadoCita = await this.citaService.getEstadoCitaByDescription('Reprogramado');
+
+        const fechaProgramada = new Date(updateAssistantDto.fecha_programada);
+
+        if (isNaN(fechaProgramada.getTime())) {
+            throw new Error('Fecha programada inválida');
+        }
+
+        const observacion = updateAssistantDto.motivo;
+
+        const ultimaCita = citas[citas.length - 1];
+
+        const assistant = await this.citaService.updateCitaAssistant(
+            ultimaCita.id, 
+            fechaProgramada, 
+            observacion, 
+            userAdmin, 
+            estadoCita
+        );
+        return {
+            statusCode: 201,
+            message: 'Cita actualizada exitosamente',
+            data: assistant
         };
     }
     
