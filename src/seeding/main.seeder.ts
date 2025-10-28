@@ -15,6 +15,7 @@ import { Tipo_Control } from "../modules/laboratorio/entities/tipo_control.entit
 import { Tipo_Resultado } from "../modules/laboratorio/entities/tipo_resultado.entity";
 import { Enfermedad } from "../modules/paciente/entities/enfermedad.entity";
 import { Sintoma } from "../modules/paciente/entities/sintoma.entity";
+import { Localizacion_TB } from "../modules/tratamiento/entities/localizacion_tb.entity";
 
 
 export default class MainSeeder implements Seeder {
@@ -60,6 +61,9 @@ export default class MainSeeder implements Seeder {
     // 13. Seeder para Sintomas (catalogo)
     await this.seedSintoma(dataSource);
 
+    // 14. Seeder para Localizaciones TB (catalogo)
+    await this.seedLocalizacionTB(dataSource);
+
         // 12. Seeder para Tipo Laboratorio (datos fijos)
         await this.seedTipoLaboratorio(dataSource);
 
@@ -70,6 +74,32 @@ export default class MainSeeder implements Seeder {
         await this.seedTipoResultado(dataSource);
 
         console.log("Proceso de seeding completado.");
+    }
+
+    private async seedLocalizacionTB(dataSource: DataSource): Promise<void> {
+        const repository = dataSource.getRepository(Localizacion_TB);
+
+        const count = await repository.count();
+        if (count > 0) {
+            console.log("Localizacion_TB ya tiene datos, se omite el seeding.");
+            return;
+        }
+
+        const localizaciones = [
+            'Pulmonar',
+            'Meninges',
+            'Huesos',
+            'Articulaciones',
+            'Ganglios linfáticos',
+            'Otro'
+        ];
+
+        for (const descripcion of localizaciones) {
+            const entity = repository.create({ descripcion, estado: true });
+            await repository.save(entity);
+        }
+
+        console.log("Seeding de Localizacion_TB completado.");
     }
 
     private async seedTipoLaboratorio(dataSource: DataSource): Promise<void> {
