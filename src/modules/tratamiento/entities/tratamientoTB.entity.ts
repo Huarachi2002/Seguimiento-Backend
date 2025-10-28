@@ -4,6 +4,7 @@ import { Estado_Tratamiento } from "./estado_tratamiento.entity";
 import { Paciente } from "../../paciente/entities/paciente.entity";
 import { Fase_Tratamiento } from "./fase_tratamiento.entity";
 import { Cita } from "./cita.entity";
+import { Localizacion_TB } from "./localizacion_tb.entity";
 
 
 @Entity()
@@ -25,6 +26,9 @@ export class TratamientoTB {
 
     @ManyToOne(() => Fase_Tratamiento, (fase) => fase.tratamientos)
     fase: Fase_Tratamiento; // Input Frontend
+
+    @ManyToOne(() => Localizacion_TB, { nullable: true })
+    localizacion: Localizacion_TB;
 
     @Column({ length: 100 , nullable: true })
     codigo_tratamiento: string; // Columna al pedo

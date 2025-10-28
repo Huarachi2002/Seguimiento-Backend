@@ -48,6 +48,16 @@ export class TratamientoController {
         };
     }
 
+    @Get('localizaciones')
+    async getLocalizaciones(): Promise<IApiResponse> {
+        const data = await this.tratamientoService.getLocalizaciones();
+        return {
+            statusCode: 200,
+            message: 'Lista de localizaciones TB',
+            data
+        };
+    }
+
     @Get('paciente/:idPaciente')
     async getTratamientosByPaciente(@Param('idPaciente') idPaciente: string):Promise<IApiResponse>{
         const paciente = await this.pacienteService.findOne(idPaciente);
@@ -179,7 +189,16 @@ export class TratamientoController {
             };
         }
 
-        const tratamiento = await this.tratamientoService.create(createTratamientoDto, tipoTratamiento, estadoTratamiento, paciente);
+        const localizacionTb = await this.tratamientoService.getLocalizacionById(createTratamientoDto.idLocalizacionTb);
+        if(!localizacionTb){
+            return {
+                statusCode: 404,
+                message: 'Estado de tratamiento no encontrado',
+                data: null
+            };
+        }
+
+        const tratamiento = await this.tratamientoService.create(createTratamientoDto, tipoTratamiento, estadoTratamiento, localizacionTb, paciente);
         return {
             statusCode: 201,
             message: 'Tratamiento creado exitosamente',

@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, Prim
 import { Contacto_Paciente } from "./contacto.entity";
 import { TratamientoTB } from "../../tratamiento/entities/tratamientoTB.entity";
 import { Direccion } from '../../monitoreo/entities/direccion.entity';
+import { Laboratorio } from '../../laboratorio/entities/laboratorio.entity';
 
 @Entity()
 export class Paciente {
@@ -20,6 +21,9 @@ export class Paciente {
 
     @OneToMany(() => TratamientoTB, (tratamiento) => tratamiento.paciente)
     tratamientos: TratamientoTB[];
+
+    @OneToMany(() => Laboratorio, (laboratorio) => laboratorio.paciente)
+    laboratorios: Laboratorio[];
 
     @Column({ length: 100 })
     nombre: string;

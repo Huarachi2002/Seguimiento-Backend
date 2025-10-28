@@ -4,6 +4,8 @@ import { TratamientoModule } from './modules/tratamiento/tratamiento.module';
 import { MonitoreoModule } from './modules/monitoreo/monitore.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { LaboratorioModule } from './modules/laboratorio/laboratorio.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { AppController } from './app.controller';
 
 @Module({
@@ -30,7 +32,9 @@ import { AppController } from './app.controller';
     }),
     PacienteModule, 
     TratamientoModule, 
-    MonitoreoModule
+    MonitoreoModule,
+    LaboratorioModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [],

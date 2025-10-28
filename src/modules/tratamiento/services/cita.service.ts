@@ -8,6 +8,8 @@ import { Estado_Tratamiento } from "../entities/estado_tratamiento.entity";
 import { User } from "../entities/user.entity";
 import { CreateCitaDto } from "../dto/create-cita.dto";
 import { UpdateCitaDto } from "../dto/update-cita.dto";
+import { CreateMotivoDto } from "../dto/create-motivo.dto";
+import { UpdateMotivoDto } from "../dto/update-motivo.dto";
 import { Estado_Cita } from "../entities/estado_cita.entity";
 import { Motivo } from "../entities/motivo.entity";
 
@@ -77,6 +79,10 @@ export class CitaService {
         return this.estadoCitaRepository.findOne({ where: { id } });
     }
 
+    async getMotivoById(id: string): Promise<Motivo> {
+        return this.motivoRepository.findOne({ where: { id } });
+    }
+
     async getTiposCita(): Promise<Tipo_Cita[]> {
         return this.tipoCitaRepository.find();
     }
@@ -85,15 +91,38 @@ export class CitaService {
         return this.motivoRepository.find();
     }
 
+    async createMotivo(createMotivoDto: CreateMotivoDto): Promise<Motivo> {
+        const exists = await this.motivoRepository.findOne({ where: { descripcion: createMotivoDto.descripcion } });
+        if (exists) throw new Error('Motivo ya existe');
+    const motivoEntity = this.motivoRepository.create(createMotivoDto as any);
+    const saved = await this.motivoRepository.save(motivoEntity as any);
+        return saved;
+    }
+
+    async updateMotivo(id: string, updateMotivoDto: UpdateMotivoDto): Promise<Motivo> {
+        const existing = await this.motivoRepository.preload({ id, ...updateMotivoDto });
+        if (!existing) throw new Error('Motivo no encontrado');
+        const saved = await this.motivoRepository.save(existing);
+        return saved;
+    }
+
     async getTipoCitaById(id: string): Promise<Tipo_Cita> {
         return this.tipoCitaRepository.findOne({ where: { id } });
     }
 
-    async create(cita: CreateCitaDto, tratamiento: TratamientoTB, tipoCita: Tipo_Cita, estadoCita: Estado_Cita, user: User): Promise<Cita> {
+    async create(
+        cita: CreateCitaDto, 
+        tratamiento: TratamientoTB, 
+        tipoCita: Tipo_Cita, 
+        estadoCita: Estado_Cita, 
+        motivo: Motivo, 
+        user: User): Promise<Cita> {
+
         const newCita = this.citaRepository.create(cita);
         newCita.estado = estadoCita;
         newCita.tipo = tipoCita;
         newCita.tratamiento = tratamiento;
+        if(motivo) newCita.motivo = motivo;
         // newCita.user = user;
         return this.citaRepository.save(newCita);
     }

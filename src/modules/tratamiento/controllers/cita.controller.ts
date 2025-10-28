@@ -7,6 +7,8 @@ import { UserService } from "../services/user.service";
 import { UpdateCitaDto } from "../dto/update-cita.dto";
 import { CreateTipoCitaDto } from "../dto/create-tipo-cita.dto";
 import { CreateEstadoCitaDto } from "../dto/create-estado-cita.dto";
+import { CreateMotivoDto } from "../dto/create-motivo.dto";
+import { UpdateMotivoDto } from "../dto/update-motivo.dto";
 import { UpdateTipoCitaDto } from "../dto/update-tipo-cita.dto";
 import { UpdateEstadoCitaDto } from "../dto/update-estado-cita.dto";
 import { UpdateAssistantDto } from "../dto/update-cita-assistant.dto";
@@ -47,6 +49,26 @@ export class CitaController {
         return {
             statusCode: 200,
             message: 'Lista de motivos de no asistencia',
+            data
+        };
+    }
+
+    @Post('motivo')
+    async createMotivo(@Body() createMotivoDto: CreateMotivoDto):Promise<IApiResponse>{
+        const data = await this.citaService.createMotivo(createMotivoDto);
+        return {
+            statusCode: 201,
+            message: 'Motivo creado exitosamente',
+            data
+        };
+    }
+
+    @Put('motivo/:id')
+    async updateMotivo(@Param('id') id: string, @Body() updateMotivoDto: UpdateMotivoDto):Promise<IApiResponse>{
+        const data = await this.citaService.updateMotivo(id, updateMotivoDto);
+        return {
+            statusCode: 200,
+            message: 'Motivo actualizado exitosamente',
             data
         };
     }
@@ -124,7 +146,7 @@ export class CitaController {
 
     @Post()
     async createCita(@Body() citaDto: CreateCitaDto):Promise<IApiResponse>{
-        const { idEstado, idTipo, idTratamiento, idUser } = citaDto;
+        const { idEstado, idTipo, idTratamiento, idMotivo, idUser } = citaDto;
         const tratamiento = await this.tratamientoService.findOne(idTratamiento);
         if(!tratamiento){
             throw new Error('Tratamiento no encontrado');
@@ -137,7 +159,15 @@ export class CitaController {
         if(!tipo){
             throw new Error('Tipo de cita no encontrado');
         }
-        const data = await this.citaService.create(citaDto, tratamiento, tipo, estado, null);
+        // const usuario = await this.usuarioService.findOne(idUser);
+        // if(!usuario){
+        //     throw new Error('Usuario no encontrado');
+        // }
+        // const data = await this.citaService.create(citaDto, tratamiento, tipo, estado, usuario);
+
+        const motivo = await this.citaService.getMotivoById(idMotivo);
+
+        const data = await this.citaService.create(citaDto, tratamiento, tipo, estado, motivo, null);
         return {
             statusCode: 201,
             message: 'Cita creada exitosamente',

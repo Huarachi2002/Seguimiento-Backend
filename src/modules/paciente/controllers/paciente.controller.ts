@@ -6,6 +6,13 @@ import { IApiResponse } from "src/common/interface/api-response.interface";
 import { CreateContactoDto } from "../dto/create-contacto.dto";
 import { CreateTipoParentescoDto } from "../dto/create-tipo-parentesco.dto";
 import { UpdateTipoParentescoDto } from "../dto/update-tipo-parentesco.dto";
+import { DireccionService } from "@/modules/monitoreo/services/direccion.service";
+import { CreateEnfermedadDto } from "../dto/create-enfermedad.dto";
+import { UpdateEnfermedadDto } from "../dto/update-enfermedad.dto";
+import { CreatePacienteEnfermedadDto } from "../dto/create-paciente-enfermedad.dto";
+import { CreateSintomaDto } from "../dto/create-sintoma.dto";
+import { UpdateSintomaDto } from "../dto/update-sintoma.dto";
+import { CreatePacienteSintomaDto } from "../dto/create-paciente-sintoma.dto";
 
 
 @Controller('paciente')
@@ -33,6 +40,18 @@ export class PacienteController {
             message: 'Lista de tipos de parentesco',
             data
         };
+    }
+    
+    @Get('enfermedad')
+    async getEnfermedades(): Promise<IApiResponse> {
+        const data = await this.pacienteService.getEnfermedades();
+        return { statusCode: HttpStatus.OK, message: 'Lista de enfermedades', data };
+    }
+
+    @Get('sintoma')
+    async getSintomas(): Promise<IApiResponse> {
+        const data = await this.pacienteService.getSintomas();
+        return { statusCode: HttpStatus.OK, message: 'Lista de sintomas', data };
     }
 
     @Get(':id')
@@ -167,11 +186,20 @@ export class PacienteController {
 
     @Post()
     async createPaciente(@Body() createPacienteDto: CreatePacienteDto) {
-        const data = await this.pacienteService.create(createPacienteDto);
+        const paciente = await this.pacienteService.create(createPacienteDto);
+
+        if (createPacienteDto.enfermedades && createPacienteDto.enfermedades.length > 0) {
+            await this.pacienteService.addEnfermedadesToPaciente(paciente.id, createPacienteDto.enfermedades);
+        }
+
+        if (createPacienteDto.sintomas && createPacienteDto.sintomas.length > 0) {
+            await this.pacienteService.addSintomasToPaciente(paciente.id, createPacienteDto.sintomas);
+        }
+
         return {
             statusCode: HttpStatus.CREATED,
             message: 'Paciente creado',
-            data
+            data: paciente
         };
     }
 
@@ -183,6 +211,60 @@ export class PacienteController {
             message: 'Tipo de parentesco creado',
             data
         };
+    }
+
+    // Enfermedades - catalogo
+    
+
+    @Post('enfermedad')
+    async createEnfermedad(@Body() dto: CreateEnfermedadDto): Promise<IApiResponse> {
+        const data = await this.pacienteService.createEnfermedad(dto);
+        return { statusCode: HttpStatus.CREATED, message: 'Enfermedad creada', data };
+    }
+
+    @Put('enfermedad/:id')
+    async updateEnfermedad(@Param('id') id: string, @Body() dto: UpdateEnfermedadDto): Promise<IApiResponse> {
+        const data = await this.pacienteService.updateEnfermedad(id, dto);
+        return { statusCode: HttpStatus.OK, message: 'Enfermedad actualizada', data };
+    }
+
+    @Post('paciente-enfermedad')
+    async addEnfermedadToPaciente(@Body() dto: CreatePacienteEnfermedadDto): Promise<IApiResponse> {
+        const data = await this.pacienteService.addEnfermedadToPaciente(dto);
+        return { statusCode: HttpStatus.CREATED, message: 'Enfermedad agregada al paciente', data };
+    }
+
+    @Get('paciente/:idPaciente/enfermedades')
+    async getEnfermedadesByPaciente(@Param('idPaciente') idPaciente: string): Promise<IApiResponse> {
+        const data = await this.pacienteService.getEnfermedadesByPaciente(idPaciente);
+        return { statusCode: HttpStatus.OK, message: 'Enfermedades del paciente', data };
+    }
+
+    // Sintomas
+    
+
+    @Post('sintoma')
+    async createSintoma(@Body() dto: CreateSintomaDto): Promise<IApiResponse> {
+        const data = await this.pacienteService.createSintoma(dto);
+        return { statusCode: HttpStatus.CREATED, message: 'Sintoma creado', data };
+    }
+
+    @Put('sintoma/:id')
+    async updateSintoma(@Param('id') id: string, @Body() dto: UpdateSintomaDto): Promise<IApiResponse> {
+        const data = await this.pacienteService.updateSintoma(id, dto);
+        return { statusCode: HttpStatus.OK, message: 'Sintoma actualizado', data };
+    }
+
+    @Post('paciente-sintoma')
+    async addSintomaToPaciente(@Body() dto: CreatePacienteSintomaDto): Promise<IApiResponse> {
+        const data = await this.pacienteService.addSintomaToPaciente(dto);
+        return { statusCode: HttpStatus.CREATED, message: 'Sintoma agregado al paciente', data };
+    }
+
+    @Get('paciente/:idPaciente/sintomas')
+    async getSintomasByPaciente(@Param('idPaciente') idPaciente: string): Promise<IApiResponse> {
+        const data = await this.pacienteService.getSintomasByPaciente(idPaciente);
+        return { statusCode: HttpStatus.OK, message: 'Sintomas del paciente', data };
     }
 
     @Post('contacto/:idPaciente')

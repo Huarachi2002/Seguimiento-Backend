@@ -11,6 +11,7 @@ import { CreateEstadoTratamientoDto } from "../dto/create-estado-tratamiento.dto
 import { UpdateTipoTratamientoDto } from "../dto/update-tipo-tratamiento.dto";
 import { Fase_Tratamiento } from "../entities/fase_tratamiento.entity";
 import { Paciente } from "@/modules/paciente/entities/paciente.entity";
+import { Localizacion_TB } from "../entities/localizacion_tb.entity";
 
 
 @Injectable()
@@ -19,6 +20,7 @@ export class TratamientoService {
         @InjectRepository(TratamientoTB) private tratamientoRepository: Repository<TratamientoTB>,
         @InjectRepository(Tipo_Tratamiento) private tipoTratamientoRepository: Repository<Tipo_Tratamiento>,
         @InjectRepository(Estado_Tratamiento) private estadoTratamientoRepository: Repository<Estado_Tratamiento>,
+        @InjectRepository(Localizacion_TB) private localizacionRepository: Repository<Localizacion_TB>,
     ) {}
 
     async findAll(): Promise<TratamientoTB[]> {
@@ -67,16 +69,25 @@ export class TratamientoService {
     async getFasesTratamiento(): Promise<Fase_Tratamiento[]> {
         return this.tratamientoRepository.manager.find(Fase_Tratamiento);
     }
+
+    async getLocalizaciones(): Promise<Localizacion_TB[]> {
+        return this.localizacionRepository.find();
+    }
+
+    async getLocalizacionById(id: string): Promise<Localizacion_TB> {
+        return this.localizacionRepository.findOne({ where: { id } });
+    }
     
     async getEstadoTratamientoById(id: string): Promise<Estado_Tratamiento> {
         return this.estadoTratamientoRepository.findOne({ where: { id } });
     }
 
-    async create(tratamiento: CreateTratamientoDto, tipoTratamiento: Tipo_Tratamiento, estadoTratamiento: Estado_Tratamiento, paciente: Paciente): Promise<TratamientoTB> {
+    async create(tratamiento: CreateTratamientoDto, tipoTratamiento: Tipo_Tratamiento, estadoTratamiento: Estado_Tratamiento, localizacionTb: Localizacion_TB, paciente: Paciente): Promise<TratamientoTB> {
         const newTratamiento = this.tratamientoRepository.create(tratamiento);
         newTratamiento.tipo_tratamiento = tipoTratamiento;
         newTratamiento.estado = estadoTratamiento;
         newTratamiento.paciente = paciente;
+        newTratamiento.localizacion = localizacionTb;
         return this.tratamientoRepository.save(newTratamiento);
     }
 

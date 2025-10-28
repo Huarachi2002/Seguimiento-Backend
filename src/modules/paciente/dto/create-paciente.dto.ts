@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
-import { IsBoolean, IsDate, IsEmail, IsInt, IsNotEmpty, IsString } from "class-validator";
+import { IsBoolean, IsDate, IsEmail, IsInt, IsNotEmpty, IsString, IsArray, IsOptional } from "class-validator";
+import { UpdateEnfermedadDto } from "./update-enfermedad.dto";
 
 export class CreatePacienteDto {
     @IsString()
@@ -30,5 +31,13 @@ export class CreatePacienteDto {
     @IsBoolean()
     @IsNotEmpty()
     tiene_whatsapp: boolean;
+
+    @IsArray()
+    @IsOptional()
+    enfermedades?:any[];
+
+    @IsArray()
+    @IsOptional()
+    sintomas?:any[];
 
 }

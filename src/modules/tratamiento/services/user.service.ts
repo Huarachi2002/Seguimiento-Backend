@@ -1,12 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { TratamientoTB } from "../entities/tratamientoTB.entity";
 import { Repository } from "typeorm";
-import { CreateTratamientoDto } from "../dto/create-tratamiento.dto";
-import { UpdateTratamientoDto } from "../dto/update-tratamiento.dto";
-import { Cita } from "../entities/cita.entity";
-import { Tipo_Cita } from "../entities/tipo_cita.entity";
-import { Estado_Tratamiento } from "../entities/estado_tratamiento.entity";
 import { User } from "../entities/user.entity";
 import { CreateUserDto } from "../dto/create-user.dto";
 import { Rol } from "../entities/rol.entity";
@@ -34,6 +28,10 @@ export class UserService {
         return this.userRepository.findOne({
             where: { rol: { descripcion: 'admin' } }
         });
+    }
+
+    async findByName(name: string): Promise<User> {
+        return this.userRepository.findOneBy({ username: name });
     }
 
     async getRols(): Promise<Rol[]> {

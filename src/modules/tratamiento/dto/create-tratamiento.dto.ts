@@ -15,6 +15,10 @@ export class CreateTratamientoDto {
     @IsNotEmpty()
     idTipoTratamiento: string;
 
+    @IsString()
+    @IsNotEmpty()
+    idLocalizacionTb: string;
+
     @IsDate()
     @IsNotEmpty()
     @Type(() => Date)
