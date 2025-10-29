@@ -55,14 +55,14 @@ export default class MainSeeder implements Seeder {
         // 11. Seeder para Motivos (datos fijos)
         await this.seedMotivo(dataSource);
 
-    // 12. Seeder para Enfermedades (catalogo)
-    await this.seedEnfermedad(dataSource);
+        // 12. Seeder para Enfermedades (catalogo)
+        await this.seedEnfermedad(dataSource);
 
-    // 13. Seeder para Sintomas (catalogo)
-    await this.seedSintoma(dataSource);
+        // 13. Seeder para Sintomas (catalogo)
+        await this.seedSintoma(dataSource);
 
-    // 14. Seeder para Localizaciones TB (catalogo)
-    await this.seedLocalizacionTB(dataSource);
+        // 14. Seeder para Localizaciones TB (catalogo)
+        await this.seedLocalizacionTB(dataSource);
 
         // 12. Seeder para Tipo Laboratorio (datos fijos)
         await this.seedTipoLaboratorio(dataSource);
@@ -364,11 +364,13 @@ export default class MainSeeder implements Seeder {
         }
 
         const estadosTratamiento = [
-            'Activa',
-            'Completada',
+            'Curado',
+            'Tratamiento Completo',
+            'Fracaso',
+            'Fallecido',
             'Abandonada',
-            'Fallida',
-            'Transferida'
+            'Transferida',
+            'En Curso'
         ];
         for (const descripcion of estadosTratamiento) {
             const estadoTratamiento = repository.create({

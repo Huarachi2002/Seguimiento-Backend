@@ -10,9 +10,14 @@ export class MonitoreoController {
 
     @Get('riesgo-abandono')
     async getPacientesEnRiesgo(
-       @Query('dias') dias: number // Días sin asistir (default: 7)
-    ) {
-        //return await this.monitoreoService.getPacientesEnRiesgoAbandonoTratamiento(dias);
+       @Query('dias') dias: number = 1 // Días sin asistir (default: 1)
+    ):Promise<IApiResponse> {
+        const data = await this.monitoreoService.getPacientesEnRiesgoAbandonoTratamiento(dias);
+        return {
+            statusCode: 200,
+            message: 'Lista de pacientes en riesgo de abandono',
+            data
+        };
     }
 
     @Get('abandonados')
@@ -64,6 +69,31 @@ export class MonitoreoController {
             statusCode: 200,
             message: 'Mapa de calor de pacientes',
             data
+        };
+    }
+
+    @Get('indicadores-evaluacion')
+    async getIndicadoresEvaluacion():Promise<IApiResponse> {
+        const dataTbTSF = await this.monitoreoService.getIndicadoresEvaluacionTbTSF();
+        const dataTbP = await this.monitoreoService.getIndicadoresEvaluacionTbP();
+        const dataFallecidosTbTSF = await this.monitoreoService.getFallecidosTbTSF();
+        const dataTbMeningeaNinos = await this.monitoreoService.getIndicadoresEvaluacionTbMeningeaNinos();
+
+        const totalPoblacion = 100000; // TODO: Obtener la población total del año
+        const tasaIncidenciaTbTSF = (dataTbTSF.length / totalPoblacion) * 100000;
+        const tasaIncidenciaTbP = (dataTbP.length / totalPoblacion) * 100000;
+        const tasaMortalidadTbTSF = (dataFallecidosTbTSF.length / totalPoblacion) * 100000;
+        const tasaIncidenciaTbMeningeaNinos = (dataTbMeningeaNinos.length / totalPoblacion) * 100000;
+
+        return {
+            statusCode: 200,
+            message: 'Lista de indicadores de evaluación',
+            data: {
+                tasaIncidenciaTbTSF,
+                tasaIncidenciaTbP,
+                tasaMortalidadTbTSF,
+                tasaIncidenciaTbMeningeaNinos
+            }
         };
     }
 
