@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post, Query } from "@nestjs/common";
 import { MonitoreoService } from "../services/monitoreo.service";
 import { IApiResponse } from "@/common/interface/api-response.interface";
 import { TratamientoTB } from "@/modules/tratamiento/entities/tratamientoTB.entity";
+import { IncidenciaTbDto } from "../dto/incidencia-tb.dto";
 
 
 @Controller('monitoreo')
@@ -88,20 +89,33 @@ export class MonitoreoController {
         const dataTbMeningeaNinos = await this.monitoreoService.getIndicadoresEvaluacionTbMeningeaNinos();
 
         const totalPoblacion = 100000; // TODO: Obtener la población total del año
-        const tasaIncidenciaTbTSF = (dataTbTSF.length / totalPoblacion) * 100000;
-        const tasaIncidenciaTbP = (dataTbP.length / totalPoblacion) * 100000;
-        const tasaMortalidadTbTSF = (dataFallecidosTbTSF.length / totalPoblacion) * 100000;
-        const tasaIncidenciaTbMeningeaNinos = (dataTbMeningeaNinos.length / totalPoblacion) * 100000;
+        
+        const tasaIncidenciaTbTSF: IncidenciaTbDto = {
+            descripcion: 'Incidencia de TB TSF',
+            valor: (dataTbTSF.length / totalPoblacion) * 100000
+        };
+        const tasaIncidenciaTbP: IncidenciaTbDto = {
+            descripcion: 'Incidencia de TB Pulmonar',
+            valor: (dataTbP.length / totalPoblacion) * 100000
+        };
+        const tasaMortalidadTbTSF: IncidenciaTbDto = {
+            descripcion: 'Mortalidad por TB TSF',
+            valor:(dataFallecidosTbTSF.length / totalPoblacion) * 100000
+        };
+        const tasaIncidenciaTbMeningeaNinos: IncidenciaTbDto = {
+            descripcion: 'Incidencia de TB Meningea en Niños',
+            valor:(dataTbMeningeaNinos.length / totalPoblacion) * 100000
+        };
 
         return {
             statusCode: 200,
             message: 'Lista de indicadores de evaluación',
-            data: {
+            data: [
                 tasaIncidenciaTbTSF,
                 tasaIncidenciaTbP,
                 tasaMortalidadTbTSF,
                 tasaIncidenciaTbMeningeaNinos
-            }
+            ]
         };
     }
 
