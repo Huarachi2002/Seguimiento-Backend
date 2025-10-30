@@ -1,10 +1,11 @@
-# Etapa 1: Construcción (Builder)
+# ====================
+# Etapa 1: Builder
+# ====================
 FROM node:20-slim AS builder
 
-# Establecer el directorio de trabajo
 WORKDIR /app
 
-# Instalar dependencias del sistema necesarias
+# Instalar dependencias necesarias para compilar los módulos nativos
 RUN apt-get update && apt-get install -y \
     python3 \
     make \
@@ -12,48 +13,60 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Copiar archivos de configuración de dependencias
+# Copiar los archivos de package.json e instalar dependencias
 COPY package*.json ./
 
-# Instalar todas las dependencias (incluyendo devDependencies)
+# Instalar las dependencias
 RUN npm ci
 
-# Copiar el código fuente
+# Copiar el resto de los archivos
 COPY . .
 
-# Construir la aplicación
+# Compilar la aplicación
 RUN npm run build
 
-# Etapa 2: Producción
-FROM builder AS production
+# Verificar que el build fue exitoso
+RUN ls -la dist/
 
-# Establecer el directorio de trabajo
+# ====================
+# Etapa 2: Producción
+# ====================
+FROM node:20-slim
+
 WORKDIR /app
 
-# Instalar las dependencias necesarias para ejecutar bcrypt
+# Instalar las dependencias necesarias para ejecutar bcrypt y curl
 RUN apt-get update && apt-get install -y \
     python3 \
     make \
     g++ \
     build-essential \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar archivos de la etapa anterior
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/data-source.ts ./
+COPY --from=builder /app/dbConfig.ts ./
+COPY --from=builder /app/tsconfig*.json ./
+COPY --from=builder /app/src ./src
+
+# Instalar TODAS las dependencias (incluye ts-node para migraciones y seeders)
+RUN npm ci
+
+# Verificar que dist existe
+RUN ls -la && ls -la dist/
 
 # Crear directorios necesarios
 RUN mkdir -p ./uploads ./temp
 RUN chmod -R 755 ./uploads ./temp
 
-# Instalar solo las dependencias de producción
-RUN npm ci --only=production && npm cache clean --force
-
-# Exponer el puerto de la aplicación
+# Exponer el puerto que usa la aplicación
 EXPOSE 3001
 
-# Configurar variables de entorno por defecto
+# Variables de entorno
 ENV NODE_ENV=production
 
-# Comando de inicio
-CMD ["node", "dist/main"]
+# Comando para iniciar la aplicación (migraciones y seeders se ejecutan manualmente)
+CMD ["npm", "run", "start:prod"]
