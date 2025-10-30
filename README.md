@@ -76,6 +76,8 @@ Nest is [MIT licensed](LICENSE).
 
 npm install
 
+npm run build
+
 // Crear la base de datos con el nombre de seguimiento_db en Postgres
 //! En caso de cambiar el nombre de la bd tendra que tambien cambiar en el archivo .env
 
@@ -91,4 +93,97 @@ npm run seed:run
 // Y por ultimo levantar proyecto
 npm run start:dev
 
+// o
+
+## Pasos para iniciar el proyecto con Docker
+
+```bash
+# 1. Construir las imágenes
+docker-compose build --no-cache
+
+# 2. Iniciar los servicios
+docker-compose up -d
+
+# 3. Esperar a que la base de datos esté lista (unos 10 segundos)
+# Luego ejecutar migraciones dentro del contenedor
+docker exec -it seguimiento-backend npm run migration:run
+
+# 4. Ejecutar seeders
+docker exec -it seguimiento-backend npm run seed:run
+
+# 5. Ver logs de la aplicación
+docker-compose logs -f app
+
+# 6. Detener servicios
+docker-compose down
+```
+
+## Comandos útiles para Docker
+
+```bash
+# Reiniciar solo la aplicación (después de cambios)
+docker-compose restart app
+
+# Acceder al contenedor
+docker exec -it seguimiento-backend sh
+
+# Ver logs de la base de datos
+docker-compose logs -f db
+
+# Limpiar todo (cuidado: borra datos)
+docker-compose down -v
+
+# Generar nueva migración dentro del contenedor
+docker exec -it seguimiento-backend npm run migration:generate -- src/database/migrations/NombreMigracion
+
+# Revertir última migración
+docker exec -it seguimiento-backend npm run migration:revert
+```
+
+npm run start:prod
+
 ## Pasos para iniciar el proyecto en Docker
+
+```bash
+# 1. Construir las imágenes
+docker-compose build --no-cache
+
+# 2. Iniciar los servicios (incluye migraciones y seeders automáticos)
+docker-compose up -d
+
+# 3. Ver logs
+docker-compose logs -f app
+
+# 4. Detener servicios
+docker-compose down
+
+# Comandos útiles:
+# - Ejecutar migraciones manualmente: docker exec -it seguimiento-backend npm run migration:run
+# - Ejecutar seeders manualmente: docker exec -it seguimiento-backend npm run seed:run
+# - Acceder al contenedor: docker exec -it seguimiento-backend sh
+# - Ver logs de la base de datos: docker-compose logs -f db
+```
+
+## Generar nuevas migraciones
+
+```bash
+# En local (recomendado)
+npm run migration:generate -- src/database/migrations/NombreMigracion
+
+# O dentro del contenedor
+docker exec -it seguimiento-backend npm run migration:generate -- src/database/migrations/NombreMigracion
+```
+
+## Para etapas de Desarrollo utilizar Script de Poblacion para la base de datos
+
+**Copia el script al contenedor:**
+docker cp populate_database.sql seguimiento-db:/tmp/populate_database.sql
+
+**Ejecuta el script dentro del contenedor:**
+docker exec -it seguimiento-db psql -U postgres -d seguimiento_db -f /tmp/populate_database.sql
+
+**Copia el script limpieza al contenedor:**
+docker cp clean_database.sql seguimiento-db:/tmp/clean_database.sql
+
+**Ejecuta el script limpieza dentro del contenedor:**
+docker exec -it seguimiento-db psql -U postgres -d seguimiento_db -f /tmp/clean_database.sql
