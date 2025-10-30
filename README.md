@@ -173,3 +173,17 @@ npm run migration:generate -- src/database/migrations/NombreMigracion
 # O dentro del contenedor
 docker exec -it seguimiento-backend npm run migration:generate -- src/database/migrations/NombreMigracion
 ```
+
+## Para etapas de Desarrollo utilizar Script de Poblacion para la base de datos
+
+**Copia el script al contenedor:**
+docker cp populate_database.sql seguimiento-db:/tmp/populate_database.sql
+
+**Ejecuta el script dentro del contenedor:**
+docker exec -it seguimiento-db psql -U postgres -d seguimiento_db -f /tmp/populate_database.sql
+
+**Copia el script limpieza al contenedor:**
+docker cp clean_database.sql seguimiento-db:/tmp/clean_database.sql
+
+**Ejecuta el script limpieza dentro del contenedor:**
+docker exec -it seguimiento-db psql -U postgres -d seguimiento_db -f /tmp/clean_database.sql
