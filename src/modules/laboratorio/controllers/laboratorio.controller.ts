@@ -4,7 +4,7 @@ import { LaboratorioService } from "../services/laboratorio.service";
 
 import { CreateLaboratorioDto } from "../dto/create-laboratorio.dto";
 import { PacienteService } from "@/modules/paciente/services/paciente.service";
-import { AuthGuard } from "@nestjs/passport";
+// import { AuthGuard } from "@nestjs/passport";
 
 
 @Controller('laboratorio')
@@ -40,7 +40,7 @@ export class LaboratorioController {
         };
     }
 
-    @UseGuards(AuthGuard('jwt'))
+    // @UseGuards(AuthGuard('jwt'))
     @Get()
     async getLaboratorios(): Promise<IApiResponse> {
         let data = await this.laboratorioService.getLaboratorios();
@@ -61,14 +61,7 @@ export class LaboratorioController {
 
     @Get('paciente/:idPaciente')
     async getLaboratoriosPaciente(@Param('idPaciente') idPaciente: string): Promise<IApiResponse> {
-        let data = await this.laboratorioService.getLaboratoriosByPaciente(idPaciente);
-        data = data.map(lab => ({
-            ...lab,
-            tipoContro: lab.tipo_control,
-            tipoLaboratorio: lab.tipo_laboratorio,
-            tipoResultado: lab.tipo_resultado,
-            paciente: lab.paciente,
-        }));
+        const data = await this.laboratorioService.getLaboratoriosByPaciente(idPaciente);
         return {
             statusCode: HttpStatus.OK,
             message: 'Lista de laboratorios del paciente',

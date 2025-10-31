@@ -8,6 +8,7 @@ export class CreateCitaDto {
     idTratamiento: string;
 
     @IsString()
+    @IsOptional()
     idMotivo: string;
 
     @IsDate()
@@ -29,7 +30,7 @@ export class CreateCitaDto {
     idTipo: string;
 
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     observaciones: string;
 
     @IsString()
