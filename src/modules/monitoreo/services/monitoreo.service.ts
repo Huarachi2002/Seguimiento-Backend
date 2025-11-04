@@ -94,7 +94,7 @@ export class MonitoreoService {
         return await this.tratamientoRepository.createQueryBuilder('tratamiento')
         .leftJoinAndSelect('tratamiento.paciente', 'paciente')
         .leftJoinAndSelect('tratamiento.tipo_tratamiento', 'tipo_tratamiento')
-        .where('tipo_tratamiento.descripcion IN (:...tipos)', { tipos: ['Nuevo', 'Recaida'] })
+        .where('tipo_tratamiento.descripcion IN (:...tipos)', { tipos: ['Nuevo caso', 'Recaída'] })
         .getMany();
     }
 
@@ -104,7 +104,7 @@ export class MonitoreoService {
         .leftJoinAndSelect('tratamiento.paciente', 'paciente')
         .leftJoinAndSelect('tratamiento.tipo_tratamiento', 'tipo_tratamiento')
         .leftJoinAndSelect('tratamiento.localizacion', 'localizacion')
-        .where('tipo_tratamiento.descripcion IN (:...tipos)', { tipos: ['Nuevo', 'Recaida'] })
+        .where('tipo_tratamiento.descripcion IN (:...tipos)', { tipos: ['Nuevo caso', 'Recaída'] })
         .andWhere('localizacion.descripcion = :localizacion', { localizacion: 'Pulmonar' })
         .getMany();
     }

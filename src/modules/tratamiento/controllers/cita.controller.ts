@@ -164,8 +164,10 @@ export class CitaController {
         //     throw new Error('Usuario no encontrado');
         // }
         // const data = await this.citaService.create(citaDto, tratamiento, tipo, estado, usuario);
-
-        const motivo = await this.citaService.getMotivoById(idMotivo);
+        var motivo = null
+        if (estado.descripcion == "Perdido") {
+            motivo = await this.citaService.getMotivoById(idMotivo);
+        }
 
         const data = await this.citaService.create(citaDto, tratamiento, tipo, estado, motivo, null);
         return {

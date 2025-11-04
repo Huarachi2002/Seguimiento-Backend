@@ -1,9 +1,7 @@
 import { Injectable, Inject, forwardRef } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { UpdateDireccionDto } from "../dto/update-laboratorio.dto";
 import { Paciente } from "@/modules/paciente/entities/paciente.entity";
-import { PacienteService } from "@/modules/paciente/services/paciente.service";
 import { Laboratorio } from "../entities/laboratorio.entity";
 
 import { Tipo_Control } from "../entities/tipo_control.entity";

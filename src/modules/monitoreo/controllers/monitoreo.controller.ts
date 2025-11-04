@@ -92,19 +92,19 @@ export class MonitoreoController {
         
         const tasaIncidenciaTbTSF: IncidenciaTbDto = {
             descripcion: 'Incidencia de TB TSF',
-            valor: (dataTbTSF.length / totalPoblacion) * 100000
+            valor: Math.round((dataTbTSF.length / totalPoblacion) * 100000)
         };
         const tasaIncidenciaTbP: IncidenciaTbDto = {
             descripcion: 'Incidencia de TB Pulmonar',
-            valor: (dataTbP.length / totalPoblacion) * 100000
+            valor: Math.round((dataTbP.length / totalPoblacion) * 100000)
         };
         const tasaMortalidadTbTSF: IncidenciaTbDto = {
             descripcion: 'Mortalidad por TB TSF',
-            valor:(dataFallecidosTbTSF.length / totalPoblacion) * 100000
+            valor: Math.round((dataFallecidosTbTSF.length / totalPoblacion) * 100000)
         };
         const tasaIncidenciaTbMeningeaNinos: IncidenciaTbDto = {
             descripcion: 'Incidencia de TB Meningea en Niños',
-            valor:(dataTbMeningeaNinos.length / totalPoblacion) * 100000
+            valor: Math.round((dataTbMeningeaNinos.length / totalPoblacion) * 100000)
         };
 
         return {
