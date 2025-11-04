@@ -199,22 +199,59 @@ export class CitaController {
     async updateCitaAssistant(@Body() updateAssistantDto: UpdateAssistantDto):Promise<IApiResponse>{
         const citas = await this.citaService.findByPaciente(updateAssistantDto.id_paciente);
         if(citas.length === 0){
-            throw new Error('No se encontraron citas para el paciente');
+            return {
+                statusCode: 404,
+                message: 'No se encontraron citas para el paciente',
+                data: null
+            };
         }
 
-        const userAdmin = await this.usuarioService.getUserAdmin()
+        const userAdmin = await this.usuarioService.getUserAdmin();
+        if(!userAdmin){
+            return {
+                statusCode: 404,
+                message: 'Usuario administrador no encontrado',
+                data: null
+            };
+        }
 
         const estadoCita = await this.citaService.getEstadoCitaByDescription('Reprogramado');
+        if(!estadoCita){
+            return {
+                statusCode: 404,
+                message: 'Estado de cita "Reprogramado" no encontrado',
+                data: null
+            };
+        }
 
-        const fechaProgramada = new Date(updateAssistantDto.fecha_programada);
+        // Limpiar y validar fecha
+        let fechaString = updateAssistantDto.fecha_programada;
+        
+        // Corregir formato si tiene doble `:` en segundos (ej: 10:00:00:00 -> 10:00:00)
+        if (typeof fechaString === 'string') {
+            fechaString = fechaString.replace(/(\d{2}:\d{2}:\d{2}):\d{2}/, '$1');
+        }
+
+        const fechaProgramada = new Date(fechaString);
 
         if (isNaN(fechaProgramada.getTime())) {
-            throw new Error('Fecha programada inválida');
+            return {
+                statusCode: 400,
+                message: `Fecha programada inválida. Recibido: ${updateAssistantDto.fecha_programada}. Formato esperado: YYYY-MM-DDTHH:mm:ss.sssZ`,
+                data: null
+            };
         }
 
         const observacion = updateAssistantDto.motivo;
 
-        const ultimaCita = citas[citas.length - 1];
+        // Obtener la última cita programada o pendiente
+        const citasPendientes = citas.filter(c => 
+            c.estado.descripcion === 'Programado' || c.estado.descripcion === 'Pendiente'
+        );
+        
+        const ultimaCita = citasPendientes.length > 0 
+            ? citasPendientes[citasPendientes.length - 1]
+            : citas[citas.length - 1];
 
         const assistant = await this.citaService.updateCitaAssistant(
             ultimaCita.id, 
@@ -223,9 +260,10 @@ export class CitaController {
             userAdmin, 
             estadoCita
         );
+        
         return {
-            statusCode: 201,
-            message: 'Cita actualizada exitosamente',
+            statusCode: 200,
+            message: 'Cita reprogramada exitosamente',
             data: assistant
         };
     }

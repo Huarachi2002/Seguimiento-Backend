@@ -117,16 +117,29 @@ export class PacienteController {
         }
 
         const citas = await this.pacienteService.findCitasByPaciente(paciente.id);
-        const proxima_cita = citas.length > 0
-            ? citas.reduce((prev, curr) => {
-                return (new Date(prev.fecha_programada) > new Date(curr.fecha_programada)) ? curr : prev;
-            }, citas[0])
+        
+        // Filtrar solo citas programadas y futuras
+        const citasProgramadas = citas.filter(cita => 
+            cita.estado.descripcion === "Programado" && 
+            new Date(cita.fecha_programada) >= new Date()
+        );
+        
+        // Obtener la cita más próxima (menor fecha futura)
+        const proxima_cita = citasProgramadas.length > 0
+            ? citasProgramadas.reduce((prev, curr) => {
+                return new Date(prev.fecha_programada) < new Date(curr.fecha_programada) ? prev : curr;
+            })
             : null;
 
-        const ultima_cita = citas.length > 0
-            ? citas.reduce((prev, curr) => {
-                return (new Date(prev.fecha_programada) < new Date(curr.fecha_programada) && curr.estado.descripcion === "Asistido") ? curr : prev;
-            }, citas[0])
+        // Última cita asistida (mayor fecha pasada con estado "Asistido")
+        const citasAsistidas = citas.filter(cita => 
+            cita.estado.descripcion === "Asistido"
+        );
+        
+        const ultima_cita = citasAsistidas.length > 0
+            ? citasAsistidas.reduce((prev, curr) => {
+                return new Date(prev.fecha_programada) > new Date(curr.fecha_programada) ? prev : curr;
+            })
             : null;
 
         const responseData = {
@@ -155,17 +168,29 @@ export class PacienteController {
             };
         }
         const citas = await this.pacienteService.findCitasByPaciente(paciente.id);
-        const proxima_cita = citas.length > 0
-            ? citas.reduce((prev, curr) => {
-                return (new Date(prev.fecha_programada) > new Date(curr.fecha_programada)) ? curr : prev;
-            }, citas[0])
+        
+        // Filtrar solo citas programadas y futuras
+        const citasProgramadas = citas.filter(cita => 
+            cita.estado.descripcion === "Programado" && 
+            new Date(cita.fecha_programada) >= new Date()
+        );
+        
+        // Obtener la cita más próxima (menor fecha futura)
+        const proxima_cita = citasProgramadas.length > 0
+            ? citasProgramadas.reduce((prev, curr) => {
+                return new Date(prev.fecha_programada) < new Date(curr.fecha_programada) ? prev : curr;
+            })
             : null;
 
-        // Buscar la utlima cita en estado "Asistido"
-        const ultima_cita = citas.length > 0
-            ? citas.reduce((prev, curr) => {
-                return (new Date(prev.fecha_programada) < new Date(curr.fecha_programada) && curr.estado.descripcion === "Asistido") ? curr : prev;
-            }, citas[0])
+        // Última cita asistida (mayor fecha pasada con estado "Asistido")
+        const citasAsistidas = citas.filter(cita => 
+            cita.estado.descripcion === "Asistido"
+        );
+        
+        const ultima_cita = citasAsistidas.length > 0
+            ? citasAsistidas.reduce((prev, curr) => {
+                return new Date(prev.fecha_programada) > new Date(curr.fecha_programada) ? prev : curr;
+            })
             : null;
 
 

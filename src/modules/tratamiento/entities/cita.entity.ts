@@ -27,10 +27,10 @@ export class Cita {
     @JoinColumn({name: 'id_motivo'})
     motivo: Motivo;
 
-    @Column()
+    @Column({ type: 'timestamp' })
     fecha_programada: Date;
 
-    @Column()
+    @Column({ type: 'timestamp' })
     fecha_actual: Date;
 
     @Column()

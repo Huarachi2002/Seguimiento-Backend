@@ -1,5 +1,4 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { TratamientoTB } from "./tratamientoTB.entity";
 
 @Entity('localizacion_tb')
 export class Localizacion_TB {
