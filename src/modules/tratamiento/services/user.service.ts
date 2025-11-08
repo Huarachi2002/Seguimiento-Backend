@@ -26,7 +26,7 @@ export class UserService {
 
     async getUserAdmin(): Promise<User> {
         return this.userRepository.findOne({
-            where: { rol: { descripcion: 'admin' } }
+            where: { rol: { descripcion: 'Admin' } }
         });
     }
 

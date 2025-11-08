@@ -426,7 +426,7 @@ export default class MainSeeder implements Seeder {
             'Toma de medicamentos',
             'Revisión médica',
             'Análisis de laboratorio',
-            'Visita de seguimiento'
+            'Visita a domicilio'
         ];
 
         for (const descripcion of tiposCita) {

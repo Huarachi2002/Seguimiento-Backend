@@ -75,6 +75,10 @@ export class CitaService {
         return this.estadoCitaRepository.findOne({ where: { descripcion: description } });
     }
 
+    async getTipoCitaByDescription(description: string): Promise<Tipo_Cita> {
+        return this.tipoCitaRepository.findOne({ where: { descripcion: description } });
+    }
+
     async getEstadoCitaById(id: string): Promise<Estado_Cita> {
         return this.estadoCitaRepository.findOne({ where: { id } });
     }

@@ -120,7 +120,7 @@ export class PacienteController {
         
         // Filtrar solo citas programadas y futuras
         const citasProgramadas = citas.filter(cita => 
-            cita.estado.descripcion === "Programado" && 
+            cita.estado.descripcion === "Programado" || cita.estado.descripcion === "Pendiente" && 
             new Date(cita.fecha_programada) >= new Date()
         );
         

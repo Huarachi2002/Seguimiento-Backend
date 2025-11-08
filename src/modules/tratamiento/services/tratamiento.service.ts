@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { TratamientoTB } from "../entities/tratamientoTB.entity";
 import { In, Repository } from "typeorm";
@@ -12,6 +12,9 @@ import { UpdateTipoTratamientoDto } from "../dto/update-tipo-tratamiento.dto";
 import { Fase_Tratamiento } from "../entities/fase_tratamiento.entity";
 import { Paciente } from "@/modules/paciente/entities/paciente.entity";
 import { Localizacion_TB } from "../entities/localizacion_tb.entity";
+import { Cita } from "../entities/cita.entity";
+import { CitaService } from "./cita.service";
+import { UserService } from "./user.service";
 
 
 @Injectable()
@@ -21,6 +24,10 @@ export class TratamientoService {
         @InjectRepository(Tipo_Tratamiento) private tipoTratamientoRepository: Repository<Tipo_Tratamiento>,
         @InjectRepository(Estado_Tratamiento) private estadoTratamientoRepository: Repository<Estado_Tratamiento>,
         @InjectRepository(Localizacion_TB) private localizacionRepository: Repository<Localizacion_TB>,
+        @InjectRepository(Cita) private citaRepository: Repository<Cita>,
+
+        @Inject(forwardRef(() => CitaService)) private citaService: CitaService,
+        @Inject(forwardRef(() => UserService)) private userService: UserService
     ) {}
 
     async findAll(): Promise<TratamientoTB[]> {
@@ -88,7 +95,59 @@ export class TratamientoService {
         newTratamiento.estado = estadoTratamiento;
         newTratamiento.paciente = paciente;
         newTratamiento.localizacion = localizacionTb;
-        return this.tratamientoRepository.save(newTratamiento);
+
+        const savedTratamiento = await this.tratamientoRepository.save(newTratamiento);
+
+        const fechaInicio = new Date(newTratamiento.fecha_inicio);
+        const hoy = new Date()
+        hoy.setHours(0,0,0,0);
+        
+        const userAdmin = await this.userService.getUserAdmin();
+
+        if (fechaInicio < hoy) {
+            const estadoCita = await this.citaService.getEstadoCitaByDescription('Perdido');
+
+
+            const tipoCita = await this.citaService.getTipoCitaByDescription('Revisión médica')
+
+            const diferenciaDias = Math.floor((hoy.getTime() - fechaInicio.getTime()) / (1000 * 60 * 60 * 24));
+
+            const citasPromises : Promise<Cita>[] = [];
+
+            for (let i = 0; i < diferenciaDias; i++) {
+                const fechaCita = new Date(fechaInicio.getTime() + (i * 24 * 60 * 60 * 1000));
+
+                const cita = this.citaRepository.create({
+                    tratamiento: savedTratamiento,
+                    fecha_actual: fechaCita,
+                    fecha_programada: fechaCita,
+                    user: userAdmin,
+                    tipo: tipoCita,
+                    estado: estadoCita,
+                    observaciones: 'Cita generada automáticamente por retraso en el tratamiento'
+                });
+
+                citasPromises.push(this.citaRepository.save(cita));
+            }
+
+            await Promise.all(citasPromises);
+        }
+
+        // Programar cita proxima al dia siguiente
+        const citaProxima = this.citaRepository.create({
+            tratamiento: savedTratamiento,
+            fecha_actual: new Date(),
+            fecha_programada: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+            tipo: await this.citaService.getTipoCitaByDescription('Revisión médica'),
+            user: userAdmin,
+            estado: await this.citaService.getEstadoCitaByDescription('Programado'),
+            observaciones: 'Ninguna'
+
+        });
+
+        await this.citaRepository.save(citaProxima);
+
+        return savedTratamiento;
     }
 
     async createTipoTratamiento(tipoTratamiento: CreateTipoTratamientoDto): Promise<Tipo_Tratamiento> {
