@@ -29,6 +29,18 @@ export class User {
     @Column({ default: true })
     estado: boolean;
 
+    @Column()
+    email: string;
+
+    @Column()
+    telefono: string;
+
+    @Column()
+    notificar_email: boolean;
+
+    @Column()
+    notificar_whatsapp: boolean;
+
     @CreateDateColumn()
     readonly created_at: Date;
 

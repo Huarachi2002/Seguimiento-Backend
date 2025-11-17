@@ -375,4 +375,15 @@ export class PacienteController {
         };
     }
 
+    // Historial de Conversaciones
+    @Get('historial/:idPaciente')
+    async getHistorialByPaciente(@Param('idPaciente') idPaciente: string): Promise<IApiResponse> {
+        const data = await this.pacienteService.getHistorialByPaciente(idPaciente);
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Historial del paciente',
+            data
+        };
+    }
+
 }

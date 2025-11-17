@@ -38,6 +38,11 @@ services:
       DB_USERNAME: postgres
       DB_PASSWORD: 123
       DB_DATABASE: seguimiento_db
+      JWT_SECRET: your-super-secret-jwt-key-here
+      JWT_EXPIRES_IN: 7d
+      LOG_LEVEL: debug
+      N8N_WEBHOOK_URL: https://a19e431b4e3d.ngrok-free.app
+      N8N_API_KEY: your-n8n-api-key-here
     volumes:
       - ./uploads:/app/uploads
       - ./temp:/app/temp

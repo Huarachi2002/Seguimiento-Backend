@@ -23,6 +23,16 @@ export class CitaController {
         private usuarioService: UserService,
     ){}
 
+    @Get('recordatorio')
+    async sendRecordatorioCita(): Promise<IApiResponse> {
+        const n8nResponse = await this.citaService.enviarRecordatorioCita();
+        return {
+            statusCode: 200,
+            message: 'Recordatorio de cita enviado exitosamente',
+            data: n8nResponse
+        };
+    }
+
     @Get('estado-cita')
     async getEstadosCita():Promise<IApiResponse>{
         const data = await this.citaService.getEstadosCita();

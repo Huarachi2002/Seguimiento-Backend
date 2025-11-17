@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LaboratorioModule } from './modules/laboratorio/laboratorio.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AppController } from './app.controller';
+import { CommonModule } from './common/commo.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { AppController } from './app.controller';
     MonitoreoModule,
     LaboratorioModule,
     AuthModule,
+    CommonModule
   ],
   controllers: [AppController],
   providers: [],

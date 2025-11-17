@@ -1,7 +1,6 @@
-import { Injectable, Inject, forwardRef } from "@nestjs/common";
+import { Injectable, Inject, forwardRef, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Paciente } from "@/modules/paciente/entities/paciente.entity";
 import { Laboratorio } from "../entities/laboratorio.entity";
 
 import { Tipo_Control } from "../entities/tipo_control.entity";
@@ -9,16 +8,24 @@ import { Tipo_Laboratorio } from "../entities/tipo_laboratorio.entity";
 import { Tipo_Resultado } from "../entities/tipo_resultado.entity";
 
 import { CreateLaboratorioDto } from "../dto/create-laboratorio.dto";
+import { User } from "@/modules/tratamiento/entities/user.entity";
+import { Paciente } from "@/modules/paciente/entities/paciente.entity";
+import { UserService } from "@/modules/tratamiento/services/user.service";
+import { N8NService } from "@/common/service/n8n.service";
 
 
 @Injectable()
 export class LaboratorioService {
+    private readonly logger = new Logger(N8NService.name);
 
     constructor(
         @InjectRepository(Laboratorio) private laboratorioRepository: Repository<Laboratorio>,
         @InjectRepository(Tipo_Control) private tipoControlRepository: Repository<Tipo_Control>,
         @InjectRepository(Tipo_Laboratorio) private tipoLaboratorioRepository: Repository<Tipo_Laboratorio>,
-        @InjectRepository(Tipo_Resultado) private tipoResultadoRepository: Repository<Tipo_Resultado>,        
+        @InjectRepository(Tipo_Resultado) private tipoResultadoRepository: Repository<Tipo_Resultado>,
+        
+        @Inject(forwardRef(() => UserService)) private userService: UserService,
+        @Inject(forwardRef(() => N8NService)) private n8nService: N8NService,
     ) { }
 
     async getTiposControl(): Promise<Tipo_Control[]> {
@@ -55,6 +62,7 @@ export class LaboratorioService {
         tipo_laboratorio: Tipo_Laboratorio, 
         tipo_resultado: Tipo_Resultado): Promise<Laboratorio> {
 
+        this.logger.log(`Creando laboratorio para el paciente: ${paciente.nombre}, Tipo Laboratorio: ${tipo_laboratorio.descripcion}, Resultado: ${tipo_resultado.descripcion}`);
         const laboratorio = this.laboratorioRepository.create({
             codigo: dto.codigo,
             fecha: dto.fecha,
@@ -64,6 +72,21 @@ export class LaboratorioService {
             tipo_laboratorio,
             tipo_resultado
         });
+
+        this.logger.log(`Laboratorio creado: ${JSON.stringify(laboratorio)}`);
+        
+        const usersToNotifyEmail = await this.userService.getUsersByNotificationEmail();
+        this.logger.log(`Usuarios a notificar por email: ${usersToNotifyEmail.map(u => u.email).join(', ')}`);
+
+        const emails = usersToNotifyEmail.map(u => u.email);
+        await this.n8nService.enviarNotificacionLaboratorio(
+            emails,
+            paciente.nombre,
+            tipo_laboratorio.descripcion,
+            tipo_resultado.descripcion
+        );
+        
+        this.logger.log(`Guardando laboratorio en la base de datos`);
         return this.laboratorioRepository.save(laboratorio);
     }
 

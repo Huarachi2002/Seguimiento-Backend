@@ -230,4 +230,11 @@ export class PacienteService {
         }
         return this.pacienteRepository.save(existingPaciente);
     }
+
+    // Historial Chat
+    async getHistorialByPaciente(idPaciente: string): Promise<any[]> {
+        const paciente = await this.pacienteRepository.findOneBy({ id: idPaciente });
+        if (!paciente) throw new Error('Paciente no encontrado');
+        return []; // Implementar lógica para obtener el historial de chat
+    }
 }

@@ -38,6 +38,14 @@ export class UserService {
         return this.rolRepository.find();
     }
 
+    async getUsersByNotificationEmail(): Promise<User[]> {
+        return this.userRepository.find({ where: { notificar_email: true } });
+    }
+
+    async getUsersByNotificationWhatsapp(): Promise<User[]> {
+        return this.userRepository.find({ where: { notificar_whatsapp: true } });
+    }
+
     async getRolById(id: string): Promise<Rol> {
         return this.rolRepository.findOne({ where: { id } });
     }

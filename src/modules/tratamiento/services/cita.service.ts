@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { TratamientoTB } from "../entities/tratamientoTB.entity";
 import { In, Repository } from "typeorm";
@@ -12,16 +12,63 @@ import { CreateMotivoDto } from "../dto/create-motivo.dto";
 import { UpdateMotivoDto } from "../dto/update-motivo.dto";
 import { Estado_Cita } from "../entities/estado_cita.entity";
 import { Motivo } from "../entities/motivo.entity";
+import { N8NService } from "@/common/service/n8n.service";
 
 
 @Injectable()
 export class CitaService {
+    private readonly logger = new Logger(CitaService.name);
+
     constructor(
         @InjectRepository(Cita) private citaRepository: Repository<Cita>,
         @InjectRepository(Estado_Cita) private estadoCitaRepository: Repository<Estado_Cita>,
         @InjectRepository(Tipo_Cita) private tipoCitaRepository: Repository<Tipo_Cita>,
         @InjectRepository(Motivo) private motivoRepository: Repository<Motivo>,
+
+        @Inject(forwardRef(() => N8NService)) private n8nService: N8NService,
     ) {}
+
+    // Enviar recordatorio de cita a todas las citas programadas para el dia hoy con 3 horas de anticipacion
+    async enviarRecordatorioCita(): Promise<any> {
+        // Lógica para enviar recordatorio de cita usando N8N u otro servicio
+        this.logger.log('Iniciando proceso de envío de recordatorios de cita...');
+        const now = new Date();
+        const threeHoursLater = new Date(now.getTime() + 3 * 60 * 60 * 1000);
+        
+        const citasPendientes = await this.citaRepository
+            .createQueryBuilder('cita')
+            .leftJoinAndSelect('cita.tratamiento', 'tratamiento')
+            .leftJoinAndSelect('tratamiento.paciente', 'paciente')
+            .leftJoinAndSelect('cita.estado', 'estado')
+            .leftJoinAndSelect('cita.tipo', 'tipo') 
+            .where('cita.fecha_programada BETWEEN :now AND :threeHoursLater', {
+            now,
+            threeHoursLater
+            })
+            .andWhere('estado.descripcion = :estado', { estado: 'Programado' })
+            .getMany();
+
+        this.logger.log(`Se encontraron ${citasPendientes.length} citas pendientes para enviar recordatorio.`);
+        const telefonos = [];
+        const mensajes = [];
+        for (const cita of citasPendientes) {
+            const paciente = cita.tratamiento.paciente;
+            if (paciente.telefono) {
+                telefonos.push(paciente.telefono.toString());
+                mensajes.push(`Hola ${paciente.nombre}, le recordamos que tiene una cita programada para el ${cita.fecha_programada.toLocaleString()} (${cita.tipo.descripcion}). Por favor, no olvide asistir.`);
+            }
+        }
+        if (telefonos.length > 0) {
+            await this.n8nService.enviarRecordatorioCita(telefonos, mensajes);
+            this.logger.log(`Se enviaron ${telefonos.length} recordatorios de cita.`);
+        }
+        const result = {
+            totalCitas: citasPendientes.length,
+            telefonosEnviados: telefonos,
+        };
+        this.logger.log('Proceso de envío de recordatorios de cita finalizado.');
+        return result;
+    }
 
     async findAll(): Promise<Cita[]> {
         return this.citaRepository.find({

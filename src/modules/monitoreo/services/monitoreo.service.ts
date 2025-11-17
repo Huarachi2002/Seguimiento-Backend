@@ -58,6 +58,7 @@ export class MonitoreoService {
             .getMany();
     }
 
+    // Obtengo las citas pendientes de los pacientes para el dia de hoy
     async getPacientesConCitasPendientes() {
         const tratamientos = await this.tratamientoRepository.createQueryBuilder('t')
             .innerJoinAndSelect('t.paciente', 'p')

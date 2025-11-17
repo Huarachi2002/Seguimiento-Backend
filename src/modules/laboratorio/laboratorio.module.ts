@@ -10,6 +10,8 @@ import { Tipo_Laboratorio } from "./entities/tipo_laboratorio.entity";
 import { Tipo_Resultado } from "./entities/tipo_resultado.entity";
 import { JwtStrategy } from "../auth/strategy/jwt.strategy";
 import { AuthModule } from "../auth/auth.module";
+import { CommonModule } from "@/common/commo.module";
+import { TratamientoModule } from "../tratamiento/tratamiento.module";
 
 @Module({
     imports: [
@@ -20,6 +22,8 @@ import { AuthModule } from "../auth/auth.module";
             Tipo_Resultado
         ]),
         forwardRef(() => PacienteModule),
+        forwardRef(() => TratamientoModule),
+        forwardRef(() => CommonModule),
         AuthModule
     ],
     providers: [LaboratorioService],
