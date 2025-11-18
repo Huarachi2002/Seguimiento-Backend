@@ -1,10 +1,9 @@
 import { forwardRef, Inject, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { TratamientoTB } from "../entities/tratamientoTB.entity";
-import { In, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { Cita } from "../entities/cita.entity";
 import { Tipo_Cita } from "../entities/tipo_cita.entity";
-import { Estado_Tratamiento } from "../entities/estado_tratamiento.entity";
 import { User } from "../entities/user.entity";
 import { CreateCitaDto } from "../dto/create-cita.dto";
 import { UpdateCitaDto } from "../dto/update-cita.dto";
@@ -13,6 +12,7 @@ import { UpdateMotivoDto } from "../dto/update-motivo.dto";
 import { Estado_Cita } from "../entities/estado_cita.entity";
 import { Motivo } from "../entities/motivo.entity";
 import { N8NService } from "@/common/service/n8n.service";
+import { TratamientoService } from "./tratamiento.service";
 
 
 @Injectable()
@@ -26,6 +26,7 @@ export class CitaService {
         @InjectRepository(Motivo) private motivoRepository: Repository<Motivo>,
 
         @Inject(forwardRef(() => N8NService)) private n8nService: N8NService,
+        @Inject(forwardRef(() => TratamientoService)) private tratamientoService: TratamientoService,
     ) {}
 
     // Enviar recordatorio de cita a todas las citas programadas para el dia hoy con 3 horas de anticipacion
@@ -49,22 +50,28 @@ export class CitaService {
             .getMany();
 
         this.logger.log(`Se encontraron ${citasPendientes.length} citas pendientes para enviar recordatorio.`);
-        const telefonos = [];
-        const mensajes = [];
+        const recordatorios = [];
+        const telefonos: string[] = [];
         for (const cita of citasPendientes) {
             const paciente = cita.tratamiento.paciente;
             if (paciente.telefono) {
                 telefonos.push(paciente.telefono.toString());
-                mensajes.push(`Hola ${paciente.nombre}, le recordamos que tiene una cita programada para el ${cita.fecha_programada.toLocaleString()} (${cita.tipo.descripcion}). Por favor, no olvide asistir.`);
+                recordatorios.push({
+                    telefono: paciente.telefono.toString(),
+                    paciente: paciente.nombre,
+                    fecha: cita.fecha_programada.toDateString(),
+                    hora: cita.fecha_programada.toLocaleTimeString(),
+                    tipo: cita.tipo.descripcion,
+                });
             }
         }
-        if (telefonos.length > 0) {
-            await this.n8nService.enviarRecordatorioCita(telefonos, mensajes);
-            this.logger.log(`Se enviaron ${telefonos.length} recordatorios de cita.`);
+        if (recordatorios.length > 0) {
+            await this.n8nService.enviarRecordatorioCita(telefonos, recordatorios);
+            this.logger.log(`Se enviaron ${recordatorios.length} recordatorios de cita.`);
         }
         const result = {
             totalCitas: citasPendientes.length,
-            telefonosEnviados: telefonos,
+            recordatoriosEnviados: recordatorios,
         };
         this.logger.log('Proceso de envío de recordatorios de cita finalizado.');
         return result;
@@ -175,6 +182,12 @@ export class CitaService {
         newCita.tratamiento = tratamiento;
         if(motivo) newCita.motivo = motivo;
         // newCita.user = user;
+
+        if (estadoCita.descripcion === 'Perdido')
+        {
+            this.tratamientoService.aumentarUnDiaFechaFinTratamiento(tratamiento.id);
+        }
+
         return this.citaRepository.save(newCita);
     }
 
@@ -198,6 +211,21 @@ export class CitaService {
         if(!existingCita){
             throw new Error('Cita no encontrada');
         }
+
+        switch (estadoCita.descripcion) {
+            case 'Perdido':
+                this.tratamientoService.aumentarUnDiaFechaFinTratamiento(tratamiento.id);    
+                break;
+
+            case 'Asistio':
+                const estadoProgramado = await this.getEstadoCitaByDescription('Programado');
+                const tipoCitaProgramacion = await this.getTipoCitaByDescription('Revisión médica');
+                this.programarCitaDiaSiguiente(cita.fecha_programada, tratamiento, user, tipoCitaProgramacion, estadoProgramado);
+                break;
+        
+            default:
+                break;
+        }
         return this.citaRepository.save(existingCita);
     }
 
@@ -214,8 +242,20 @@ export class CitaService {
         }
         return this.citaRepository.save(existingCita);
     }
-        
-    
+       
+    // Crea una nueva cita para el día siguiente de la misma hora
+    async programarCitaDiaSiguiente(fecha_programada_ant: Date, tratamiento: TratamientoTB, user: User, tipoCita: Tipo_Cita, estadoCita: Estado_Cita): Promise<Cita> {
+        const nuevaCita = this.citaRepository.create({
+            tratamiento: tratamiento,
+            fecha_actual: new Date(),
+            fecha_programada: fecha_programada_ant.getDate() + 1,
+            tipo: tipoCita,
+            estado: estadoCita,
+            observaciones: 'Ninguna',
+            user: user,
+        });
+        return this.citaRepository.save(nuevaCita);
+    }
 
     async updateEstadoCita(id: string, estadoCita: any): Promise<Estado_Cita> {
         const existingEstado = await this.estadoCitaRepository.preload({
