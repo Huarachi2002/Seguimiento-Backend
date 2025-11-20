@@ -26,18 +26,6 @@ export class UpdateTratamientoDto {
 
     @IsOptional()
     @IsString()
-    regimen_medicacion: string;
-
-    @IsOptional()
-    @IsInt()
-    dosis_total: number;
-
-    @IsOptional()
-    @IsInt()
-    dosis_completa: number;
-
-    @IsOptional()
-    @IsString()
     idEstado: string;
 
     @IsOptional()

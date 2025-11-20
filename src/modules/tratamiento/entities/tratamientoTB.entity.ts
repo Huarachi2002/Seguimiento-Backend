@@ -30,23 +30,11 @@ export class TratamientoTB {
     @ManyToOne(() => Localizacion_TB, { nullable: true })
     localizacion: Localizacion_TB;
 
-    @Column({ length: 100 , nullable: true })
-    codigo_tratamiento: string; // Columna al pedo
-
     @Column()
     fecha_inicio: Date; // Input Frontend
 
     @Column({ nullable: true })
     fecha_fin: Date;
-
-    @Column({ length: 100 , nullable: true })
-    regimen_medicacion: string; // Columna al pedo
-
-    @Column({ nullable: true })
-    dosis_total: number;  // Columna al pedo
-
-    @Column({ nullable: true })
-    dosis_completa: number; // Columna al pedo
 
     @Column()
     observaciones: string;

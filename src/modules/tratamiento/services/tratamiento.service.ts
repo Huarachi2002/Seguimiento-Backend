@@ -81,6 +81,13 @@ export class TratamientoService {
         return this.localizacionRepository.find();
     }
 
+    async aumentarUnDiaFechaFinTratamiento(tratamientoId: string): Promise<void> {
+        await this.tratamientoRepository.update(
+            { id: tratamientoId },
+            { fecha_fin: () => "DATEADD(day, 1, fecha_fin)" }
+        );
+    }
+
     async getLocalizacionById(id: string): Promise<Localizacion_TB> {
         return this.localizacionRepository.findOne({ where: { id } });
     }

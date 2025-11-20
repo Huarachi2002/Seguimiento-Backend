@@ -37,7 +37,7 @@ export class N8NService {
 
     async enviarRecordatorioCita(
         telefonos: string[],
-        mensajes: string[],
+        recordatoriosData: any[] 
         // nombrePaciente: string,
         // fechaCita: Date,
         // tipoCita: string
@@ -46,7 +46,7 @@ export class N8NService {
             tipo: 'recordatorio_cita',
             destinatarios: telefonos,
             datos: {
-                mensajes,
+                recordatoriosData,
                 // nombre: nombrePaciente,
                 // fecha: fechaCita.toISOString(),
                 // tipo: tipoCita,

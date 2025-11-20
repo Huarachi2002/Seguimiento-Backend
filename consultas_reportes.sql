@@ -117,14 +117,10 @@ ORDER BY cantidad DESC;
 SELECT 
     p.nombre,
     p.numero_doc,
-    t.codigo_tratamiento,
     tt.descripcion as tipo,
     ft.descripcion as fase,
     t.fecha_inicio,
-    CURRENT_DATE - t.fecha_inicio as dias_transcurridos,
-    t.dosis_completa,
-    t.dosis_total,
-    ROUND(t.dosis_completa * 100.0 / t.dosis_total, 2) as porcentaje_avance
+    CURRENT_DATE - t.fecha_inicio as dias_transcurridos
 FROM "tratamientoTB" t
 INNER JOIN paciente p ON t."pacienteId" = p.id
 INNER JOIN tipo_tratamiento tt ON t."tipoTratamientoId" = tt.id
@@ -433,7 +429,6 @@ ORDER BY citas_perdidas_consecutivas DESC;
 SELECT 
     p.nombre,
     p.telefono,
-    t.codigo_tratamiento,
     ft.descripcion as fase,
     t.fecha_inicio,
     CURRENT_DATE - t.fecha_inicio as dias_tratamiento,
@@ -445,7 +440,7 @@ INNER JOIN estado_tratamiento et ON t."estadoId" = et.id
 LEFT JOIN cita c ON c."tratamientoId" = t.id
 LEFT JOIN estado_cita ec ON c."estadoId" = ec.id
 WHERE et.descripcion = 'En Curso'
-GROUP BY p.id, p.nombre, p.telefono, t.id, t.codigo_tratamiento, ft.descripcion, t.fecha_inicio
+GROUP BY p.id, p.nombre, p.telefono, t.id, ft.descripcion, t.fecha_inicio
 HAVING COUNT(CASE WHEN ec.descripcion = 'Perdido' THEN 1 END) >= 2
 ORDER BY citas_perdidas DESC, dias_tratamiento DESC;
 
