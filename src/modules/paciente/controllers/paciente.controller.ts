@@ -88,6 +88,16 @@ export class PacienteController {
         };
     }
 
+    @Get('historial-conversacion/:telefono')
+    async getHistorialConversacionByPaciente(@Param('telefono') telefono: string): Promise<IApiResponse> {
+        const data = await this.pacienteService.findHistorialConversacionByPaciente(telefono);
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Historial de conversación del paciente',
+            data
+        };
+    }
+
     @Get('tipo-parentesco/:id')
     async getTipoParentescoById(@Param('id') id: string): Promise<IApiResponse> {
         const data = await this.pacienteService.findTipoParentescoById(id);

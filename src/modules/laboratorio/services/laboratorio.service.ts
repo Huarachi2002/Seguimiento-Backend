@@ -73,21 +73,33 @@ export class LaboratorioService {
             tipo_resultado
         });
 
-        this.logger.log(`Laboratorio creado: ${JSON.stringify(laboratorio)}`);
+        const savedLaboratorio = await this.laboratorioRepository.save(laboratorio);
+        this.logger.log(`Laboratorio creado: ${JSON.stringify(savedLaboratorio)}`);
         
-        const usersToNotifyEmail = await this.userService.getUsersByNotificationEmail();
-        this.logger.log(`Usuarios a notificar por email: ${usersToNotifyEmail.map(u => u.email).join(', ')}`);
+        this.userService.getUsersByNotificationEmail()
+            .then(async (usersToNotifyEmail) => {
+                this.logger.log(`(Async) Usuarios a notificar: ${usersToNotifyEmail.length}`);
+                
+                if (usersToNotifyEmail.length > 0) {
+                    const emails = usersToNotifyEmail.map(u => u.email);
+                    // Llamamos a N8N y retornamos la promesa para encadenar el catch
+                    return this.n8nService.enviarNotificacionLaboratorio(
+                        emails,
+                        paciente.nombre,
+                        tipo_laboratorio.descripcion,
+                        tipo_resultado.descripcion
+                    );
+                }
+            })
+            .then(() => {
+                this.logger.log('(Async) Notificación a N8N enviada exitosamente');
+            })
+            .catch((error) => {
+                // Si falla N8N, solo lo logueamos, pero NO afecta al usuario final ni a la creación del laboratorio
+                this.logger.error(`(Async) Error al enviar notificación a N8N: ${error.message}`, error.stack);
+            });
 
-        const emails = usersToNotifyEmail.map(u => u.email);
-        await this.n8nService.enviarNotificacionLaboratorio(
-            emails,
-            paciente.nombre,
-            tipo_laboratorio.descripcion,
-            tipo_resultado.descripcion
-        );
-        
-        this.logger.log(`Guardando laboratorio en la base de datos`);
-        return this.laboratorioRepository.save(laboratorio);
+        return savedLaboratorio;
     }
 
     async getLaboratoriosByPaciente(idPaciente: string): Promise<Laboratorio[]> {

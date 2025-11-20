@@ -4,16 +4,14 @@ import { N8NResponse } from "../interface/n8n-reponse.interface";
 import { N8NWebhookPayload } from "../interface/n8n-payload.interface";
 
 @Injectable()
-export class N8NService {
-    private readonly logger = new Logger(N8NService.name);
-    private readonly n8nWebHookUrl: string;
-    private readonly n8nApiKey: string;
+export class IAService {
+    private readonly logger = new Logger(IAService.name);
+    private readonly url: string;
 
     constructor(
         private configService: ConfigService
     ) {
-        this.n8nWebHookUrl = this.configService.get<string>('N8N_WEBHOOK_URL');
-        this.n8nApiKey = this.configService.get<string>('N8N_API_KEY');
+        this.url = this.configService.get<string>('N8N_WEBHOOK_URL');
     }
 
     async enviarNotificacionLaboratorio(
@@ -60,11 +58,11 @@ export class N8NService {
     private async sendToN8N(payload: N8NWebhookPayload): Promise<N8NResponse> {
         try {
             this.logger.log(`Enviando payload a n8n: ${JSON.stringify(payload)}`);
-            this.logger.log(`URL de webhook: ${this.n8nWebHookUrl}/webhook/b727a688-7624-4054-943e-39ab560693cd`);
+
             const response = await fetch(`${this.n8nWebHookUrl}/webhook/b727a688-7624-4054-943e-39ab560693cd`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(payload),
             });
@@ -95,5 +93,44 @@ export class N8NService {
         }
     }
 
+    private async getHistorialConversacionByPaciente(telefono: string): Promise<any[]> {
+        // Lógica para obtener el historial de conversación del paciente desde la base de datos
+        this.logger.log(`Obteniendo historial de conversación para el paciente con telefono: ${telefono}`);
+        // Aquí deberías implementar la lógica real para obtener los datos
+        try {
+            this.logger.log(`Recuperando Historial de ${telefono}`);
+
+            const response = await fetch(`${this.url}/history/${telefono}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new HttpException(
+                    `Error al comunicarse con IA: ${response.statusText}`,
+                    HttpStatus.BAD_GATEWAY
+                );
+            }
+
+            const data = await response.json();
+
+            this.logger.log(`Respuesta de IA: ${JSON.stringify(data)}`);
+
+            return {
+                success: true,
+                message: 'Historial obtenido exitosamente de IA',
+                data
+            };
+        } catch (error) {
+            this.logger.error(`Error al enviar a IA: ${error.message}`);
+            
+            throw new HttpException(
+                'Error al procesar historial',
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
     
 }

@@ -37,8 +37,8 @@ export class PacienteService {
         @InjectRepository(Sintoma) private sintomaRepository: Repository<Sintoma>,
         @InjectRepository(Paciente_Sintoma) private pacienteSintomaRepository: Repository<Paciente_Sintoma>,
         
-        @Inject(forwardRef(() => DireccionService))
-        private direccionService: DireccionService
+        @Inject(forwardRef(() => DireccionService)) private direccionService: DireccionService,
+        @Inject(forwardRef(() => IAService)) private iaService: IAService,
     ) { }
 
     async findAll(): Promise<Paciente[]> {
@@ -232,8 +232,8 @@ export class PacienteService {
     }
 
     // Historial Chat
-    async getHistorialByPaciente(idPaciente: string): Promise<any[]> {
-        const paciente = await this.pacienteRepository.findOneBy({ id: idPaciente });
+    async findHistorialConversacionByPaciente(telefono: string): Promise<any[]> {
+        const paciente = await this.iaService.getHistorialConversacionByPaciente(telefono);
         if (!paciente) throw new Error('Paciente no encontrado');
         return []; // Implementar lógica para obtener el historial de chat
     }

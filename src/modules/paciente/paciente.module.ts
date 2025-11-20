@@ -12,6 +12,7 @@ import { Enfermedad } from "./entities/enfermedad.entity";
 import { Paciente_Enfermedad } from "./entities/paciente_enfermedad.entity";
 import { Sintoma } from "./entities/sintoma.entity";
 import { Paciente_Sintoma } from "./entities/paciente_sintoma.entity";
+import { CommonModule } from "@/common/commo.module";
 
 @Module({
     imports: [
@@ -26,6 +27,7 @@ import { Paciente_Sintoma } from "./entities/paciente_sintoma.entity";
             Sintoma,
             Paciente_Sintoma
         ]),
+        forwardRef(() => CommonModule),
         forwardRef(()=> MonitoreoModule)
     ],
     providers: [PacienteService],
