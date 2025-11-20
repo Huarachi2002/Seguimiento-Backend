@@ -32,21 +32,6 @@ export class CreateTratamientoDto {
 
     @IsString()
     @IsNotEmpty()
-    @IsOptional()
-    regimen_medicacion: string;
-
-    @IsInt()
-    @IsNotEmpty()
-    @IsOptional()
-    dosis_total: number;
-
-    @IsInt()
-    @IsNotEmpty()
-    @IsOptional()
-    dosis_completa: number;
-
-    @IsString()
-    @IsNotEmpty()
     idEstado: string;
 
     @IsString()

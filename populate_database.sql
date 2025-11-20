@@ -8,7 +8,7 @@
 
 -- Limpieza de datos existentes (opcional - comentar si no desea limpiar)
 -- TRUNCATE TABLE cita, laboratorio, paciente_sintoma, paciente_enfermedad, 
--- contacto_paciente, "tratamientoTB", paciente, direccion, "user" CASCADE;
+-- contacto_paciente, tratamiento_tb, paciente, direccion, "user" CASCADE;
 
 -- ================================================================
 -- 1. USUARIOS ADICIONALES
@@ -280,6 +280,7 @@ BEGIN
     
     FOR paciente_rec IN SELECT id FROM paciente ORDER BY random() LOOP
         contador := contador + 1;
+        tratamiento_id := gen_random_uuid();
         
         -- 80% tiene 1 tratamiento, 15% tiene 2, 5% tiene ninguno
         IF random() > 0.05 THEN
@@ -305,22 +306,15 @@ BEGIN
             tratamiento_id := gen_random_uuid();
             
             INSERT INTO "tratamiento_tb" (
-                id, codigo_tratamiento, fecha_inicio, fecha_fin, regimen_medicacion, 
-                dosis_total, dosis_completa, observaciones, 
+                id, fecha_inicio, fecha_fin, 
+                observaciones, 
                 "pacienteId", "tipoTratamientoId", "estadoId", "faseId", "localizacionId",
                 created_at, updated_at
             )
             VALUES (
                 tratamiento_id,
-                'TB-' || LPAD(contador::TEXT, 6, '0'),
                 fecha_inicio,
                 CASE WHEN dias_transcurridos >= 180 THEN fecha_inicio + 180 ELSE NULL END,
-                CASE 
-                    WHEN random() > 0.5 THEN '2HRZE/4HR'
-                    ELSE '2HRZES/1HRZE/5HRE'
-                END,
-                180,
-                LEAST(dias_transcurridos, 180),
                 CASE 
                     WHEN random() > 0.7 THEN 'Paciente con buena adherencia'
                     WHEN random() > 0.4 THEN 'Requiere seguimiento cercano'
@@ -357,19 +351,15 @@ BEGIN
                 contador := contador + 1;
                 
                 INSERT INTO "tratamiento_tb" (
-                    id, codigo_tratamiento, fecha_inicio, fecha_fin, regimen_medicacion, 
-                    dosis_total, dosis_completa, observaciones, 
+                    id, fecha_inicio, fecha_fin, 
+                    observaciones, 
                     "pacienteId", "tipoTratamientoId", "estadoId", "faseId", "localizacionId",
                     created_at, updated_at
                 )
                 VALUES (
                     gen_random_uuid(),
-                    'TB-' || LPAD(contador::TEXT, 6, '0'),
                     fecha_inicio,
                     CASE WHEN dias_transcurridos >= 180 THEN fecha_inicio + 180 ELSE NULL END,
-                    '2HRZES/1HRZE/5HRE',
-                    180,
-                    LEAST(dias_transcurridos, 180),
                     'Recaída - Nuevo esquema de tratamiento',
                     paciente_rec.id,
                     tipo_trat_id,
@@ -429,9 +419,15 @@ BEGIN
     SELECT id INTO tipo_revision_id FROM tipo_cita WHERE descripcion = 'Revisión médica' LIMIT 1;
     
     FOR tratamiento_rec IN 
-        SELECT id, fecha_inicio, fecha_fin, dosis_completa 
+        SELECT id, fecha_inicio, fecha_fin
         FROM tratamiento_tb
     LOOP
+        -- Calcular duración del tratamiento
+        IF tratamiento_rec.fecha_fin IS NOT NULL THEN
+            duracion_dias := tratamiento_rec.fecha_fin - tratamiento_rec.fecha_inicio;
+        ELSE
+            duracion_dias := CURRENT_DATE - tratamiento_rec.fecha_inicio;
+        END IF;
 
         duracion_dias := EXTRACT(DAY FROM (COALESCE(tratamiento_rec.fecha_fin, CURRENT_DATE) - tratamiento_rec.fecha_inicio))::INTEGER;
 
@@ -619,11 +615,11 @@ DECLARE
     tratamientos_activos INTEGER;
 BEGIN
     SELECT COUNT(*) INTO total_pacientes FROM paciente;
-    SELECT COUNT(*) INTO total_tratamientos FROM "tratamiento_tb";
+    SELECT COUNT(*) INTO total_tratamientos FROM tratamiento_tb;
     SELECT COUNT(*) INTO total_citas FROM cita;
     SELECT COUNT(*) INTO total_laboratorios FROM laboratorio;
     SELECT COUNT(*) INTO total_contactos FROM contacto_paciente;
-    SELECT COUNT(*) INTO tratamientos_activos FROM "tratamiento_tb" t
+    SELECT COUNT(*) INTO tratamientos_activos FROM tratamiento_tb t
     INNER JOIN estado_tratamiento e ON t."estadoId" = e.id
     WHERE e.descripcion = 'En Curso';
     
@@ -647,7 +643,7 @@ END $$;
 -- SELECT 
 --     et.descripcion as estado_tratamiento,
 --     COUNT(DISTINCT t."pacienteId") as num_pacientes
--- FROM "tratamientoTB" t
+-- FROM tratamiento_tb t
 -- INNER JOIN estado_tratamiento et ON t."estadoId" = et.id
 -- GROUP BY et.descripcion
 -- ORDER BY num_pacientes DESC;

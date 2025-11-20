@@ -98,13 +98,18 @@ npm run start:dev
 ## Pasos para iniciar el proyecto con Docker
 
 ```bash
-# 1. Construir las imágenes
-docker-compose build --no-cache
+# 1. Construir las imágenes (Elegir 1 // Recomendado 1.2.)
+1.1. docker-compose build --no-cache 
+
+1.2. docker-compose up --build -d
 
 # 2. Iniciar los servicios
 docker-compose up -d
 
 # 3. Esperar a que la base de datos esté lista (unos 10 segundos)
+# Si no tiene migraciones ejecutar el siguiente comando
+docker exec -it seguimiento-backend npm run migration:generate -- src/database/migrations/InitialDB
+
 # Luego ejecutar migraciones dentro del contenedor
 docker exec -it seguimiento-backend npm run migration:run
 
