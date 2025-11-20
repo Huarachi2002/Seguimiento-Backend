@@ -14,7 +14,7 @@ export class IAService {
         this.url = this.configService.get<string>('IA_SERVICE_URL');
     }
 
-    private async getHistorialConversacionByPaciente(telefono: string): Promise<any[]> {
+    public async getHistorialConversacionByPaciente(telefono: string): Promise<any> {
         // Lógica para obtener el historial de conversación del paciente desde la base de datos
         this.logger.log(`Obteniendo historial de conversación para el paciente con telefono: ${telefono}`);
         // Aquí deberías implementar la lógica real para obtener los datos
@@ -39,11 +39,7 @@ export class IAService {
 
             this.logger.log(`Respuesta de IA: ${JSON.stringify(data)}`);
 
-            return {
-                success: true,
-                message: 'Historial obtenido exitosamente de IA',
-                data
-            };
+            return data;
         } catch (error) {
             this.logger.error(`Error al enviar a IA: ${error.message}`);
             

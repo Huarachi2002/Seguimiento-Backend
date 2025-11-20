@@ -22,7 +22,7 @@ import { CreatePacienteSintomaDto } from "../dto/create-paciente-sintoma.dto";
 import { DireccionService } from "@/modules/monitoreo/services/direccion.service";
 import { Direccion } from "@/modules/monitoreo/entities/direccion.entity";
 import { Cita } from "@/modules/tratamiento/entities/cita.entity";
-
+import { IAService } from "@/common/service/ia.service";
 
 @Injectable()
 export class PacienteService {
@@ -232,9 +232,9 @@ export class PacienteService {
     }
 
     // Historial Chat
-    async findHistorialConversacionByPaciente(telefono: string): Promise<any[]> {
-        const paciente = await this.iaService.getHistorialConversacionByPaciente(telefono);
-        if (!paciente) throw new Error('Paciente no encontrado');
-        return []; // Implementar lógica para obtener el historial de chat
+    async findHistorialConversacionByPaciente(telefono: string): Promise<any> {
+        const data = await this.iaService.getHistorialConversacionByPaciente(telefono);
+        if (!data) throw new Error('Historial no encontrado');
+        return data; // Implementar lógica para obtener el historial de chat
     }
 }
