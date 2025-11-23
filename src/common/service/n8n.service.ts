@@ -60,8 +60,8 @@ export class N8NService {
     private async sendToN8N(payload: N8NWebhookPayload): Promise<N8NResponse> {
         try {
             this.logger.log(`Enviando payload a n8n: ${JSON.stringify(payload)}`);
-            this.logger.log(`URL de webhook: ${this.n8nWebHookUrl}/webhook/b727a688-7624-4054-943e-39ab560693cd`);
-            const response = await fetch(`${this.n8nWebHookUrl}/webhook/b727a688-7624-4054-943e-39ab560693cd`, {
+            this.logger.log(`URL de webhook: ${this.n8nWebHookUrl}/webhook-test/b727a688-7624-4054-943e-39ab560693cd`);
+            const response = await fetch(`${this.n8nWebHookUrl}/webhook-test/b727a688-7624-4054-943e-39ab560693cd`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -17,21 +17,35 @@ export class UserService {
     ) {}
 
     async findAll(): Promise<User[]> {
-        return this.userRepository.find();
+        return this.userRepository.find({
+            relations: {
+                rol: true
+            }
+        });
     }
 
     async findOne(id: string): Promise<User> {
-        return this.userRepository.findOne({ where: { id } });
+        return this.userRepository.findOne({ 
+            where: { id },
+            relations: {
+                rol: true
+            }
+        });
     }
 
     async getUserAdmin(): Promise<User> {
         return this.userRepository.findOne({
-            where: { rol: { descripcion: 'Admin' } }
+            where: { rol: { descripcion: 'Admin' } },
+            relations: {
+                rol: true
+            }
         });
     }
 
     async findByName(name: string): Promise<User> {
-        return this.userRepository.findOneBy({ username: name });
+        return this.userRepository.findOneBy(
+            { username: name },
+        );
     }
 
     async getRols(): Promise<Rol[]> {

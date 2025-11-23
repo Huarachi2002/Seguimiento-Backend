@@ -1,5 +1,5 @@
 import { Type } from "class-transformer"
-import { IsDate, IsNotEmpty, IsString } from "class-validator"
+import { IsBoolean, IsDate, IsNotEmpty, IsString } from "class-validator"
 
 
 export class CreateUserDto {
@@ -15,6 +15,22 @@ export class CreateUserDto {
     @IsString()
     @IsNotEmpty()
     contrasena: string;
+
+    @IsString()
+    @IsNotEmpty()
+    email: string;
+
+    @IsString()
+    @IsNotEmpty()
+    telefono: string;
+
+    @IsBoolean()
+    @IsNotEmpty()
+    notificar_email: boolean;
+
+    @IsBoolean()
+    @IsNotEmpty()
+    notificar_whatsapp: boolean;
 
     @IsString()
     @IsNotEmpty()

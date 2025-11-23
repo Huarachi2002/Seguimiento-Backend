@@ -20,8 +20,8 @@ export class IAService {
         // Aquí deberías implementar la lógica real para obtener los datos
         try {
             this.logger.log(`Recuperando Historial de ${telefono}`);
-
-            const response = await fetch(`${this.url}/history/${telefono}`, {
+            this.logger.log(`URL: ${this.url}/chat/history/${telefono}`);
+            const response = await fetch(`${this.url}/chat/history/${telefono}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
