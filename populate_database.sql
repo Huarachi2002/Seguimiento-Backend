@@ -29,38 +29,38 @@ BEGIN
     -- Verificar y crear usuarios solo si no existen
     SELECT COUNT(*) INTO existing_user FROM "user" WHERE username = 'dr.martinez';
     IF existing_user = 0 THEN
-        INSERT INTO "user" (id, username, contrasena, nombre, fecha_login, estado, "rolId", created_at, updated_at)
-        VALUES (gen_random_uuid(), 'dr.martinez', '123', 'Dr. Carlos Martinez', NOW(), true, rol_doctor_id, NOW(), NOW());
+        INSERT INTO "user" (id, username, contrasena, nombre, fecha_login, estado, email, telefono, notificar_email, notificar_whatsapp, "rolId", created_at, updated_at)
+        VALUES (gen_random_uuid(), 'dr.martinez', '123', 'Dr. Carlos Martinez', NOW(), true, 'dr.martinez@hospital.com', '77123456', true, true, rol_doctor_id, NOW(), NOW());
     END IF;
 
     SELECT COUNT(*) INTO existing_user FROM "user" WHERE username = 'dr.rodriguez';
     IF existing_user = 0 THEN
-        INSERT INTO "user" (id, username, contrasena, nombre, fecha_login, estado, "rolId", created_at, updated_at)
-        VALUES (gen_random_uuid(), 'dr.rodriguez', '123', 'Dra. Ana Rodriguez', NOW(), true, rol_doctor_id, NOW(), NOW());
+        INSERT INTO "user" (id, username, contrasena, nombre, fecha_login, estado, email, telefono, notificar_email, notificar_whatsapp, "rolId", created_at, updated_at)
+        VALUES (gen_random_uuid(), 'dr.rodriguez', '123', 'Dra. Ana Rodriguez', NOW(), true, 'dra.rodriguez@hospital.com', '77234567', true, true, rol_doctor_id, NOW(), NOW());
     END IF;
 
     SELECT COUNT(*) INTO existing_user FROM "user" WHERE username = 'dr.lopez';
     IF existing_user = 0 THEN
-        INSERT INTO "user" (id, username, contrasena, nombre, fecha_login, estado, "rolId", created_at, updated_at)
-        VALUES (gen_random_uuid(), 'dr.lopez', '123', 'Dr. Luis Lopez', NOW(), true, rol_doctor_id, NOW(), NOW());
+        INSERT INTO "user" (id, username, contrasena, nombre, fecha_login, estado, email, telefono, notificar_email, notificar_whatsapp, "rolId", created_at, updated_at)
+        VALUES (gen_random_uuid(), 'dr.lopez', '123', 'Dr. Luis Lopez', NOW(), true, 'dr.lopez@hospital.com', '77345678', true, false, rol_doctor_id, NOW(), NOW());
     END IF;
 
     SELECT COUNT(*) INTO existing_user FROM "user" WHERE username = 'lic.garcia';
     IF existing_user = 0 THEN
-        INSERT INTO "user" (id, username, contrasena, nombre, fecha_login, estado, "rolId", created_at, updated_at)
-        VALUES (gen_random_uuid(), 'lic.garcia', '123', 'Lic. Maria Garcia', NOW(), true, rol_licenciado_id, NOW(), NOW());
+        INSERT INTO "user" (id, username, contrasena, nombre, fecha_login, estado, email, telefono, notificar_email, notificar_whatsapp, "rolId", created_at, updated_at)
+        VALUES (gen_random_uuid(), 'lic.garcia', '123', 'Lic. Maria Garcia', NOW(), true, 'lic.garcia@hospital.com', '77456789', true, true, rol_licenciado_id, NOW(), NOW());
     END IF;
 
     SELECT COUNT(*) INTO existing_user FROM "user" WHERE username = 'lic.fernandez';
     IF existing_user = 0 THEN
-        INSERT INTO "user" (id, username, contrasena, nombre, fecha_login, estado, "rolId", created_at, updated_at)
-        VALUES (gen_random_uuid(), 'lic.fernandez', '123', 'Lic. Jose Fernandez', NOW(), true, rol_licenciado_id, NOW(), NOW());
+        INSERT INTO "user" (id, username, contrasena, nombre, fecha_login, estado, email, telefono, notificar_email, notificar_whatsapp, "rolId", created_at, updated_at)
+        VALUES (gen_random_uuid(), 'lic.fernandez', '123', 'Lic. Jose Fernandez', NOW(), true, 'lic.fernandez@hospital.com', '77567890', false, true, rol_licenciado_id, NOW(), NOW());
     END IF;
 
     SELECT COUNT(*) INTO existing_user FROM "user" WHERE username = 'lic.ramirez';
     IF existing_user = 0 THEN
-        INSERT INTO "user" (id, username, contrasena, nombre, fecha_login, estado, "rolId", created_at, updated_at)
-        VALUES (gen_random_uuid(), 'lic.ramirez', '123', 'Lic. Sofia Ramirez', NOW(), true, rol_licenciado_id, NOW(), NOW());
+        INSERT INTO "user" (id, username, contrasena, nombre, fecha_login, estado, email, telefono, notificar_email, notificar_whatsapp, "rolId", created_at, updated_at)
+        VALUES (gen_random_uuid(), 'lic.ramirez', '123', 'Lic. Sofia Ramirez', NOW(), true, 'lic.ramirez@hospital.com', '77678901', true, true, rol_licenciado_id, NOW(), NOW());
     END IF;
 
     RAISE NOTICE 'Usuarios creados exitosamente!';
@@ -423,12 +423,8 @@ BEGIN
         FROM tratamiento_tb
     LOOP
         -- Calcular duración del tratamiento
-        IF tratamiento_rec.fecha_fin IS NOT NULL THEN
-            duracion_dias := tratamiento_rec.fecha_fin - tratamiento_rec.fecha_inicio;
-        ELSE
-            duracion_dias := CURRENT_DATE - tratamiento_rec.fecha_inicio;
-        END IF;
-
+        -- Calcular duración del tratamiento
+        -- Se usa EXTRACT para manejar la resta de timestamps que devuelve un intervalo
         duracion_dias := EXTRACT(DAY FROM (COALESCE(tratamiento_rec.fecha_fin, CURRENT_DATE) - tratamiento_rec.fecha_inicio))::INTEGER;
 
         -- Calcular número de citas basado en la duración del tratamiento

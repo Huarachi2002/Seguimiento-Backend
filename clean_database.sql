@@ -33,7 +33,7 @@ BEGIN
     RAISE NOTICE '✓ Relaciones paciente-enfermedad eliminadas';
     
     -- 5. Eliminar tratamientos
-    DELETE FROM "tratamientoTB";
+    DELETE FROM tratamiento_tb;
     RAISE NOTICE '✓ Tratamientos eliminados';
     
     -- 6. Eliminar contactos
@@ -69,9 +69,9 @@ COMMIT;
 SELECT 
     'paciente' as tabla, COUNT(*) as registros FROM paciente
 UNION ALL
-SELECT 'tratamientoTB', COUNT(*) FROM "tratamientoTB"
+SELECT 'tratamiento_tb', COUNT(*) FROM "tratamiento_tb"
 UNION ALL
-SELECT 'cita', COUNT(*) FROM cita
+SELECT 'cit a', COUNT(*) FROM cita
 UNION ALL
 SELECT 'laboratorio', COUNT(*) FROM laboratorio
 UNION ALL

@@ -396,4 +396,14 @@ export class PacienteController {
         };
     }
 
+    @Get('riesgo-salud/:telefono')
+    async pacienteRiesgoSalud(@Param('telefono') telefono: number): Promise<IApiResponse> {
+        const data = await this.pacienteService.pacienteRiesgoSalud(telefono);
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Notificacion enviada para supervisora',
+            data
+        };
+    }
+
 }

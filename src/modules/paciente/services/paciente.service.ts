@@ -23,6 +23,9 @@ import { DireccionService } from "@/modules/monitoreo/services/direccion.service
 import { Direccion } from "@/modules/monitoreo/entities/direccion.entity";
 import { Cita } from "@/modules/tratamiento/entities/cita.entity";
 import { IAService } from "@/common/service/ia.service";
+import { N8NService } from "@/common/service/n8n.service";
+import { UserService } from "@/modules/tratamiento/services/user.service";
+import { User } from "@/modules/tratamiento/entities/user.entity";
 
 @Injectable()
 export class PacienteService {
@@ -39,6 +42,8 @@ export class PacienteService {
         
         @Inject(forwardRef(() => DireccionService)) private direccionService: DireccionService,
         @Inject(forwardRef(() => IAService)) private iaService: IAService,
+        @Inject(forwardRef(() => N8NService)) private n8nService: N8NService,
+        @Inject(forwardRef(() => UserService)) private userService: UserService
     ) { }
 
     async findAll(): Promise<Paciente[]> {
@@ -236,5 +241,29 @@ export class PacienteService {
         const data = await this.iaService.getHistorialConversacionByPaciente(telefono);
         if (!data) throw new Error('Historial no encontrado');
         return data; // Implementar lógica para obtener el historial de chat
+    }
+
+    async pacienteRiesgoSalud(telefono: number): Promise<User[]> {
+        const paciente = await this.findByTelefono(telefono);
+        if (!paciente) throw new Error('Paciente no encontrado');
+
+        const contactos = await this.findContactosByPaciente(paciente.id);
+        
+        const paciente_enfermedad = await this.pacienteEnfermedadRepository.find({
+            where: {
+                paciente: {
+                    id: paciente.id
+                }
+            },
+            relations: ['enfermedad'],
+            select: ['enfermedad']
+        });
+        const enfermedad: Enfermedad[] = paciente_enfermedad.map((paciente_enfermedad) => paciente_enfermedad.enfermedad);
+
+        const supervisores_destinatarios = await this.userService.getUsersByNotificationWhatsapp();
+        
+        this.n8nService.pacienteRiesgoSalud(supervisores_destinatarios, paciente, enfermedad, contactos);
+
+        return supervisores_destinatarios;
     }
 }

@@ -2,6 +2,10 @@ import { Injectable, Inject, forwardRef, Logger, HttpException, HttpStatus } fro
 import { ConfigService } from "@nestjs/config";
 import { N8NResponse } from "../interface/n8n-reponse.interface";
 import { N8NWebhookPayload } from "../interface/n8n-payload.interface";
+import { User } from "@/modules/tratamiento/entities/user.entity";
+import { Paciente } from "@/modules/paciente/entities/paciente.entity";
+import { Enfermedad } from "@/modules/paciente/entities/enfermedad.entity";
+import { Contacto_Paciente } from "@/modules/paciente/entities/contacto.entity";
 
 @Injectable()
 export class N8NService {
@@ -57,11 +61,36 @@ export class N8NService {
         return this.sendToN8N(payload);
     }
 
+    async pacienteRiesgoSalud(
+        usuarios: User[],
+        paciente: Paciente,
+        enfermedad_base: Enfermedad[],
+        contactos: Contacto_Paciente[],
+    ): Promise<N8NResponse> {
+        const dataContactos = contactos.map((contacto) => {
+            return {
+                nombre: contacto.nombre_contacto,
+                telefono: contacto.numero_telefono_contacto,
+                parentesco: contacto.tipo_parentesco.descripcion
+            }
+        });
+        const payload: N8NWebhookPayload = {
+            tipo: 'alerta_riesgo_salud',
+            destinatarios: usuarios.map(user => user.telefono),
+            datos: {
+                paciente,
+                enfermedad_base,
+                contactos: dataContactos,
+            }
+        };
+        return this.sendToN8N(payload);
+    }
+
     private async sendToN8N(payload: N8NWebhookPayload): Promise<N8NResponse> {
         try {
             this.logger.log(`Enviando payload a n8n: ${JSON.stringify(payload)}`);
-            this.logger.log(`URL de webhook: ${this.n8nWebHookUrl}/webhook-test/b727a688-7624-4054-943e-39ab560693cd`);
-            const response = await fetch(`${this.n8nWebHookUrl}/webhook-test/b727a688-7624-4054-943e-39ab560693cd`, {
+            this.logger.log(`URL de webhook: ${this.n8nWebHookUrl}/webhook/b727a688-7624-4054-943e-39ab560693cd`);
+            const response = await fetch(`${this.n8nWebHookUrl}/webhook/b727a688-7624-4054-943e-39ab560693cd`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
