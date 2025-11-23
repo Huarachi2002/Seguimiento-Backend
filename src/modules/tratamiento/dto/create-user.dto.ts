@@ -1,5 +1,5 @@
 import { Type } from "class-transformer"
-import { IsBoolean, IsDate, IsNotEmpty, IsString } from "class-validator"
+import { IsBoolean, IsDate, IsNotEmpty, IsOptional, IsString } from "class-validator"
 
 
 export class CreateUserDto {
@@ -37,7 +37,7 @@ export class CreateUserDto {
     idRol: string;
 
     @IsDate()
-    @IsNotEmpty()
+    @IsOptional()
     @Type(() => Date)
     fecha_login: Date;
 }

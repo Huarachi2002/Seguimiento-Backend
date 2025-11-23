@@ -1,7 +1,7 @@
-import { Injectable, Inject, forwardRef, Logger, HttpException, HttpStatus } from "@nestjs/common";
+import { Injectable, Logger, HttpException, HttpStatus } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { N8NResponse } from "../interface/n8n-reponse.interface";
-import { N8NWebhookPayload } from "../interface/n8n-payload.interface";
+import { HttpService } from "@nestjs/axios";
+import { firstValueFrom } from "rxjs";
 
 @Injectable()
 export class IAService {
@@ -9,45 +9,57 @@ export class IAService {
     private readonly url: string;
 
     constructor(
-        private configService: ConfigService
+        private configService: ConfigService,
+        private httpService: HttpService
     ) {
         this.url = this.configService.get<string>('IA_SERVICE_URL');
     }
 
     public async getHistorialConversacionByPaciente(telefono: string): Promise<any> {
-        // Lógica para obtener el historial de conversación del paciente desde la base de datos
         this.logger.log(`Obteniendo historial de conversación para el paciente con telefono: ${telefono}`);
-        // Aquí deberías implementar la lógica real para obtener los datos
+        
         try {
+            const fullUrl = `${this.url}/chat/history/${telefono}`;
             this.logger.log(`Recuperando Historial de ${telefono}`);
-            this.logger.log(`URL: ${this.url}/chat/history/${telefono}`);
-            const response = await fetch(`${this.url}/chat/history/${telefono}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            this.logger.log(`URL: ${fullUrl}`);
+            
+            // Usar HttpService (basado en Axios) en lugar de fetch
+            const response = await firstValueFrom(
+                this.httpService.get(fullUrl, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    timeout: 30000 // 30 segundos de timeout
+                })
+            );
 
-            if (!response.ok) {
+            this.logger.log(`Respuesta de IA: ${JSON.stringify(response.data)}`);
+
+            return response.data;
+        } catch (error) {
+            // Mejor manejo de errores con Axios
+            if (error.response) {
+                // El servidor respondió con un código de estado fuera del rango 2xx
+                this.logger.error(`Error de respuesta de IA: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
                 throw new HttpException(
-                    `Error al comunicarse con IA: ${response.statusText}`,
-                    HttpStatus.BAD_GATEWAY
+                    `Error al comunicarse con IA: ${error.response.statusText}`,
+                    error.response.status
+                );
+            } else if (error.request) {
+                // La petición fue hecha pero no hubo respuesta
+                this.logger.error(`Error de conexión con IA: No se recibió respuesta. ${error.message}`);
+                throw new HttpException(
+                    'No se pudo conectar con el servicio de IA. Verifica que esté disponible.',
+                    HttpStatus.SERVICE_UNAVAILABLE
+                );
+            } else {
+                // Algo pasó al configurar la petición
+                this.logger.error(`Error al enviar a IA: ${error.message}`);
+                throw new HttpException(
+                    'Error al procesar historial',
+                    HttpStatus.INTERNAL_SERVER_ERROR
                 );
             }
-
-            const data = await response.json();
-
-            this.logger.log(`Respuesta de IA: ${JSON.stringify(data)}`);
-
-            return data;
-        } catch (error) {
-            this.logger.error(`Error al enviar a IA: ${error.message}`);
-            
-            throw new HttpException(
-                'Error al procesar historial',
-                HttpStatus.INTERNAL_SERVER_ERROR
-            );
         }
     }
-    
 }
