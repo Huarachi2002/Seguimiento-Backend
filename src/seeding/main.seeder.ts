@@ -293,6 +293,8 @@ export default class MainSeeder implements Seeder {
 
     const users: User[] = [
       { username: 'admin', nombre: 'Admin', contrasena: '123', telefono: '76023033', email: 'roberthuarachi27@gmail.com', estado: true, rol: { descripcion: 'Admin' }, notificar_whatsapp: true, notificar_email: true } as User,
+      { username: 'doctor', nombre: 'Doctor', contrasena: '123', telefono: '76023033', email: 'roberthuarachi27@gmail.com', estado: true, rol: { descripcion: 'Doctor' }, notificar_whatsapp: true, notificar_email: true } as User,
+      { username: 'licenciado', nombre: 'Licenciado', contrasena: '123', telefono: '76351308', email: 'superenano1514@gmail.com', estado: true, rol: { descripcion: 'Licenciado' }, notificar_whatsapp: true, notificar_email: true } as User,
     ];
 
     for (const userData of users) {
