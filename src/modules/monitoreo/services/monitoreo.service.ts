@@ -1,3 +1,4 @@
+import { Motivo } from "@/modules/tratamiento/entities/motivo.entity";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Paciente } from "src/modules/paciente/entities/paciente.entity";
@@ -12,21 +13,94 @@ export class MonitoreoService {
         @InjectRepository(Paciente) private pacienteRepository: Repository<Paciente>,
         @InjectRepository(Cita) private citaRepository: Repository<Cita>,
         @InjectRepository(TratamientoTB) private tratamientoRepository: Repository<TratamientoTB>,
+        @InjectRepository(Motivo) private motivoRepository: Repository<Motivo>,
     ) {}
 
     // Pacientes en riesgo de abandono
-    async getPacientesEnRiesgoAbandonoTratamiento(diasSinAsistir: number){ // TODO: FALTA ANALIZAR
-        const pacientes = await this.pacienteRepository.createQueryBuilder('paciente')
-            .innerJoin('paciente.tratamientos', 'tratamiento')
-            .innerJoin('tratamiento.estado_tratamiento', 'estado_tratamiento')
-            .innerJoin('tratamiento.citas', 'cita')
-            .innerJoin('cita.estado_cita', 'estado_cita')
+    async getPacientesEnRiesgoAbandonoTratamiento(diasPeriodo: number = 30){
+        const fechaFin = new Date();
+        const fechaInicio = new Date();
+        fechaInicio.setDate(fechaFin.getDate() - diasPeriodo);
+
+        const tratamientos = await this.tratamientoRepository.createQueryBuilder('tratamiento')
+            .innerJoinAndSelect('tratamiento.paciente', 'paciente')
+            .innerJoinAndSelect('tratamiento.citas', 'cita')
+            .innerJoin('tratamiento.estado', 'estado_tratamiento')
+            .leftJoinAndSelect('cita.estado', 'estado_cita')
             .where('estado_tratamiento.descripcion = :estadoTratamiento', { estadoTratamiento: 'En Curso' })
-            .andWhere('estado_cita.descripcion = :estadoCita', { estadoCita: 'Perdido' })
-            .distinct(true)
+            .andWhere('cita.fecha_programada BETWEEN :fechaInicio AND :fechaFin', { fechaInicio, fechaFin })
             .getMany();
 
-        return pacientes;
+        const reporte = tratamientos.map(tratamiento => {
+            const citas = tratamiento.citas.sort((a, b) => new Date(a.fecha_programada).getTime() - new Date(b.fecha_programada).getTime());
+            
+            const T = diasPeriodo;
+            const citasPerdidas = citas.filter(c => c.estado && c.estado.descripcion === 'Perdido');
+            const M = citasPerdidas.length;
+            
+            if (M === 0) return null;
+
+            let missRuns = 0;
+            let maxRunLength = 0;
+            let currentRunLength = 0;
+            
+            const diasPerdidos = citasPerdidas.map(c => {
+                const d = new Date(c.fecha_programada);
+                d.setHours(0,0,0,0);
+                return d.getTime();
+            });
+
+            const diasUnicos = [...new Set(diasPerdidos)].sort((a, b) => a - b);
+
+            if (diasUnicos.length > 0) {
+                missRuns = 1;
+                currentRunLength = 1;
+                maxRunLength = 1;
+
+                for (let i = 1; i < diasUnicos.length; i++) {
+                    const diffTime = diasUnicos[i] - diasUnicos[i-1];
+                    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+                    if (diffDays === 1) {
+                        currentRunLength++;
+                    } else {
+                        missRuns++;
+                        currentRunLength = 1;
+                    }
+                    if (currentRunLength > maxRunLength) {
+                        maxRunLength = currentRunLength;
+                    }
+                }
+            }
+
+            const missRate = M / T;
+            const dispersionIndex = M > 0 ? missRuns / M : 0;
+            const longestGapNormalized = maxRunLength / T;
+
+            const riskScore = (0.6 * missRate) + (0.3 * dispersionIndex) + (0.1 * longestGapNormalized);
+
+            let nivel = 'Bajo';
+            if (riskScore > 0.75) nivel = 'Muy Alto';
+            else if (riskScore > 0.5) nivel = 'Alto';
+            else if (riskScore > 0.25) nivel = 'Moderado';
+
+            return {
+                paciente: tratamiento.paciente,
+                tratamientoId: tratamiento.id,
+                metricas: {
+                    T,
+                    M,
+                    missRate: Number(missRate.toFixed(4)),
+                    missRuns,
+                    dispersionIndex: Number(dispersionIndex.toFixed(4)),
+                    longestGapNormalized: Number(longestGapNormalized.toFixed(4)),
+                    riskScore: Number(riskScore.toFixed(4)),
+                    nivel
+                }
+            };
+        }).filter(item => item !== null);
+
+        return reporte.sort((a, b) => b.metricas.riskScore - a.metricas.riskScore);
     }
 
     // Pacientes que han abandonado
@@ -127,6 +201,31 @@ export class MonitoreoService {
         .andWhere('paciente.fecha_nacimiento >= NOW() - INTERVAL \'5 years\'')
         .andWhere('localizacion.descripcion = :localizacion', { localizacion: 'Meninges' })
         .getMany();
+    }
+
+    async getMotivoNoVisita(fechaInicio: Date, fechaFin: Date){
+
+        // Obtener cantidad total de citas en el rango
+        const totalCitas = await this.citaRepository.createQueryBuilder('cita')
+            .where('cita.fecha_programada BETWEEN :fechaInicio AND :fechaFin', { fechaInicio, fechaFin })
+            .getCount();
+
+        // Obtener cantidad de citas por motivo
+        const motivos = await this.citaRepository.createQueryBuilder('cita')
+            .innerJoin('cita.motivo', 'motivo')
+            .select('motivo.descripcion', 'motivo')
+            .addSelect('COUNT(cita.id)', 'cantidad')
+            .where('cita.fecha_programada BETWEEN :fechaInicio AND :fechaFin', { fechaInicio, fechaFin })
+            .groupBy('motivo.descripcion')
+            .getRawMany();
+
+        return {
+            total_citas: totalCitas,
+            motivos: motivos.map(m => ({
+                motivo: m.motivo,
+                cantidad: Number(m.cantidad)
+            }))
+        };
     }
     
 }

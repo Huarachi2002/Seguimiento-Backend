@@ -137,6 +137,16 @@ export class CitaController {
         };
     }
 
+    @Get()
+    async getCitas():Promise<IApiResponse>{
+        const data = await this.citaService.findAll();
+        return {
+            statusCode: 200,
+            message: 'Lista de citas',
+            data
+        };
+    }
+
     @Get(':id')
     async getCitaById(@Param('id') id: string):Promise<IApiResponse>{
         const data = await this.citaService.findOne(id);

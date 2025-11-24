@@ -3,6 +3,7 @@ import { MonitoreoService } from "../services/monitoreo.service";
 import { IApiResponse } from "@/common/interface/api-response.interface";
 import { TratamientoTB } from "@/modules/tratamiento/entities/tratamientoTB.entity";
 import { IncidenciaTbDto } from "../dto/incidencia-tb.dto";
+import { MotivoDto } from "../dto/motivo.dto";
 
 
 @Controller('monitoreo')
@@ -12,12 +13,12 @@ export class MonitoreoController {
 
     @Get('riesgo-abandono')
     async getPacientesEnRiesgo(
-       @Query('dias') dias: number = 1 // Días sin asistir (default: 1)
+       @Query('dias') dias: number = 30 // Días del periodo de análisis (default: 30)
     ):Promise<IApiResponse> {
         const data = await this.monitoreoService.getPacientesEnRiesgoAbandonoTratamiento(dias);
         return {
             statusCode: 200,
-            message: 'Lista de pacientes en riesgo de abandono',
+            message: 'Reporte de riesgo de abandono (Algoritmo de Dispersión)',
             data
         };
     }
@@ -119,4 +120,13 @@ export class MonitoreoController {
         };
     }
 
+    @Post('motivo-no-visita')
+    async getMotivoNoVisita(@Body() motivoDto: MotivoDto):Promise<IApiResponse> {
+        const data = await this.monitoreoService.getMotivoNoVisita(motivoDto.fecha_inicio, motivoDto.fecha_fin);
+        return {    
+            statusCode: 200,
+            message: 'Lista de motivos de no visita',
+            data
+        };
+    }
 }
