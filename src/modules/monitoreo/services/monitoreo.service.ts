@@ -5,6 +5,7 @@ import { Paciente } from "src/modules/paciente/entities/paciente.entity";
 import { Cita } from "src/modules/tratamiento/entities/cita.entity";
 import { TratamientoTB } from "src/modules/tratamiento/entities/tratamientoTB.entity";
 import { Repository } from "typeorm";
+import { RiesgoAbandonoDto } from "../dto/riesgo-abandono.dto";
 
 
 @Injectable()
@@ -14,13 +15,12 @@ export class MonitoreoService {
         @InjectRepository(Cita) private citaRepository: Repository<Cita>,
         @InjectRepository(TratamientoTB) private tratamientoRepository: Repository<TratamientoTB>,
         @InjectRepository(Motivo) private motivoRepository: Repository<Motivo>,
-    ) {}
+    ) { }
 
     // Pacientes en riesgo de abandono
-    async getPacientesEnRiesgoAbandonoTratamiento(diasPeriodo: number = 30){
-        const fechaFin = new Date();
-        const fechaInicio = new Date();
-        fechaInicio.setDate(fechaFin.getDate() - diasPeriodo);
+    async getPacientesEnRiesgoAbandonoTratamiento(dto: RiesgoAbandonoDto) {
+        const fechaFin = new Date(dto.fecha_fin);
+        const fechaInicio = new Date(dto.fecha_inicio);
 
         const tratamientos = await this.tratamientoRepository.createQueryBuilder('tratamiento')
             .innerJoinAndSelect('tratamiento.paciente', 'paciente')
@@ -33,20 +33,20 @@ export class MonitoreoService {
 
         const reporte = tratamientos.map(tratamiento => {
             const citas = tratamiento.citas.sort((a, b) => new Date(a.fecha_programada).getTime() - new Date(b.fecha_programada).getTime());
-            
+            const diasPeriodo = (fechaFin.getTime() - fechaInicio.getTime()) / (1000 * 60 * 60 * 24);
             const T = diasPeriodo;
             const citasPerdidas = citas.filter(c => c.estado && c.estado.descripcion === 'Perdido');
             const M = citasPerdidas.length;
-            
+
             if (M === 0) return null;
 
             let missRuns = 0;
             let maxRunLength = 0;
             let currentRunLength = 0;
-            
+
             const diasPerdidos = citasPerdidas.map(c => {
                 const d = new Date(c.fecha_programada);
-                d.setHours(0,0,0,0);
+                d.setHours(0, 0, 0, 0);
                 return d.getTime();
             });
 
@@ -58,7 +58,7 @@ export class MonitoreoService {
                 maxRunLength = 1;
 
                 for (let i = 1; i < diasUnicos.length; i++) {
-                    const diffTime = diasUnicos[i] - diasUnicos[i-1];
+                    const diffTime = diasUnicos[i] - diasUnicos[i - 1];
                     const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
                     if (diffDays === 1) {
@@ -112,8 +112,8 @@ export class MonitoreoService {
             .createQueryBuilder('tratamiento')
             .leftJoinAndSelect('tratamiento.paciente', 'paciente')
             .leftJoinAndSelect('tratamiento.citas', 'cita')
-            .where('tratamiento.estado = :estado', { estado: 'Abandonado'})
-            .orWhere( qb => {
+            .where('tratamiento.estado = :estado', { estado: 'Abandonado' })
+            .orWhere(qb => {
                 const subQuery = qb.subQuery()
                     .select('MAX(cita.fecha_programada)', 'ultimaCita')
                     .from('cita', 'cita')
@@ -155,58 +155,59 @@ export class MonitoreoService {
             .getMany();
     }
 
-    async getMapaCalorPacientes(){
+    async getMapaCalorPacientes() {
         return await this.pacienteRepository.createQueryBuilder('paciente')
-        .leftJoinAndSelect('paciente.direccion', 'direccion')
-        .leftJoinAndSelect('direccion.zona', 'zona')
-        .leftJoinAndSelect('zona.zona_uv', 'zona_uv')
-        .getMany();
+            .leftJoinAndSelect('paciente.direccion', 'direccion')
+            .leftJoinAndSelect('direccion.zona', 'zona')
+            .leftJoinAndSelect('zona.zona_uv', 'zona_uv')
+            .getMany();
     }
 
     // Este reporte generado por Tasa de incidencia de TB todas las formas
     // N° de casos de TB TSF(nuevos y recaidas) notificados/Poblacion total del año x 100,000
-    async getIndicadoresEvaluacionTbTSF(){
+    async getIndicadoresEvaluacionTbTSF() {
         return await this.tratamientoRepository.createQueryBuilder('tratamiento')
-        .leftJoinAndSelect('tratamiento.paciente', 'paciente')
-        .leftJoinAndSelect('tratamiento.tipo_tratamiento', 'tipo_tratamiento')
-        .where('tipo_tratamiento.descripcion IN (:...tipos)', { tipos: ['Nuevo caso', 'Recaída'] })
-        .getMany();
+            .leftJoinAndSelect('tratamiento.paciente', 'paciente')
+            .leftJoinAndSelect('tratamiento.tipo_tratamiento', 'tipo_tratamiento')
+            .where('tipo_tratamiento.descripcion IN (:...tipos)', { tipos: ['Nuevo caso', 'Recaída'] })
+            .getMany();
     }
 
     // N° de casos de TB Pulmonar (nuevo y recaidas) notificados/Poblacion total del año x 100,000
-    async getIndicadoresEvaluacionTbP(){
+    async getIndicadoresEvaluacionTbP() {
         return await this.tratamientoRepository.createQueryBuilder('tratamiento')
-        .leftJoinAndSelect('tratamiento.paciente', 'paciente')
-        .leftJoinAndSelect('tratamiento.tipo_tratamiento', 'tipo_tratamiento')
-        .leftJoinAndSelect('tratamiento.localizacion', 'localizacion')
-        .where('tipo_tratamiento.descripcion IN (:...tipos)', { tipos: ['Nuevo caso', 'Recaída'] })
-        .andWhere('localizacion.descripcion = :localizacion', { localizacion: 'Pulmonar' })
-        .getMany();
+            .leftJoinAndSelect('tratamiento.paciente', 'paciente')
+            .leftJoinAndSelect('tratamiento.tipo_tratamiento', 'tipo_tratamiento')
+            .leftJoinAndSelect('tratamiento.localizacion', 'localizacion')
+            .where('tipo_tratamiento.descripcion IN (:...tipos)', { tipos: ['Nuevo caso', 'Recaída'] })
+            .andWhere('localizacion.descripcion = :localizacion', { localizacion: 'Pulmonar' })
+            .getMany();
     }
 
     // N° de casos fallecidos por TB TSF
-    async getFallecidosTbTSF(){
+    async getFallecidosTbTSF() {
         return await this.tratamientoRepository.createQueryBuilder('tratamiento')
-        .leftJoinAndSelect('tratamiento.paciente', 'paciente')
-        .leftJoinAndSelect('tratamiento.estado', 'estado_tratamiento')
-        .where('estado_tratamiento.descripcion = :estado', { estado: 'Fallecido' })
-        .getMany();
+            .leftJoinAndSelect('tratamiento.paciente', 'paciente')
+            .leftJoinAndSelect('tratamiento.estado', 'estado_tratamiento')
+            .where('estado_tratamiento.descripcion = :estado', { estado: 'Fallecido' })
+            .getMany();
     }
 
     // Tasa de incidencia de TB Meningea en niños menores de 5 años
-    async getIndicadoresEvaluacionTbMeningeaNinos(){
+    async getIndicadoresEvaluacionTbMeningeaNinos() {
         return await this.tratamientoRepository.createQueryBuilder('tratamiento')
-        .leftJoinAndSelect('tratamiento.paciente', 'paciente')
-        .leftJoinAndSelect('tratamiento.localizacion', 'localizacion')
-        .andWhere('paciente.fecha_nacimiento >= NOW() - INTERVAL \'5 years\'')
-        .andWhere('localizacion.descripcion = :localizacion', { localizacion: 'Meninges' })
-        .getMany();
+            .leftJoinAndSelect('tratamiento.paciente', 'paciente')
+            .leftJoinAndSelect('tratamiento.localizacion', 'localizacion')
+            .andWhere('paciente.fecha_nacimiento >= NOW() - INTERVAL \'5 years\'')
+            .andWhere('localizacion.descripcion = :localizacion', { localizacion: 'Meninges' })
+            .getMany();
     }
 
-    async getMotivoNoVisita(fechaInicio: Date, fechaFin: Date){
+    async getMotivoNoVisita(fechaInicio: Date, fechaFin: Date) {
 
-        // Obtener cantidad total de citas en el rango
+        // Obtener cantidad total de citas con motivo registrado en el rango
         const totalCitas = await this.citaRepository.createQueryBuilder('cita')
+            .innerJoin('cita.motivo', 'motivo')
             .where('cita.fecha_programada BETWEEN :fechaInicio AND :fechaFin', { fechaInicio, fechaFin })
             .getCount();
 
@@ -227,5 +228,5 @@ export class MonitoreoService {
             }))
         };
     }
-    
+
 }

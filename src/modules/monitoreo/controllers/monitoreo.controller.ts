@@ -4,18 +4,19 @@ import { IApiResponse } from "@/common/interface/api-response.interface";
 import { TratamientoTB } from "@/modules/tratamiento/entities/tratamientoTB.entity";
 import { IncidenciaTbDto } from "../dto/incidencia-tb.dto";
 import { MotivoDto } from "../dto/motivo.dto";
+import { RiesgoAbandonoDto } from "../dto/riesgo-abandono.dto";
 
 
 @Controller('monitoreo')
 export class MonitoreoController {
 
-    constructor(private readonly monitoreoService: MonitoreoService) {}
+    constructor(private readonly monitoreoService: MonitoreoService) { }
 
-    @Get('riesgo-abandono')
+    @Post('riesgo-abandono')
     async getPacientesEnRiesgo(
-       @Query('dias') dias: number = 30 // Días del periodo de análisis (default: 30)
-    ):Promise<IApiResponse> {
-        const data = await this.monitoreoService.getPacientesEnRiesgoAbandonoTratamiento(dias);
+        @Body() dto: RiesgoAbandonoDto
+    ): Promise<IApiResponse> {
+        const data = await this.monitoreoService.getPacientesEnRiesgoAbandonoTratamiento(dto);
         return {
             statusCode: 200,
             message: 'Reporte de riesgo de abandono (Algoritmo de Dispersión)',
@@ -25,8 +26,8 @@ export class MonitoreoController {
 
     @Get('abandonados')
     async getPacientesAbandonados(
-         @Query('dias') dias: number // Días para considerar abandono (default: 30)
-    ){
+        @Query('dias') dias: number // Días para considerar abandono (default: 30)
+    ) {
         //return await this.monitoreoService.getPacientesAbandonados(dias);
     }
 
@@ -44,7 +45,7 @@ export class MonitoreoController {
     }
 
     @Get('pacientes-citas')
-    async getPacientesConCitasPendientes():Promise<IApiResponse> {
+    async getPacientesConCitasPendientes(): Promise<IApiResponse> {
         const tratamientos: TratamientoTB[] = await this.monitoreoService.getPacientesConCitasPendientes();
         const data = tratamientos.map(tratamiento => ({
             idTratamiento: tratamiento.id,
@@ -63,7 +64,7 @@ export class MonitoreoController {
     @Post('pacientes-nuevos')
     async getPacientesNuevos(
         @Body() fechas: { fechaInicio: Date; fechaFin: Date }
-    ):Promise<IApiResponse> {
+    ): Promise<IApiResponse> {
         const data = await this.monitoreoService.getPacientesNuevos(fechas.fechaInicio, fechas.fechaFin);
         return {
             statusCode: 200,
@@ -73,7 +74,7 @@ export class MonitoreoController {
     }
 
     @Get('mapa-calor')
-    async getMapaCalorPacientes():Promise<IApiResponse> {
+    async getMapaCalorPacientes(): Promise<IApiResponse> {
         const data = await this.monitoreoService.getMapaCalorPacientes();
         return {
             statusCode: 200,
@@ -83,14 +84,14 @@ export class MonitoreoController {
     }
 
     @Get('indicadores-evaluacion')
-    async getIndicadoresEvaluacion():Promise<IApiResponse> {
+    async getIndicadoresEvaluacion(): Promise<IApiResponse> {
         const dataTbTSF = await this.monitoreoService.getIndicadoresEvaluacionTbTSF();
         const dataTbP = await this.monitoreoService.getIndicadoresEvaluacionTbP();
         const dataFallecidosTbTSF = await this.monitoreoService.getFallecidosTbTSF();
         const dataTbMeningeaNinos = await this.monitoreoService.getIndicadoresEvaluacionTbMeningeaNinos();
 
         const totalPoblacion = 100000; // TODO: Obtener la población total del año
-        
+
         const tasaIncidenciaTbTSF: IncidenciaTbDto = {
             descripcion: 'Incidencia de TB TSF',
             valor: Math.round((dataTbTSF.length / totalPoblacion) * 100000)
@@ -121,9 +122,9 @@ export class MonitoreoController {
     }
 
     @Post('motivo-no-visita')
-    async getMotivoNoVisita(@Body() motivoDto: MotivoDto):Promise<IApiResponse> {
+    async getMotivoNoVisita(@Body() motivoDto: MotivoDto): Promise<IApiResponse> {
         const data = await this.monitoreoService.getMotivoNoVisita(motivoDto.fecha_inicio, motivoDto.fecha_fin);
-        return {    
+        return {
             statusCode: 200,
             message: 'Lista de motivos de no visita',
             data
