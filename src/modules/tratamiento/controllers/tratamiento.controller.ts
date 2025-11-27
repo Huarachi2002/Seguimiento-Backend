@@ -24,7 +24,8 @@ export class TratamientoController {
         return {
             statusCode: 200,
             message: 'Lista de tipos de tratamiento',
-            data
+            data,
+            error: null
         };
     }
 
@@ -34,7 +35,8 @@ export class TratamientoController {
         return {
             statusCode: 200,
             message: 'Lista de estados de tratamiento',
-            data
+            data,
+            error: null
         };
     }
 
@@ -44,7 +46,8 @@ export class TratamientoController {
         return {
             statusCode: 200,
             message: 'Lista de fases de tratamiento',
-            data
+            data,
+            error: null
         };
     }
 
@@ -54,7 +57,8 @@ export class TratamientoController {
         return {
             statusCode: 200,
             message: 'Lista de localizaciones TB',
-            data
+            data,
+            error: null
         };
     }
 
@@ -65,14 +69,16 @@ export class TratamientoController {
             return {
                 statusCode: 404,
                 message: 'Paciente no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
         const data = await this.tratamientoService.findByPaciente(idPaciente);
         return {
             statusCode: 200,
             message: 'Lista de tratamientos del paciente',
-            data
+            data,
+            error: null
         };
     }
 
@@ -83,13 +89,15 @@ export class TratamientoController {
             return {
                 statusCode: 404,
                 message: 'Tratamiento no encontrado',
-                data: null
+                data: null,
+                error: null
             }
         }
         return {
             statusCode: 200,
             message: 'Tratamiento encontrado',
-            data
+            data,
+            error: null
         };
     }
 
@@ -100,13 +108,15 @@ export class TratamientoController {
             return {
                 statusCode: 404,
                 message: 'Tipo de tratamiento no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
         return {
             statusCode: 200,
             message: 'Tipo de tratamiento encontrado',
-            data
+            data,
+            error: null
         };
     }
 
@@ -117,13 +127,15 @@ export class TratamientoController {
             return {
                 statusCode: 404,
                 message: 'Estado de tratamiento no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
         return {
             statusCode: 200,
             message: 'Estado de tratamiento encontrado',
-            data
+            data,
+            error: null
         };
     }
 
@@ -133,7 +145,8 @@ export class TratamientoController {
         return {
             statusCode: 200,
             message: 'Lista de tratamientos',
-            data
+            data,
+            error: null
         };
     }
 
@@ -144,7 +157,8 @@ export class TratamientoController {
         return {
             statusCode: 201,
             message: 'Tipo de tratamiento creado exitosamente',
-            data: tipoTratamiento
+            data: tipoTratamiento,
+            error: null
         };
     }
 
@@ -155,7 +169,8 @@ export class TratamientoController {
         return {
             statusCode: 201,
             message: 'Estado de tratamiento creado exitosamente',
-            data: estadoTratamiento
+            data: estadoTratamiento,
+            error: null
         };
     }
 
@@ -167,7 +182,8 @@ export class TratamientoController {
             return {
                 statusCode: 404,
                 message: 'Paciente no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
 
@@ -176,7 +192,8 @@ export class TratamientoController {
             return {
                 statusCode: 404,
                 message: 'Tipo de tratamiento no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
 
@@ -185,7 +202,8 @@ export class TratamientoController {
             return {
                 statusCode: 404,
                 message: 'Estado de tratamiento no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
 
@@ -194,7 +212,8 @@ export class TratamientoController {
             return {
                 statusCode: 404,
                 message: 'Estado de tratamiento no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
 
@@ -202,7 +221,8 @@ export class TratamientoController {
         return {
             statusCode: 201,
             message: 'Tratamiento creado exitosamente',
-            data: tratamiento
+            data: tratamiento,
+            error: null
         };
     }
 
@@ -213,7 +233,8 @@ export class TratamientoController {
             return {
                 statusCode: 404,
                 message: 'Paciente no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
 
@@ -222,7 +243,8 @@ export class TratamientoController {
             return {
                 statusCode: 404,
                 message: 'Tipo de tratamiento no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
 
@@ -231,7 +253,8 @@ export class TratamientoController {
             return {
                 statusCode: 404,
                 message: 'Estado de tratamiento no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
 
@@ -239,7 +262,8 @@ export class TratamientoController {
         return {
             statusCode: 200,
             message: 'Tratamiento actualizado exitosamente',
-            data: updatedTratamiento
+            data: updatedTratamiento,
+            error: null
         };
     }
 
@@ -249,7 +273,8 @@ export class TratamientoController {
         return {
             statusCode: 200,
             message: 'Tipo de tratamiento actualizado exitosamente',
-            data: updatedTipo
+            data: updatedTipo,
+            error: null
         };
     }
 
@@ -259,7 +284,8 @@ export class TratamientoController {
         return {
             statusCode: 200,
             message: 'Estado de tratamiento actualizado exitosamente',
-            data: updatedEstado
+            data: updatedEstado,
+            error: null
         };
     }
 }

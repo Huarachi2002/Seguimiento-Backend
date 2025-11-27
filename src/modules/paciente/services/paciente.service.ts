@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Paciente } from "../entities/paciente.entity";
 import { Repository } from "typeorm";
@@ -47,223 +47,746 @@ export class PacienteService {
     ) { }
 
     async findAll(): Promise<Paciente[]> {
-        return this.pacienteRepository.find({
-            relations: {
-                direccion: true
-            }
-        });
+        try {
+            return await this.pacienteRepository.find({
+                relations: {
+                    direccion: true
+                }
+            });
+        } catch (error) {
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al obtener pacientes',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async findOne(id: string): Promise<Paciente> {
-        return this.pacienteRepository.findOneBy({ id });
+        try {
+            return await this.pacienteRepository.findOneBy({ id });
+        } catch (error) {
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al obtener paciente',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async findDireccionByPaciente(idPaciente: string): Promise<Direccion> {
-        return this.direccionService.findOneByPaciente(idPaciente);
+        try {
+            return await this.direccionService.findOneByPaciente(idPaciente);
+        } catch (error) {
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al obtener dirección del paciente',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async findContactoById(id: string): Promise<Contacto_Paciente> {
-        return this.contactoRepository.findOneBy({ id });
+        try {
+            return await this.contactoRepository.findOneBy({ id });
+        } catch (error) {
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al obtener contacto',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async findContactosByPaciente(id: string): Promise<Contacto_Paciente[]> {
-        return this.contactoRepository.find({
-            where: { paciente: { id } },
-            relations: ['tipo_parentesco', 'paciente'],
-        });
+        try {
+            return await this.contactoRepository.find({
+                where: { paciente: { id } },
+                relations: ['tipo_parentesco', 'paciente'],
+            });
+        } catch (error) {
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al obtener contactos del paciente',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async getTipoParentescos(): Promise<Tipo_Parentesco[]> {
-        return this.tipoParentescoRepository.find();
+        try {
+            return await this.tipoParentescoRepository.find();
+        } catch (error) {
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al obtener tipos de parentesco',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async findByTelefono(telefono: number): Promise<Paciente> {
-        return this.pacienteRepository.findOne({
-            where: { telefono }
-        });
+        try {
+            return await this.pacienteRepository.findOne({
+                where: { telefono }
+            });
+        } catch (error) {
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al buscar paciente por teléfono',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async findCitasByPaciente(idPaciente: string): Promise<Cita[]> {
-        const data = await this.citaRepository.find({
-            where: { tratamiento: { paciente: { id: idPaciente } } },
-            relations: {
-                estado: true,
-                tipo: true
-            }
-        });
-        return data;
+        try {
+            const data = await this.citaRepository.find({
+                where: { tratamiento: { paciente: { id: idPaciente } } },
+                relations: {
+                    estado: true,
+                    tipo: true
+                }
+            });
+            return data;
+        } catch (error) {
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al obtener citas del paciente',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async findByCarnet(carnet: string): Promise<Paciente> {
-        return this.pacienteRepository.findOne({
-            where: { numero_doc: carnet  }
-        });
+        try {
+            return await this.pacienteRepository.findOne({
+                where: { numero_doc: carnet  }
+            });
+        } catch (error) {
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al buscar paciente por carnet',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async findTipoParentescoById(id: string): Promise<Tipo_Parentesco> {
-        return this.tipoParentescoRepository.findOne({
-            where: { id },
-        });
+        try {
+            return await this.tipoParentescoRepository.findOne({
+                where: { id },
+            });
+        } catch (error) {
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al obtener tipo de parentesco',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async createTipoParentesco(tipoParentesco: CreateTipoParentescoDto): Promise<Tipo_Parentesco> {
-        return this.tipoParentescoRepository.save(tipoParentesco);
+        try {
+            return await this.tipoParentescoRepository.save(tipoParentesco);
+        } catch (error) {
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al crear tipo de parentesco',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     // --- Enfermedades (catalogo)
     async createEnfermedad(enf: CreateEnfermedadDto): Promise<Enfermedad> {
-        const exists = await this.enfermedadRepository.findOne({ where: { descripcion: enf.descripcion } });
-        if (exists) throw new Error('Enfermedad ya existe');
-        const entity = this.enfermedadRepository.create(enf as any);
-        return this.enfermedadRepository.save(entity as any);
+        try {
+            const exists = await this.enfermedadRepository.findOne({ where: { descripcion: enf.descripcion } });
+            if (exists) {
+                throw new HttpException(
+                    {
+                        success: false,
+                        message: 'Enfermedad ya existe',
+                        data: null,
+                        error: 'Bad Request',
+                    },
+                    HttpStatus.BAD_REQUEST,
+                );
+            }
+            const entity = this.enfermedadRepository.create(enf as any);
+            return await this.enfermedadRepository.save(entity as any);
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al crear enfermedad',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async updateEnfermedad(id: string, enf: UpdateEnfermedadDto): Promise<Enfermedad> {
-        const existing = await this.enfermedadRepository.preload({ id, ...enf } as any);
-        if (!existing) throw new Error('Enfermedad no encontrada');
-        return this.enfermedadRepository.save(existing as any);
+        try {
+            const existing = await this.enfermedadRepository.preload({ id, ...enf } as any);
+            if (!existing) {
+                throw new HttpException(
+                    {
+                        success: false,
+                        message: 'Enfermedad no encontrada',
+                        data: null,
+                        error: 'Not Found',
+                    },
+                    HttpStatus.NOT_FOUND,
+                );
+            }
+            return await this.enfermedadRepository.save(existing as any);
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al actualizar enfermedad',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async getEnfermedades(): Promise<Enfermedad[]> {
-        return this.enfermedadRepository.find();
+        try {
+            return await this.enfermedadRepository.find();
+        } catch (error) {
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al obtener enfermedades',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     // --- Asociaciones paciente - enfermedad
     async addEnfermedadToPaciente(dto: CreatePacienteEnfermedadDto): Promise<Paciente_Enfermedad> {
-        const paciente = await this.findOne(dto.idPaciente);
-        if (!paciente) throw new Error('Paciente no encontrado');
-        const enfermedad = await this.enfermedadRepository.findOneBy({ id: dto.idEnfermedad });
-        if (!enfermedad) throw new Error('Enfermedad no encontrada');
-        const existing = await this.pacienteEnfermedadRepository.findOne({ where: { paciente: { id: dto.idPaciente }, enfermedad: { id: dto.idEnfermedad } } });
-        if (existing) return existing;
-        const pe = this.pacienteEnfermedadRepository.create({ paciente, enfermedad } as any);
-        return this.pacienteEnfermedadRepository.save(pe as any);
+        try {
+            const paciente = await this.findOne(dto.idPaciente);
+            if (!paciente) {
+                throw new HttpException(
+                    {
+                        success: false,
+                        message: 'Paciente no encontrado',
+                        data: null,
+                        error: 'Not Found',
+                    },
+                    HttpStatus.NOT_FOUND,
+                );
+            }
+            const enfermedad = await this.enfermedadRepository.findOneBy({ id: dto.idEnfermedad });
+            if (!enfermedad) {
+                throw new HttpException(
+                    {
+                        success: false,
+                        message: 'Enfermedad no encontrada',
+                        data: null,
+                        error: 'Not Found',
+                    },
+                    HttpStatus.NOT_FOUND,
+                );
+            }
+            const existing = await this.pacienteEnfermedadRepository.findOne({ where: { paciente: { id: dto.idPaciente }, enfermedad: { id: dto.idEnfermedad } } });
+            if (existing) return existing;
+            const pe = this.pacienteEnfermedadRepository.create({ paciente, enfermedad } as any);
+            return await this.pacienteEnfermedadRepository.save(pe as any);
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al asociar enfermedad al paciente',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async getEnfermedadesByPaciente(idPaciente: string): Promise<Paciente_Enfermedad[]> {
-        return this.pacienteEnfermedadRepository.find({ where: { paciente: { id: idPaciente } }, relations: ['enfermedad'] });
+        try {
+            return await this.pacienteEnfermedadRepository.find({ where: { paciente: { id: idPaciente } }, relations: ['enfermedad'] });
+        } catch (error) {
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al obtener enfermedades del paciente',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async addEnfermedadesToPaciente(idPaciente: string, enfermedades: any[]) {
-        for (const enfermedad of enfermedades) {
-            await this.addEnfermedadToPaciente({ idPaciente, idEnfermedad: enfermedad.id });
+        try {
+            for (const enfermedad of enfermedades) {
+                await this.addEnfermedadToPaciente({ idPaciente, idEnfermedad: enfermedad.id });
+            }
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al asociar enfermedades al paciente',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
     // --- Sintomas (catalogo)
     async createSintoma(s: CreateSintomaDto): Promise<Sintoma> {
-        const exists = await this.sintomaRepository.findOne({ where: { descripcion: s.descripcion } });
-        if (exists) throw new Error('Sintoma ya existe');
-        const entity = this.sintomaRepository.create(s as any);
-        return this.sintomaRepository.save(entity as any);
+        try {
+            const exists = await this.sintomaRepository.findOne({ where: { descripcion: s.descripcion } });
+            if (exists) {
+                throw new HttpException(
+                    {
+                        success: false,
+                        message: 'Sintoma ya existe',
+                        data: null,
+                        error: 'Bad Request',
+                    },
+                    HttpStatus.BAD_REQUEST,
+                );
+            }
+            const entity = this.sintomaRepository.create(s as any);
+            return await this.sintomaRepository.save(entity as any);
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al crear síntoma',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async updateSintoma(id: string, s: UpdateSintomaDto): Promise<Sintoma> {
-        const existing = await this.sintomaRepository.preload({ id, ...s } as any);
-        if (!existing) throw new Error('Sintoma no encontrado');
-        return this.sintomaRepository.save(existing as any);
+        try {
+            const existing = await this.sintomaRepository.preload({ id, ...s } as any);
+            if (!existing) {
+                throw new HttpException(
+                    {
+                        success: false,
+                        message: 'Síntoma no encontrado',
+                        data: null,
+                        error: 'Not Found',
+                    },
+                    HttpStatus.NOT_FOUND,
+                );
+            }
+            return await this.sintomaRepository.save(existing as any);
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al actualizar síntoma',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async getSintomas(): Promise<Sintoma[]> {
-        return this.sintomaRepository.find();
+        try {
+            return await this.sintomaRepository.find();
+        } catch (error) {
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al obtener síntomas',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async addSintomaToPaciente(dto: CreatePacienteSintomaDto): Promise<Paciente_Sintoma> {
-        const paciente = await this.findOne(dto.idPaciente);
-        if (!paciente) throw new Error('Paciente no encontrado');
-        const sintoma = await this.sintomaRepository.findOneBy({ id: dto.idSintoma });
-        if (!sintoma) throw new Error('Sintoma no encontrado');
-        const existing = await this.pacienteSintomaRepository.findOne({ where: { paciente: { id: dto.idPaciente }, sintoma: { id: dto.idSintoma } } });
-        if (existing) return existing;
-        const ps = this.pacienteSintomaRepository.create({ paciente, sintoma } as any);
-        return this.pacienteSintomaRepository.save(ps as any);
+        try {
+            const paciente = await this.findOne(dto.idPaciente);
+            if (!paciente) {
+                throw new HttpException(
+                    {
+                        success: false,
+                        message: 'Paciente no encontrado',
+                        data: null,
+                        error: 'Not Found',
+                    },
+                    HttpStatus.NOT_FOUND,
+                );
+            }
+            const sintoma = await this.sintomaRepository.findOneBy({ id: dto.idSintoma });
+            if (!sintoma) {
+                throw new HttpException(
+                    {
+                        success: false,
+                        message: 'Síntoma no encontrado',
+                        data: null,
+                        error: 'Not Found',
+                    },
+                    HttpStatus.NOT_FOUND,
+                );
+            }
+            const existing = await this.pacienteSintomaRepository.findOne({ where: { paciente: { id: dto.idPaciente }, sintoma: { id: dto.idSintoma } } });
+            if (existing) return existing;
+            const ps = this.pacienteSintomaRepository.create({ paciente, sintoma } as any);
+            return await this.pacienteSintomaRepository.save(ps as any);
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al asociar síntoma al paciente',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async getSintomasByPaciente(idPaciente: string): Promise<Paciente_Sintoma[]> {
-        return this.pacienteSintomaRepository.find({ where: { paciente: { id: idPaciente } }, relations: ['sintoma'] });
+        try {
+            return await this.pacienteSintomaRepository.find({ where: { paciente: { id: idPaciente } }, relations: ['sintoma'] });
+        } catch (error) {
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al obtener síntomas del paciente',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async addSintomasToPaciente(idPaciente: string, sintomas: any[]) {
-        for (const sintoma of sintomas) {
-            await this.addSintomaToPaciente({ idPaciente, idSintoma: sintoma.id });
+        try {
+            for (const sintoma of sintomas) {
+                await this.addSintomaToPaciente({ idPaciente, idSintoma: sintoma.id });
+            }
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al asociar síntomas al paciente',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
         }
     }
     
 
     async createContactoForPaciente(contactoDto: CreateContactoDto, paciente: Paciente, tipoParentesco: Tipo_Parentesco): Promise<Contacto_Paciente> {
-        const newContacto = this.contactoRepository.create(contactoDto);
-        newContacto.paciente = paciente;
-        newContacto.tipo_parentesco = tipoParentesco;
-        return this.contactoRepository.save(newContacto);
+        try {
+            const newContacto = this.contactoRepository.create(contactoDto);
+            newContacto.paciente = paciente;
+            newContacto.tipo_parentesco = tipoParentesco;
+            return await this.contactoRepository.save(newContacto);
+        } catch (error) {
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al crear contacto del paciente',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async create(paciente: CreatePacienteDto): Promise<Paciente> {
-        return this.pacienteRepository.save(paciente);
+        try {
+            return await this.pacienteRepository.save(paciente);
+        } catch (error) {
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al crear paciente',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async updateTipoParentesco(id: string, tipoParentesco: UpdateTipoParentescoDto): Promise<Tipo_Parentesco> {
-        const existingTipo = await this.tipoParentescoRepository.preload({
-            id,
-            ...tipoParentesco
-        })
-        if(!existingTipo){
-            throw new Error('Tipo de Parentesco no encontrado');
+        try {
+            const existingTipo = await this.tipoParentescoRepository.preload({
+                id,
+                ...tipoParentesco
+            })
+            if(!existingTipo){
+                throw new HttpException(
+                    {
+                        success: false,
+                        message: 'Tipo de Parentesco no encontrado',
+                        data: null,
+                        error: 'Not Found',
+                    },
+                    HttpStatus.NOT_FOUND,
+                );
+            }
+            return await this.tipoParentescoRepository.save(existingTipo);
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al actualizar tipo de parentesco',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
         }
-        return this.tipoParentescoRepository.save(existingTipo);
     }
 
     async updateContacto(id: string, contacto: CreateContactoDto, paciente: Paciente, tipoParentesco: Tipo_Parentesco): Promise<Contacto_Paciente> {
-        const existingContacto = await this.contactoRepository.preload({
-            id,
-            ...contacto,
-            paciente,
-            tipo_parentesco: tipoParentesco
-        })
-        if(!existingContacto){
-            throw new Error('Contacto no encontrado');
+        try {
+            const existingContacto = await this.contactoRepository.preload({
+                id,
+                ...contacto,
+                paciente,
+                tipo_parentesco: tipoParentesco
+            })
+            if(!existingContacto){
+                throw new HttpException(
+                    {
+                        success: false,
+                        message: 'Contacto no encontrado',
+                        data: null,
+                        error: 'Not Found',
+                    },
+                    HttpStatus.NOT_FOUND,
+                );
+            }
+            return await this.contactoRepository.save(existingContacto);
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al actualizar contacto',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
         }
-        return this.contactoRepository.save(existingContacto);
     }
 
     async update(id: string, paciente: UpdatePacienteDto): Promise<Paciente> {
-        const existingPaciente = await this.pacienteRepository.preload({
-            id,
-            ...paciente
-        })
-        if(!existingPaciente){
-            throw new Error('Paciente no encontrado');
+        try {
+            const existingPaciente = await this.pacienteRepository.preload({
+                id,
+                ...paciente
+            })
+            if(!existingPaciente){
+                throw new HttpException(
+                    {
+                        success: false,
+                        message: 'Paciente no encontrado',
+                        data: null,
+                        error: 'Not Found',
+                    },
+                    HttpStatus.NOT_FOUND,
+                );
+            }
+            return await this.pacienteRepository.save(existingPaciente);
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al actualizar paciente',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
         }
-        return this.pacienteRepository.save(existingPaciente);
     }
 
     // Historial Chat
     async findHistorialConversacionByPaciente(telefono: string): Promise<any> {
-        const data = await this.iaService.getHistorialConversacionByPaciente(telefono);
-        if (!data) throw new Error('Historial no encontrado');
-        return data; // Implementar lógica para obtener el historial de chat
+        try {
+            const data = await this.iaService.getHistorialConversacionByPaciente(telefono);
+            if (!data) {
+                throw new HttpException(
+                    {
+                        success: false,
+                        message: 'Historial no encontrado',
+                        data: null,
+                        error: 'Not Found',
+                    },
+                    HttpStatus.NOT_FOUND,
+                );
+            }
+            return data;
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al obtener historial de conversación',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async pacienteRiesgoSalud(telefono: number): Promise<User[]> {
-        const paciente = await this.findByTelefono(telefono);
-        if (!paciente) throw new Error('Paciente no encontrado');
+        try {
+            const paciente = await this.findByTelefono(telefono);
+            if (!paciente) {
+                throw new HttpException(
+                    {
+                        success: false,
+                        message: 'Paciente no encontrado',
+                        data: null,
+                        error: 'Not Found',
+                    },
+                    HttpStatus.NOT_FOUND,
+                );
+            }
 
-        const contactos = await this.findContactosByPaciente(paciente.id);
-        
-        const paciente_enfermedad = await this.pacienteEnfermedadRepository.find({
-            where: {
-                paciente: {
-                    id: paciente.id
-                }
-            },
-            relations: ['enfermedad'],
-            select: ['enfermedad']
-        });
-        const enfermedad: Enfermedad[] = paciente_enfermedad.map((paciente_enfermedad) => paciente_enfermedad.enfermedad);
+            const contactos = await this.findContactosByPaciente(paciente.id);
+            
+            const paciente_enfermedad = await this.pacienteEnfermedadRepository.find({
+                where: {
+                    paciente: {
+                        id: paciente.id
+                    }
+                },
+                relations: ['enfermedad'],
+                select: ['enfermedad']
+            });
+            const enfermedad: Enfermedad[] = paciente_enfermedad.map((paciente_enfermedad) => paciente_enfermedad.enfermedad);
 
-        const supervisores_destinatarios = await this.userService.getUsersByNotificationWhatsapp();
-        
-        this.n8nService.pacienteRiesgoSalud(supervisores_destinatarios, paciente, enfermedad, contactos);
+            const supervisores_destinatarios = await this.userService.getUsersByNotificationWhatsapp();
+            
+            this.n8nService.pacienteRiesgoSalud(supervisores_destinatarios, paciente, enfermedad, contactos);
 
-        return supervisores_destinatarios;
+            return supervisores_destinatarios;
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al procesar riesgo de salud del paciente',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 }

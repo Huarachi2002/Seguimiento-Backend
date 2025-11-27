@@ -20,7 +20,8 @@ export class MonitoreoController {
         return {
             statusCode: 200,
             message: 'Reporte de riesgo de abandono (Algoritmo de Dispersión)',
-            data
+            data,
+            error: null
         };
     }
 
@@ -57,7 +58,8 @@ export class MonitoreoController {
         return {
             statusCode: 200,
             message: 'Lista de pacientes con citas pendientes',
-            data
+            data,
+            error: null
         };
     }
 
@@ -69,7 +71,8 @@ export class MonitoreoController {
         return {
             statusCode: 200,
             message: 'Lista de pacientes nuevos',
-            data
+            data,
+            error: null
         };
     }
 
@@ -79,7 +82,8 @@ export class MonitoreoController {
         return {
             statusCode: 200,
             message: 'Mapa de calor de pacientes',
-            data
+            data,
+            error: null
         };
     }
 
@@ -117,7 +121,8 @@ export class MonitoreoController {
                 tasaIncidenciaTbP,
                 tasaMortalidadTbTSF,
                 tasaIncidenciaTbMeningeaNinos
-            ]
+            ],
+            error: null
         };
     }
 
@@ -127,7 +132,8 @@ export class MonitoreoController {
         return {
             statusCode: 200,
             message: 'Lista de motivos de no visita',
-            data
+            data,
+            error: null
         };
     }
 }

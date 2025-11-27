@@ -20,7 +20,8 @@ export class DireccionController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Lista de zonas Mza',
-            data
+            data,
+            error: null
         };
     }
 
@@ -30,7 +31,8 @@ export class DireccionController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Lista de zonas UV',
-            data
+            data,
+            error: null
         };
     }
 
@@ -41,13 +43,15 @@ export class DireccionController {
             return {
                 statusCode: HttpStatus.NOT_FOUND,
                 message: 'Zona Mza no encontrada',
-                data: null
+                data: null,
+                error: null
             };
         }
         return {
             statusCode: HttpStatus.OK,
             message: 'Detalles de la zona Mza',
-            data: {...data, idZonaUv: data.zona_uv.id}
+            data: {...data, idZonaUv: data.zona_uv.id},
+            error: null
         };
     }
 
@@ -58,22 +62,25 @@ export class DireccionController {
             return {
                 statusCode: HttpStatus.NOT_FOUND,
                 message: 'Zona UV no encontrada',
-                data: null
+                data: null,
+                error: null
             };
         }
         return {
             statusCode: HttpStatus.OK,
             message: 'Detalles de la zona UV',
-            data
+            data,
+            error: null
         };
     }
 
     @Get('zona-mza/uv/:idZonaUv')
-    getZonasMzaByZonaUv(@Param('idZonaUv') idZonaUv: string) {
+    getZonasMzaByZonaUv(@Param('idZonaUv') idZonaUv: string): Promise<IApiResponse> {
         return this.direccionService.findMzasByZonaUv(idZonaUv).then(data => ({
             statusCode: HttpStatus.OK,
             message: 'Lista de zonas Mza por Zona UV',
-            data
+            data,
+            error: null
         }));
     }
 
@@ -84,14 +91,16 @@ export class DireccionController {
             return {
                 statusCode: HttpStatus.NOT_FOUND,
                 message: 'Paciente no encontrado',
-                data: null
+                data: null,
+                error: null
             }
         }
 
         return this.direccionService.findOneByPaciente(id).then(data => ({
             statusCode: HttpStatus.OK,
             message: 'Detalles de la direccion',
-            data
+            data,
+            error: null
         }));
     }
 
@@ -102,13 +111,15 @@ export class DireccionController {
             return {
                 statusCode: 404,
                 message: "Direccion no encontrada",
-                data: null
+                data: null,
+                error: null
             };
         }
         return {
             statusCode: HttpStatus.OK,
             message: 'Detalles de la direccion',
-            data
+            data,
+            error: null
         };
     }
 
@@ -121,15 +132,17 @@ export class DireccionController {
             return {
                 statusCode: HttpStatus.NOT_FOUND,
                 message: 'Zona UV no encontrada',
-                data: null
+                data: null,
+                error: null
             };
         }
         
         const data = await this.direccionService.createMza(createZonaMzaDto, zona_uv);
-        return {
+        return {    
             statusCode: HttpStatus.CREATED,
             message: 'Zona Mza creada',
-            data
+            data,
+            error: null
         };
     }
 
@@ -139,7 +152,8 @@ export class DireccionController {
         return {
             statusCode: HttpStatus.CREATED,
             message: 'Zona UV creada',
-            data
+            data,
+            error: null
         };
     }
 
@@ -150,14 +164,16 @@ export class DireccionController {
             return Promise.resolve({
                 statusCode: HttpStatus.NOT_FOUND,
                 message: 'Paciente no encontrado',
-                data: null
+                data: null,
+                error: null
             });
         }
 
         return this.direccionService.create(createDireccionDto, paciente).then(data => ({
             statusCode: HttpStatus.CREATED,
             message: 'Direccion creada',
-            data
+            data,
+            error: null
         }));
     }
 
@@ -168,14 +184,16 @@ export class DireccionController {
             return {
                 statusCode: HttpStatus.NOT_FOUND,
                 message: 'Zona UV no encontrada',
-                data: null
+                data: null,
+                error: null
             };
         }
         const data = await this.direccionService.updateMza(id, updateZonaMzaDto, zonaUv);
         return {
             statusCode: HttpStatus.OK,
             message: 'Zona Mza actualizada',
-            data
+            data,
+            error: null
         };
     }
 
@@ -185,7 +203,8 @@ export class DireccionController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Zona UV actualizada',
-            data
+            data,
+            error: null
         };
     }
 
@@ -196,13 +215,15 @@ export class DireccionController {
             return {
                 statusCode: 404,
                 message: "Direccion no encontrada",
-                data: null
+                data: null,
+                error: null
             };
         }
         return {
             statusCode: HttpStatus.OK,
             message: 'Direccion actualizada',
-            data
+            data,
+            error: null
         };
     }
 

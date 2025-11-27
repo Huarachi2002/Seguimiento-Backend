@@ -26,17 +26,32 @@ export class N8NService {
         tipoLaboratorio: string,
         resultado: string,
     ): Promise<N8NResponse> {
-        const payload: N8NWebhookPayload = {
-            tipo: 'notificacion_laboratorio',
-            destinatarios: email,
-            datos: {
-                nombre: nombrePaciente,
-                tipo_laboratorio: tipoLaboratorio,
-                resultado,
-                mensaje: `Hola ${nombrePaciente}, su resultado de ${tipoLaboratorio} es: ${resultado}. Por favor, consulte con su médico para más detalles.`
+        try {
+            const payload: N8NWebhookPayload = {
+                tipo: 'notificacion_laboratorio',
+                destinatarios: email,
+                datos: {
+                    nombre: nombrePaciente,
+                    tipo_laboratorio: tipoLaboratorio,
+                    resultado,
+                    mensaje: `Hola ${nombrePaciente}, su resultado de ${tipoLaboratorio} es: ${resultado}. Por favor, consulte con su médico para más detalles.`
+                }
+            };
+            return await this.sendToN8N(payload);
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
             }
-        };
-        return this.sendToN8N(payload);
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al enviar notificación de laboratorio',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async enviarRecordatorioCita(
@@ -46,19 +61,34 @@ export class N8NService {
         // fechaCita: Date,
         // tipoCita: string
     ): Promise<N8NResponse> {
-        const payload: N8NWebhookPayload = {
-            tipo: 'recordatorio_cita',
-            destinatarios: telefonos,
-            datos: {
-                recordatoriosData,
-                // nombre: nombrePaciente,
-                // fecha: fechaCita.toISOString(),
-                // tipo: tipoCita,
-                // mensaje: `Hola ${nombrePaciente}, le recordamos que tiene una cita programada para el ${fechaCita} (${tipoCita}). Por favor, no olvide asistir.`
-            }
-        };
+        try {
+            const payload: N8NWebhookPayload = {
+                tipo: 'recordatorio_cita',
+                destinatarios: telefonos,
+                datos: {
+                    recordatoriosData,
+                    // nombre: nombrePaciente,
+                    // fecha: fechaCita.toISOString(),
+                    // tipo: tipoCita,
+                    // mensaje: `Hola ${nombrePaciente}, le recordamos que tiene una cita programada para el ${fechaCita} (${tipoCita}). Por favor, no olvide asistir.`
+                }
+            };
 
-        return this.sendToN8N(payload);
+            return await this.sendToN8N(payload);
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al enviar recordatorio de cita',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     async pacienteRiesgoSalud(
@@ -67,23 +97,38 @@ export class N8NService {
         enfermedad_base: Enfermedad[],
         contactos: Contacto_Paciente[],
     ): Promise<N8NResponse> {
-        const dataContactos = contactos.map((contacto) => {
-            return {
-                nombre: contacto.nombre_contacto,
-                telefono: contacto.numero_telefono_contacto,
-                parentesco: contacto.tipo_parentesco.descripcion
+        try {
+            const dataContactos = contactos.map((contacto) => {
+                return {
+                    nombre: contacto.nombre_contacto,
+                    telefono: contacto.numero_telefono_contacto,
+                    parentesco: contacto.tipo_parentesco.descripcion
+                }
+            });
+            const payload: N8NWebhookPayload = {
+                tipo: 'alerta_riesgo_salud',
+                destinatarios: usuarios.map(user => user.telefono),
+                datos: {
+                    paciente,
+                    enfermedad_base,
+                    contactos: dataContactos,
+                }
+            };
+            return await this.sendToN8N(payload);
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
             }
-        });
-        const payload: N8NWebhookPayload = {
-            tipo: 'alerta_riesgo_salud',
-            destinatarios: usuarios.map(user => user.telefono),
-            datos: {
-                paciente,
-                enfermedad_base,
-                contactos: dataContactos,
-            }
-        };
-        return this.sendToN8N(payload);
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error al enviar alerta de riesgo de salud',
+                    data: null,
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     private async sendToN8N(payload: N8NWebhookPayload): Promise<N8NResponse> {
@@ -100,7 +145,12 @@ export class N8NService {
 
             if (!response.ok) {
                 throw new HttpException(
-                    `Error al comunicarse con N8N: ${response.statusText}`,
+                    {
+                        success: false,
+                        message: `Error al comunicarse con N8N: ${response.statusText}`,
+                        data: null,
+                        error: response.statusText,
+                    },
                     HttpStatus.BAD_GATEWAY
                 );
             }
@@ -117,8 +167,16 @@ export class N8NService {
         } catch (error) {
             this.logger.error(`Error al enviar webhook a N8N: ${error.message}`);
             
+            if (error instanceof HttpException) {
+                throw error;
+            }
             throw new HttpException(
-                'Error al procesar notificación',
+                {
+                    success: false,
+                    message: 'Error al procesar notificación',
+                    data: null,
+                    error: error.message,
+                },
                 HttpStatus.INTERNAL_SERVER_ERROR
             );
         }

@@ -28,7 +28,8 @@ export class PacienteController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Lista de pacientes',
-            data
+            data,
+            error: null
         };
     }
     
@@ -38,30 +39,42 @@ export class PacienteController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Lista de tipos de parentesco',
-            data
+            data,
+            error: null
         };
     }
     
     @Get('enfermedad')
     async getEnfermedades(): Promise<IApiResponse> {
         const data = await this.pacienteService.getEnfermedades();
-        return { statusCode: HttpStatus.OK, message: 'Lista de enfermedades', data };
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Lista de enfermedades',
+            data,
+            error: null
+        };
     }
 
     @Get('sintoma')
     async getSintomas(): Promise<IApiResponse> {
         const data = await this.pacienteService.getSintomas();
-        return { statusCode: HttpStatus.OK, message: 'Lista de sintomas', data };
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Lista de sintomas',
+            data,
+            error: null
+        };
     }
 
     @Get(':id')
-    async getPacienteById(@Param('id') id: string) {
+    async getPacienteById(@Param('id') id: string): Promise<IApiResponse> {
         const paciente = await this.pacienteService.findOne(id);
         if(!paciente){
             return {
                 statusCode: HttpStatus.NOT_FOUND,
                 message: 'Paciente no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
         const direccion = await this.pacienteService.findDireccionByPaciente(id);
@@ -74,7 +87,8 @@ export class PacienteController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Detalles del paciente',
-            data
+            data,
+            error: null
         };
     }
 
@@ -84,7 +98,8 @@ export class PacienteController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Lista de contactos del paciente',
-            data
+            data,
+            error: null
         };
     }
 
@@ -95,13 +110,15 @@ export class PacienteController {
             return {
                 statusCode: HttpStatus.NOT_FOUND,
                 message: 'Tipo de parentesco no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
         return {
             statusCode: HttpStatus.OK,
             message: 'Detalles del tipo de parentesco',
-            data
+            data,
+            error: null
         };
     }
 
@@ -112,7 +129,8 @@ export class PacienteController {
             return {
                 statusCode: HttpStatus.NOT_FOUND,
                 message: 'Paciente no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
 
@@ -153,7 +171,8 @@ export class PacienteController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Paciente encontrado por telefono',
-            data: responseData
+            data: responseData,
+            error: null
         };
     }
 
@@ -164,7 +183,8 @@ export class PacienteController {
             return {
                 statusCode: HttpStatus.NOT_FOUND,
                 message: 'Paciente no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
         const citas = await this.pacienteService.findCitasByPaciente(paciente.id);
@@ -205,7 +225,8 @@ export class PacienteController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Paciente encontrado por carnet',
-            data: responseData
+            data: responseData,
+            error: null
         };
     }
 
@@ -224,7 +245,8 @@ export class PacienteController {
         return {
             statusCode: HttpStatus.CREATED,
             message: 'Paciente creado',
-            data: paciente
+            data: paciente,
+            error: null
         };
     }
 
@@ -234,7 +256,8 @@ export class PacienteController {
         return {
             statusCode: HttpStatus.CREATED,
             message: 'Tipo de parentesco creado',
-            data
+            data,
+            error: null
         };
     }
 
@@ -244,25 +267,45 @@ export class PacienteController {
     @Post('enfermedad')
     async createEnfermedad(@Body() dto: CreateEnfermedadDto): Promise<IApiResponse> {
         const data = await this.pacienteService.createEnfermedad(dto);
-        return { statusCode: HttpStatus.CREATED, message: 'Enfermedad creada', data };
+        return {
+            statusCode: HttpStatus.CREATED,
+            message: 'Enfermedad creada',
+            data,
+            error: null
+        };
     }
 
     @Put('enfermedad/:id')
     async updateEnfermedad(@Param('id') id: string, @Body() dto: UpdateEnfermedadDto): Promise<IApiResponse> {
         const data = await this.pacienteService.updateEnfermedad(id, dto);
-        return { statusCode: HttpStatus.OK, message: 'Enfermedad actualizada', data };
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Enfermedad actualizada',
+            data,
+            error: null
+        };
     }
 
     @Post('paciente-enfermedad')
     async addEnfermedadToPaciente(@Body() dto: CreatePacienteEnfermedadDto): Promise<IApiResponse> {
         const data = await this.pacienteService.addEnfermedadToPaciente(dto);
-        return { statusCode: HttpStatus.CREATED, message: 'Enfermedad agregada al paciente', data };
+        return {
+            statusCode: HttpStatus.CREATED,
+            message: 'Enfermedad agregada al paciente',
+            data,
+            error: null
+        };
     }
 
     @Get('paciente/:idPaciente/enfermedades')
     async getEnfermedadesByPaciente(@Param('idPaciente') idPaciente: string): Promise<IApiResponse> {
         const data = await this.pacienteService.getEnfermedadesByPaciente(idPaciente);
-        return { statusCode: HttpStatus.OK, message: 'Enfermedades del paciente', data };
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Enfermedades del paciente',
+            data,
+            error: null
+        };
     }
 
     // Sintomas
@@ -271,25 +314,45 @@ export class PacienteController {
     @Post('sintoma')
     async createSintoma(@Body() dto: CreateSintomaDto): Promise<IApiResponse> {
         const data = await this.pacienteService.createSintoma(dto);
-        return { statusCode: HttpStatus.CREATED, message: 'Sintoma creado', data };
+        return {
+            statusCode: HttpStatus.CREATED,
+            message: 'Sintoma creado',
+            data,
+            error: null
+        };
     }
 
     @Put('sintoma/:id')
     async updateSintoma(@Param('id') id: string, @Body() dto: UpdateSintomaDto): Promise<IApiResponse> {
         const data = await this.pacienteService.updateSintoma(id, dto);
-        return { statusCode: HttpStatus.OK, message: 'Sintoma actualizado', data };
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Sintoma actualizado',
+            data,
+            error: null
+        };
     }
 
     @Post('paciente-sintoma')
     async addSintomaToPaciente(@Body() dto: CreatePacienteSintomaDto): Promise<IApiResponse> {
         const data = await this.pacienteService.addSintomaToPaciente(dto);
-        return { statusCode: HttpStatus.CREATED, message: 'Sintoma agregado al paciente', data };
+        return {
+            statusCode: HttpStatus.CREATED,
+            message: 'Sintoma agregado al paciente',
+            data,
+            error: null
+        };
     }
 
     @Get('paciente/:idPaciente/sintomas')
     async getSintomasByPaciente(@Param('idPaciente') idPaciente: string): Promise<IApiResponse> {
         const data = await this.pacienteService.getSintomasByPaciente(idPaciente);
-        return { statusCode: HttpStatus.OK, message: 'Sintomas del paciente', data };
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Sintomas del paciente',
+            data,
+            error: null
+        };
     }
 
     @Post('contacto/:idPaciente')
@@ -299,7 +362,8 @@ export class PacienteController {
             return {
                 statusCode: HttpStatus.NOT_FOUND,
                 message: 'Paciente no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
         const tipoParentesco = await this.pacienteService.findTipoParentescoById(createContactoDto.id_tipo_parentesco);
@@ -307,24 +371,27 @@ export class PacienteController {
             return {
                 statusCode: HttpStatus.NOT_FOUND,
                 message: 'Tipo de parentesco no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
         const contacto = await this.pacienteService.createContactoForPaciente(createContactoDto, paciente, tipoParentesco);
         return {
             statusCode: HttpStatus.CREATED,
             message: 'Contacto creado para el paciente',
-            data: contacto
+            data: contacto,
+            error: null
         };
     }    
 
     @Put(':id')
-    async updatePaciente(@Param('id') id: string, @Body() updatePacienteDto: UpdatePacienteDto) {
+    async updatePaciente(@Param('id') id: string, @Body() updatePacienteDto: UpdatePacienteDto): Promise<IApiResponse> {
         const data = await this.pacienteService.update(id, updatePacienteDto);
         return {
             statusCode: HttpStatus.OK,
             message: 'Paciente actualizado',
-            data
+            data,
+            error: null
         };
     }
 
@@ -335,7 +402,8 @@ export class PacienteController {
             return {
                 statusCode: HttpStatus.NOT_FOUND,
                 message: 'Contacto no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
 
@@ -344,7 +412,8 @@ export class PacienteController {
             return {
                 statusCode: HttpStatus.NOT_FOUND,
                 message: 'Paciente no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
         const tipoParentesco = await this.pacienteService.findTipoParentescoById(updateContactoDto.id_tipo_parentesco);
@@ -352,7 +421,8 @@ export class PacienteController {
             return {
                 statusCode: HttpStatus.NOT_FOUND,
                 message: 'Tipo de parentesco no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
 
@@ -361,7 +431,8 @@ export class PacienteController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Contacto actualizado',
-            data: updatedContacto
+            data: updatedContacto,
+            error: null
         };
     }
 
@@ -371,7 +442,8 @@ export class PacienteController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Tipo de parentesco actualizado',
-            data
+            data,
+            error: null
         };
     }
 
@@ -382,7 +454,8 @@ export class PacienteController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Historial del paciente',
-            data
+            data,
+            error: null
         };
     }
 
@@ -392,7 +465,8 @@ export class PacienteController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Historial de conversación del paciente',
-            data
+            data,
+            error: null
         };
     }
 
@@ -402,7 +476,8 @@ export class PacienteController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Notificacion enviada para supervisora',
-            data
+            data,
+            error: null
         };
     }
 

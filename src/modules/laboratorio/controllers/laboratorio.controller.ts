@@ -36,7 +36,8 @@ export class LaboratorioController {
         return {
             statusCode: HttpStatus.CREATED,
             message: 'Laboratorio registrado correctamente',
-            data
+            data,
+            error: null
         };
     }
 
@@ -55,7 +56,8 @@ export class LaboratorioController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Lista de laboratorios',
-            data
+            data,
+            error: null
         };
     }
 
@@ -65,7 +67,8 @@ export class LaboratorioController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Lista de laboratorios del paciente',
-            data
+            data,
+            error: null
         };
     }
 
@@ -75,7 +78,8 @@ export class LaboratorioController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Lista de tipos de control',
-            data
+            data,
+            error: null
         };
     }
 
@@ -85,7 +89,8 @@ export class LaboratorioController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Lista de tipos de laboratorio',
-            data
+            data,
+            error: null
         };
     }
 
@@ -95,7 +100,8 @@ export class LaboratorioController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Lista de tipos de resultado',
-            data
+            data,
+            error: null
         };
     }
 }

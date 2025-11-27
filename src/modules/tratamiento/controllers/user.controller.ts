@@ -20,7 +20,8 @@ export class UserController {
         return {
             statusCode: 200,
             message: 'Roles encontrados',
-            data: rols
+            data: rols,
+            error: null
         }
     }
 
@@ -30,7 +31,8 @@ export class UserController {
         return {
             statusCode: 200,
             message: 'Usuarios encontrados',
-            data: users
+            data: users,
+            error: null
         }
     }
     
@@ -41,13 +43,15 @@ export class UserController {
             return {
                 statusCode: 404,
                 message: 'Usuario no encontrado',
-                data: null
+                data: null,
+                error: null
             }
         }
         return {
             statusCode: 200,
             message: 'Usuario encontrado',
-            data: user
+            data: user,
+            error: null
         }
     }
 
@@ -58,13 +62,15 @@ export class UserController {
             return {
                 statusCode: 404,
                 message: 'Rol no encontrado',
-                data: null
+                data: null,
+                error: null
             }
         }
         return {
             statusCode: 200,
             message: 'Rol encontrado',
-            data: rol
+            data: rol,
+            error: null
         }
     }
 
@@ -74,7 +80,8 @@ export class UserController {
         return {
             statusCode: 201,
             message: 'Rol creado',
-            data: newRol
+            data: newRol,
+            error: null
         }
     }
 
@@ -85,7 +92,8 @@ export class UserController {
         return {
             statusCode: 201,
             message: 'Usuario creado',
-            data: newUser
+            data: newUser,
+            error: null
         }
     }
 
@@ -95,7 +103,8 @@ export class UserController {
         return {
             statusCode: 200,
             message: 'Rol actualizado',
-            data: updatedRol
+            data: updatedRol,
+            error: null
         }
     }
 
@@ -106,7 +115,8 @@ export class UserController {
         return {
             statusCode: 200,
             message: 'Usuario actualizado',
-            data: updatedUser
+            data: updatedUser,
+            error: null
         }
     }
 

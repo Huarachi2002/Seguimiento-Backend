@@ -29,7 +29,8 @@ export class CitaController {
         return {
             statusCode: 200,
             message: 'Recordatorio de cita enviado exitosamente',
-            data: n8nResponse
+            data: n8nResponse,
+            error: null
         };
     }
 
@@ -39,7 +40,8 @@ export class CitaController {
         return {
             statusCode: 200,
             message: 'Lista de estados de cita',
-            data
+            data,
+            error: null
         };
     }
 
@@ -49,7 +51,8 @@ export class CitaController {
         return {
             statusCode: 200,
             message: 'Lista de tipos de cita',
-            data
+            data,
+            error: null
         };
     }
 
@@ -59,7 +62,8 @@ export class CitaController {
         return {
             statusCode: 200,
             message: 'Lista de motivos de no asistencia',
-            data
+            data,
+            error: null
         };
     }
 
@@ -69,7 +73,8 @@ export class CitaController {
         return {
             statusCode: 201,
             message: 'Motivo creado exitosamente',
-            data
+            data,
+            error: null
         };
     }
 
@@ -79,7 +84,8 @@ export class CitaController {
         return {
             statusCode: 200,
             message: 'Motivo actualizado exitosamente',
-            data
+            data,
+            error: null
         };
     }
 
@@ -89,7 +95,8 @@ export class CitaController {
         return {
             statusCode: 200,
             message: 'Lista de citas del paciente',
-            data
+            data,
+            error: null
         };
     }
     
@@ -99,7 +106,8 @@ export class CitaController {
         return {
             statusCode: 200,
             message: 'Lista de citas del tratamiento',
-            data
+            data,
+            error: null
         };
     }
 
@@ -110,13 +118,15 @@ export class CitaController {
             return {
                 statusCode: 404,
                 message: 'Estado de cita no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
         return {
             statusCode: 200,
             message: 'Estado de cita encontrado',
-            data
+            data,
+            error: null
         };
     }
 
@@ -127,13 +137,15 @@ export class CitaController {
             return {
                 statusCode: 404,
                 message: 'Tipo de cita no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
         return {
             statusCode: 200,
             message: 'Tipo de cita encontrado',
-            data
+            data,
+            error: null
         };
     }
 
@@ -143,7 +155,8 @@ export class CitaController {
         return {
             statusCode: 200,
             message: 'Lista de citas',
-            data
+            data,
+            error: null
         };
     }
 
@@ -154,13 +167,15 @@ export class CitaController {
             return {
                 statusCode: 404,
                 message: 'Cita no encontrada',
-                data: null
+                data: null,
+                error: null
             };
         }
         return {
             statusCode: 200,
             message: 'Cita encontrada',
-            data
+            data,
+            error: null
         };
     }
 
@@ -193,7 +208,8 @@ export class CitaController {
         return {
             statusCode: 201,
             message: 'Cita creada exitosamente',
-            data
+            data,
+            error: null
         };
     }
 
@@ -203,7 +219,8 @@ export class CitaController {
         return {
             statusCode: 201,
             message: 'Tipo de cita creado exitosamente',
-            data: tipoCita
+            data: tipoCita,
+            error: null
         };
     }
 
@@ -213,7 +230,8 @@ export class CitaController {
         return {
             statusCode: 201,
             message: 'Estado de cita creado exitosamente',
-            data: estadoCita
+            data: estadoCita,
+            error: null
         };
     }
 
@@ -224,7 +242,8 @@ export class CitaController {
             return {
                 statusCode: 404,
                 message: 'No se encontraron citas para el paciente',
-                data: null
+                data: null,
+                error: null
             };
         }
 
@@ -233,7 +252,8 @@ export class CitaController {
             return {
                 statusCode: 404,
                 message: 'Usuario administrador no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
 
@@ -242,7 +262,8 @@ export class CitaController {
             return {
                 statusCode: 404,
                 message: 'Estado de cita "Reprogramado" no encontrado',
-                data: null
+                data: null,
+                error: null
             };
         }
 
@@ -260,7 +281,8 @@ export class CitaController {
             return {
                 statusCode: 400,
                 message: `Fecha programada inválida. Recibido: ${updateAssistantDto.fecha_programada}. Formato esperado: YYYY-MM-DDTHH:mm:ss.sssZ`,
-                data: null
+                data: null,
+                error: null
             };
         }
 
@@ -286,7 +308,8 @@ export class CitaController {
         return {
             statusCode: 200,
             message: 'Cita reprogramada exitosamente',
-            data: assistant
+            data: assistant,
+            error: null
         };
     }
     
@@ -296,7 +319,8 @@ export class CitaController {
         return {
             statusCode: 200,
             message: 'Tipo de cita actualizado exitosamente',
-            data
+            data,
+            error: null
         };
     }
 
@@ -306,7 +330,8 @@ export class CitaController {
         return {
             statusCode: 200,
             message: 'Estado de cita actualizado exitosamente',
-            data
+            data,
+            error: null
         };
     }
 
@@ -333,7 +358,8 @@ export class CitaController {
         return {
             statusCode: 200,
             message: 'Cita actualizada exitosamente',
-            data
+            data,
+            error: null
         };
     }
 }
