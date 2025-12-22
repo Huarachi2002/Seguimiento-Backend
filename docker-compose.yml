@@ -43,7 +43,6 @@ services:
       LOG_LEVEL: debug
       N8N_WEBHOOK_URL: https://n8n-service-axadhhayhpdpdbhz.centralus-01.azurewebsites.net
       N8N_API_KEY: your-n8n-api-key-here
-      IA_SERVICE_URL: http://host.docker.internal:8000
     volumes:
       - ./uploads:/app/uploads
       - ./temp:/app/temp

@@ -22,7 +22,6 @@ import { CreatePacienteSintomaDto } from "../dto/create-paciente-sintoma.dto";
 import { DireccionService } from "@/modules/monitoreo/services/direccion.service";
 import { Direccion } from "@/modules/monitoreo/entities/direccion.entity";
 import { Cita } from "@/modules/tratamiento/entities/cita.entity";
-import { IAService } from "@/common/service/ia.service";
 import { N8NService } from "@/common/service/n8n.service";
 import { UserService } from "@/modules/tratamiento/services/user.service";
 import { User } from "@/modules/tratamiento/entities/user.entity";
@@ -41,7 +40,6 @@ export class PacienteService {
         @InjectRepository(Paciente_Sintoma) private pacienteSintomaRepository: Repository<Paciente_Sintoma>,
         
         @Inject(forwardRef(() => DireccionService)) private direccionService: DireccionService,
-        @Inject(forwardRef(() => IAService)) private iaService: IAService,
         @Inject(forwardRef(() => N8NService)) private n8nService: N8NService,
         @Inject(forwardRef(() => UserService)) private userService: UserService
     ) { }
@@ -701,38 +699,6 @@ export class PacienteService {
                 {
                     success: false,
                     message: 'Error al actualizar paciente',
-                    data: null,
-                    error: error.message,
-                },
-                HttpStatus.INTERNAL_SERVER_ERROR,
-            );
-        }
-    }
-
-    // Historial Chat
-    async findHistorialConversacionByPaciente(telefono: string): Promise<any> {
-        try {
-            const data = await this.iaService.getHistorialConversacionByPaciente(telefono);
-            if (!data) {
-                throw new HttpException(
-                    {
-                        success: false,
-                        message: 'Historial no encontrado',
-                        data: null,
-                        error: 'Not Found',
-                    },
-                    HttpStatus.NOT_FOUND,
-                );
-            }
-            return data;
-        } catch (error) {
-            if (error instanceof HttpException) {
-                throw error;
-            }
-            throw new HttpException(
-                {
-                    success: false,
-                    message: 'Error al obtener historial de conversación',
                     data: null,
                     error: error.message,
                 },

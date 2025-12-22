@@ -1,6 +1,7 @@
 import { UserService } from '@/modules/tratamiento/services/user.service';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +15,7 @@ export class AuthService {
     try {
       const user = await this.usersService.findByName(username); 
 
-      if (user && user.contrasena === pass) {
+      if (user && bcrypt.compareSync(pass, user.contrasena)) {
         const { contrasena, ...result } = user;
         return result;
       }
@@ -35,8 +36,6 @@ export class AuthService {
   async login(user: any) {
     try {
       const payload = { name: user.username, userId: user.id };
-      console.log("payload-user->", user);
-      console.log("payload-out->", payload);
       return {
         access_token: this.jwtService.sign(payload),
       };

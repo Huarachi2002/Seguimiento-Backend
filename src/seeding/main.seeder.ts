@@ -17,6 +17,7 @@ import { Enfermedad } from '../modules/paciente/entities/enfermedad.entity';
 import { Sintoma } from '../modules/paciente/entities/sintoma.entity';
 import { Localizacion_TB } from '../modules/tratamiento/entities/localizacion_tb.entity';
 import { User } from '../modules/tratamiento/entities/user.entity';
+import * as bcrypt from 'bcryptjs';
 
 export default class MainSeeder implements Seeder {
   public async run(
@@ -300,7 +301,7 @@ export default class MainSeeder implements Seeder {
     for (const userData of users) {
       const user = repository.create({
         username: userData.username,
-        contrasena: userData.contrasena,
+        contrasena: bcrypt.hashSync(userData.contrasena, 10),
         nombre: userData.nombre,
         fecha_login: new Date(),
         rol: { descripcion: userData.rol.descripcion },
